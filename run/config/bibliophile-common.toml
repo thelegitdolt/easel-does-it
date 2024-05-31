@@ -1,0 +1,9 @@
+
+[XP]
+
+	[XP."XP Scaling"]
+		#If the levels required to advance each level should remain at a constant value
+		RemoveXPScaling = true
+		#If RemoveXPScaling is true, the amount of XP it takes to level up
+		xpPerLevel = 35
+

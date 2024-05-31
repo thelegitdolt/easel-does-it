@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "com/dolthhaven/bibliophile/core/mixin/PlayerMixin": {
+      "getXpNeededForNextLevel": "Lnet/minecraft/world/entity/player/Player;m_36323_()I"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/dolthhaven/bibliophile/core/mixin/PlayerMixin": {
+        "getXpNeededForNextLevel": "Lnet/minecraft/world/entity/player/Player;m_36323_()I"
+      }
+    }
+  }
+}
