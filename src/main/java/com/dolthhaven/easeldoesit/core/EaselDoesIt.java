@@ -2,6 +2,7 @@ package com.dolthhaven.easeldoesit.core;
 
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModLoot;
 import com.mojang.logging.LogUtils;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import net.minecraft.core.HolderLookup;
@@ -59,6 +60,7 @@ public class EaselDoesIt {
         EaselModBlockTags.TagProvider blockTags = new EaselModBlockTags.TagProvider(output, provider, helper);
 
         generator.addProvider(server, blockTags);
+        generator.addProvider(server, new EaselModLoot(output));
     }
 
     public static ResourceLocation rl(String path) {

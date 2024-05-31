@@ -4,16 +4,12 @@ import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
 import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -32,8 +28,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.http.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,8 +88,8 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             ItemStack stack = player.getItemInHand(hand);
 
             EaselModUtil.getPaintingFromStack(stack).ifPresentOrElse(painting -> {
-                        easelBlockEntity.setSavedPainting(painting);
-                        level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
+                easelBlockEntity.setSavedPainting(painting);
+                level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
             },
             () -> {
                 easelBlockEntity.setSavedPainting(null);
@@ -103,11 +97,6 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             });
 
 //                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
-
-            if (easelBlockEntity.getSavedPainting() != null) {
-                player.displayClientMessage(Component.translatable(ForgeRegistries.PAINTING_VARIANTS.getKey(easelBlockEntity.getSavedPainting()).toString()), true);
-            }
-
         }
 
         return InteractionResult.SUCCESS;

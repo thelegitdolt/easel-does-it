@@ -83,8 +83,10 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
-        ResourceLocation savedPainting = new ResourceLocation(tag.getString(SAVED_PAINTING_TAG_KEY));
-        this.setSavedPainting(ForgeRegistries.PAINTING_VARIANTS.getValue(savedPainting));
+        if (!tag.getString(SAVED_PAINTING_TAG_KEY).isEmpty()) {
+            ResourceLocation savedPainting = new ResourceLocation(tag.getString(SAVED_PAINTING_TAG_KEY));
+            this.setSavedPainting(ForgeRegistries.PAINTING_VARIANTS.getValue(savedPainting));
+        }
     }
 
     @Nullable
