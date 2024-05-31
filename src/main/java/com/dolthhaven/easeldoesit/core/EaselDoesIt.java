@@ -7,6 +7,7 @@ import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -58,5 +59,9 @@ public class EaselDoesIt {
         EaselModBlockTags.TagProvider blockTags = new EaselModBlockTags.TagProvider(output, provider, helper);
 
         generator.addProvider(server, blockTags);
+    }
+
+    public static ResourceLocation rl(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 }

@@ -3,7 +3,6 @@ package com.dolthhaven.easeldoesit.common.blocks;
 import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,12 +26,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+@SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
@@ -69,7 +68,6 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
     
     @Override
-    @SuppressWarnings(value = "deprecation")
     public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
@@ -81,7 +79,6 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings(value = "deprecation")
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult result) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -92,4 +89,5 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
         return InteractionResult.SUCCESS;
     }
+
 }

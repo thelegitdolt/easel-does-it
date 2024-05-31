@@ -1,3 +1,11 @@
+./run
+./.gradle
+./build
+./.idea
+./.gitignore
+
+
+
 # Build and Release Folders
 bin-debug/
 bin-release/
@@ -5,11 +13,7 @@ bin-release/
 [Bb]in/
 
 # Other files and folders
-./run
-./.gradle
-./build
-./.idea
-./.gitignore
+
 
 # Executables
 *.swf
