@@ -1,0 +1,39 @@
+modLoader = "javafml"
+loaderVersion = "[32,)"
+issueTrackerURL = "https://github.com/thelegitdolt/easel-does-it/issues"
+license = "https://github.com/thelegitdolt/easel-does-it/blob/main/LICENSE"
+
+[[mods]]
+    modId = "easel_does_it"
+    version = "${file.jarVersion}"
+    logoFile = "logo.png"
+    itemIcon = "minecraft:painting"
+    configBackground = "minecraft:textures/block/obsidian.png"
+    authors = "Dolt and Glyphys"
+    credits = "Glyphys and Dolt"
+    displayURL = "https://www.youtube.com/mods/caverns-and-chasms"
+    displayName = "Easel Does It!"
+    description = '''
+       Adds the easel, which will make using painting much easel-ier!
+    '''
+
+[[dependencies.easel_does_it]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "[1.20.1,1.21)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.easel_does_it]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "[47.1.3,)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.easel_does_it]]
+    modId = "blueprint"
+    mandatory = true
+    versionRange = "[7.1.0,)"
+    ordering = "AFTER"
+    side = "BOTH"
