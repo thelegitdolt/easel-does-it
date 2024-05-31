@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {
     public static final String MOD_ID = "easel_does_it";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
 
 

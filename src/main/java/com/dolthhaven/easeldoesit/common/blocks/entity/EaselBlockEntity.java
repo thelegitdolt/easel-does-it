@@ -63,6 +63,10 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
         return CONTAINER_TITLE;
     }
 
+    public PaintingVariant getSavedPainting() {
+        return this.savedPainting;
+    }
+
     public void setSavedPainting(@Nullable PaintingVariant newPainting) {
         this.savedPainting = newPainting;
     }

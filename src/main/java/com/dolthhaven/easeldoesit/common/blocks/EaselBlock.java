@@ -1,12 +1,19 @@
 package com.dolthhaven.easeldoesit.common.blocks;
 
 import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
+import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -25,7 +32,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.http.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +74,7 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
     }
-    
+
     @Override
     public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
@@ -83,10 +91,25 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                                           InteractionHand hand, BlockHitResult result) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof EaselBlockEntity easelBlockEntity) {
-            if (!level.isClientSide) {
-                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
+            ItemStack stack = player.getItemInHand(hand);
+
+            EaselModUtil.getPaintingFromStack(stack).ifPresentOrElse(painting -> {
+                        easelBlockEntity.setSavedPainting(painting);
+                        level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
+            },
+            () -> {
+                easelBlockEntity.setSavedPainting(null);
+                level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.BLOCKS);
+            });
+
+//                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
+
+            if (easelBlockEntity.getSavedPainting() != null) {
+                player.displayClientMessage(Component.translatable(ForgeRegistries.PAINTING_VARIANTS.getKey(easelBlockEntity.getSavedPainting()).toString()), true);
             }
+
         }
+
         return InteractionResult.SUCCESS;
     }
 
