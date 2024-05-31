@@ -5,11 +5,11 @@ bin-release/
 [Bb]in/
 
 # Other files and folders
-.settings/
-.run/
-.gradle/
-.build/
-.idea/
+./run
+./.gradle
+./build
+./.idea
+./.gitignore
 
 # Executables
 *.swf

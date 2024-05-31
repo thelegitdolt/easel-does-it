@@ -1,1 +1,4 @@
 # easel-does-it
+
+CONTRIBUTE TO THE MOD!
+MAKE ME A BETTER CODER!
