@@ -69,7 +69,7 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
     public void setSavedPainting(@Nullable PaintingVariant newPainting) {
         this.savedPainting = newPainting;
         this.height = Objects.nonNull(newPainting) ? newPainting.getHeight() :  0;
-        this.width = newPainting.getWidth();
+        this.width = Objects.nonNull(newPainting) ? newPainting.getWidth() : 0;
     }
 
     @Override
