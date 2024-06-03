@@ -13,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class EaselModBlockTags {
     public static class TagProvider extends BlueprintBlockTagsProvider {
-
         public TagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, ExistingFileHelper helper) {
             super(EaselDoesIt.MOD_ID, output, provider, helper);
         }

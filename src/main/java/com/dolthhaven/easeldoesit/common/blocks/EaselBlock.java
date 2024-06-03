@@ -4,12 +4,17 @@ import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
 import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -28,17 +33,20 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
-
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public EaselBlock(Properties props) {
         super(props);
@@ -87,18 +95,23 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         if (blockEntity instanceof EaselBlockEntity easelBlockEntity) {
             ItemStack stack = player.getItemInHand(hand);
 
-            EaselModUtil.getPaintingFromStack(stack).ifPresentOrElse(painting -> {
-                easelBlockEntity.setSavedPainting(painting);
+            Optional<PaintingVariant> painting = EaselModUtil.getPaintingFromStack(stack);
+            if (painting.isPresent()) {
+                easelBlockEntity.setSavedPainting(painting.orElseThrow());
                 level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
-            },
-            () -> {
+            }
+            else if (stack.is(Items.PAINTING) && !level.isClientSide()) {
+                ResourceLocation paintingVariantsKey = ForgeRegistries.PAINTING_VARIANTS.getKey(easelBlockEntity.getSavedPainting());
+                if (Objects.nonNull(paintingVariantsKey)) {
+                    player.displayClientMessage(Component.translatable(paintingVariantsKey.toString()), true);
+                }
+                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
+            }
+            else {
                 easelBlockEntity.setSavedPainting(null);
                 level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.BLOCKS);
-            });
-
-//                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
+            }
         }
-
         return InteractionResult.SUCCESS;
     }
 

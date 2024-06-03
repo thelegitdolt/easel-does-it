@@ -6,9 +6,12 @@ import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 public class EaselModUtil {
     public static Optional<PaintingVariant> getPaintingFromStack(ItemStack stack) {
         if (!stack.is(Items.PAINTING)) return Optional.empty();
@@ -24,5 +27,10 @@ public class EaselModUtil {
         else {
             return Optional.empty();
         }
+    }
+
+    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {
+        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
+                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width).toList();
     }
 }

@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -63,12 +62,14 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
         return CONTAINER_TITLE;
     }
 
-    public PaintingVariant getSavedPainting() {
+    public @Nullable PaintingVariant getSavedPainting() {
         return this.savedPainting;
     }
 
     public void setSavedPainting(@Nullable PaintingVariant newPainting) {
         this.savedPainting = newPainting;
+        this.height = Objects.nonNull(newPainting) ? newPainting.getHeight() :  0;
+        this.width = newPainting.getWidth();
     }
 
     @Override
