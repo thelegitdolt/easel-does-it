@@ -39,18 +39,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
 @SuppressWarnings("deprecation")
-public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+public class EaselBlock extends BaseEntityBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("container.easel_does_it.easel");
 
-
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty PAINTING = BooleanProperty.create("painting");
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public EaselBlock(Properties props) {
         super(props);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false).setValue(PAINTING, false));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(PAINTING, false));
     }
 
     @Override
@@ -73,18 +71,12 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
-                .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER).setValue(PAINTING, false);
-    }
-
-    @Override
-    public @NotNull FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(PAINTING, false);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateDef) {
-        stateDef.add(WATERLOGGED, FACING, PAINTING);
+        stateDef.add(FACING, PAINTING);
     }
 
     @Override
@@ -177,5 +169,4 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 //        return new SimpleMenuProvider((p_57074_, inventory, player) ->
 //                new EaselMenu(), CONTAINER_TITLE);
     }
-
 }
