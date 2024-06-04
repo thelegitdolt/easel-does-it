@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.core;
 
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
+import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModLoot;
 import com.mojang.logging.LogUtils;
@@ -17,6 +18,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -35,8 +37,10 @@ public class EaselDoesIt {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         REGISTRY_HELPER.register(modEventBus);
+        EaselModMenuTypes.MENU_TYPES.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::clientSetup);
         modEventBus.addListener(this::dataSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -47,6 +51,10 @@ public class EaselDoesIt {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+    }
+
+    private void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(EaselModMenuTypes::registerScreens);
     }
 
     private void dataSetup(GatherDataEvent event) {

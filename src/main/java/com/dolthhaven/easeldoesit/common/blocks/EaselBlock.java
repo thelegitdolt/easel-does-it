@@ -20,15 +20,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock {
@@ -130,7 +126,7 @@ public class EaselBlock extends BaseEntityBlock {
         return 0;
     }
 
-    private static boolean attemptTogglePainting(Player player, Level level, BlockPos pos, InteractionHand hand, BlockState state, ItemStack heldStack, EaselBlockEntity easelEntity) {
+    private static boolean attemptTogglePainting(@NotNull Player player, Level level, BlockPos pos, InteractionHand hand, BlockState state, ItemStack heldStack, EaselBlockEntity easelEntity) {
         if (!player.isCrouching() && player.getItemInHand(EaselModUtil.getOtherHand(hand)).isEmpty()) {
             return false;
         }

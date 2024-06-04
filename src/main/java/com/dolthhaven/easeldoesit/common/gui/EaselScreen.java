@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
-    public static final ResourceLocation TEXTURE = EaselDoesIt.rl("");
+    private static final ResourceLocation TEXTURE = EaselDoesIt.rl("textures/gui/container/easel.png");
 
     public EaselScreen(EaselMenu menu, Inventory inventory, Component component) {
         super(menu, inventory, component);
@@ -28,10 +28,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        int x = (width - imageWidth) / 2;
-        int y = (width - imageHeight) / 2;
+        int beginX = (width - imageWidth) / 2;
+        int beginY = (width - imageHeight) / 2;
 
-        guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-
+        guiGraphics.blit(TEXTURE, beginX, beginY, 0, 0, imageWidth, imageHeight);
     }
 }
