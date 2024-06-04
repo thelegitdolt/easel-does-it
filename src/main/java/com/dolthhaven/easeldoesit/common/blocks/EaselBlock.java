@@ -1,21 +1,17 @@
 package com.dolthhaven.easeldoesit.common.blocks;
 
 import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
-import com.dolthhaven.easeldoesit.common.gui.EaselMenu;
 import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.StonecutterMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -36,16 +32,11 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
-import java.util.Optional;
-
-import static com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity.CONTAINER_TITLE;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -103,7 +94,7 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         if (level.getBlockEntity(pos) instanceof EaselBlockEntity easelEntity) {
             ItemStack stack = player.getItemInHand(hand);
 
-            boolean toggledPainting = attemptTogglePainting(player, level, pos, hand, stack, easelEntity);
+            boolean toggledPainting = attemptTogglePainting(player, level, pos, hand, state, stack, easelEntity);
             if (toggledPainting) {
                 return InteractionResult.SUCCESS;
             }
@@ -117,29 +108,63 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         return InteractionResult.SUCCESS;
     }
 
-    private static boolean attemptTogglePainting(Player player, Level level, BlockPos pos, InteractionHand hand, ItemStack heldStack, EaselBlockEntity easelEntity) {
+    @Override
+    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() == newState.getBlock()) {
+            return;
+        }
+
+        BlockEntity tileEntity = level.getBlockEntity(pos);
+        if (tileEntity instanceof EaselBlockEntity easelEntity && !easelEntity.getSavedPainting().isEmpty()) {
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), easelEntity.getSavedPainting());
+            level.updateNeighbourForOutputSignal(pos, this);
+        }
+
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
+        return true;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof EaselBlockEntity easelEntity) {
+            return easelEntity.getSavedPainting().isEmpty() ? 0 : 15;
+        }
+        return 0;
+    }
+
+    private static boolean attemptTogglePainting(Player player, Level level, BlockPos pos, InteractionHand hand, BlockState state, ItemStack heldStack, EaselBlockEntity easelEntity) {
         if (!player.isCrouching() && player.getItemInHand(EaselModUtil.getOtherHand(hand)).isEmpty()) {
             return false;
         }
 
         if (heldStack.is(Items.PAINTING)) {
-            if (Objects.nonNull(easelEntity.getSavedPainting())) {
+            if (!easelEntity.getSavedPainting().isEmpty()) {
                 return false;
             }
             level.playSound(player, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
-            heldStack.shrink(1);
-            easelEntity.setSavedPainting(heldStack);
+
+            ItemStack oneStack = player.getAbilities().instabuild ? heldStack.copyWithCount(1) : heldStack.split(1);
+            level.setBlockAndUpdate(pos, state.setValue(PAINTING, true));
+            easelEntity.setSavedPainting(oneStack);
             return true;
         }
         else if (heldStack.isEmpty()) {
-            if (Objects.isNull(easelEntity.getSavedPainting())) {
+            if (easelEntity.getSavedPainting().isEmpty()) {
                 return false;
             }
             level.playSound(player, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
             if (!player.getInventory().add(easelEntity.getSavedPainting())) {
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), easelEntity.getSavedPainting());
             }
+
             easelEntity.setSavedPainting((ItemStack) null);
+            level.setBlockAndUpdate(pos, state.setValue(PAINTING, false));
             return true;
         }
 
@@ -149,8 +174,8 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Nullable
     @ParametersAreNonnullByDefault
     public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
-        return new SimpleMenuProvider((p_57074_, inventory, player) ->
-                new EaselMenu(), CONTAINER_TITLE);
+//        return new SimpleMenuProvider((p_57074_, inventory, player) ->
+//                new EaselMenu(), CONTAINER_TITLE);
     }
 
 }

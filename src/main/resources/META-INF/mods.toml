@@ -10,11 +10,11 @@ license = "https://github.com/thelegitdolt/easel-does-it/blob/main/LICENSE"
     itemIcon = "minecraft:painting"
     configBackground = "minecraft:textures/block/obsidian.png"
     authors = "Dolt and Glyphys"
-    credits = "Glyphys and Dolt"
+    credits = "Pixabay, for the Easel Use sound effect: https://pixabay.com/sound-effects/search/paint/"
     displayURL = "https://www.youtube.com/mods/caverns-and-chasms"
     displayName = "Easel Does It!"
     description = '''
-       Adds the easel, which will make using painting much easel-ier!
+       Adds the easel, which makes using painting much easel-ier!
     '''
 
 [[dependencies.easel_does_it]]

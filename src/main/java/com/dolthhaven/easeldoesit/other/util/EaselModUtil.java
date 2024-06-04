@@ -31,11 +31,16 @@ public class EaselModUtil {
     }
 
     public static ItemStack getStackFromPainting(PaintingVariant variant) {
-        ItemStack paintingStack = new ItemStack(Items.PAINTING);
+        ItemStack paintingStack = new ItemStack(Items.PAINTING, 1);
         CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
         Painting.storeVariant(tag, Holder.direct(variant));
 
         return paintingStack;
+    }
+
+    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {
+        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
+                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width).toList();
     }
 
     public static InteractionHand getOtherHand(InteractionHand hand) {
@@ -43,10 +48,5 @@ public class EaselModUtil {
             case MAIN_HAND -> InteractionHand.OFF_HAND;
             case OFF_HAND -> InteractionHand.MAIN_HAND;
         };
-    }
-
-    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {
-        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
-                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width).toList();
     }
 }

@@ -23,7 +23,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EaselBlockEntity extends BlockEntity implements MenuProvider {
+public class EaselBlockEntity extends BlockEntity {
     private final ItemStackHandler ITEM_HANDLER = new ItemStackHandler(1);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     public static final String INVENTORY_COMPOUND_KEY = "inventory";
@@ -32,12 +32,7 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
         super(EaselModBlockEntities.EASEL.get(), pos, state);
     }
 
-    @Override
-    public @NotNull Component getDisplayName() {
-        return CONTAINER_TITLE;
-    }
-
-    public @Nullable ItemStack getSavedPainting() {
+    public @NotNull ItemStack getSavedPainting() {
         return ITEM_HANDLER.getStackInSlot(0);
     }
 
@@ -50,8 +45,6 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
     public void setSavedPainting(PaintingVariant paintingVariant) {
         this.setSavedPainting(EaselModUtil.getStackFromPainting(paintingVariant));
     }
-
-
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -83,11 +76,5 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         ITEM_HANDLER.deserializeNBT(tag.getCompound(INVENTORY_COMPOUND_KEY));
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
-        return null;
     }
 }
