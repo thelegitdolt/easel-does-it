@@ -1,60 +1,35 @@
 package com.dolthhaven.easeldoesit.common.blocks.entity;
 
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlockEntities;
+import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 public class EaselBlockEntity extends BlockEntity implements MenuProvider {
-    public static final String SAVED_PAINTING_TAG_KEY = "easelPainting";
-    private static final Component CONTAINER_TITLE = Component.translatable("container.easel_does_it.easel");
-    private @Nullable PaintingVariant savedPainting;
-    protected final ContainerData data;
-    private int width;
-    private int height;
+    private final ItemStackHandler ITEM_HANDLER = new ItemStackHandler(1);
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    public static final String INVENTORY_COMPOUND_KEY = "inventory";
 
     public EaselBlockEntity(BlockPos pos, BlockState state) {
         super(EaselModBlockEntities.EASEL.get(), pos, state);
-        this.width = 0;
-        this.height = 0;
-        this.data = new ContainerData() {
-            @Override
-            public int get(int id) {
-                return switch (id) {
-                    case 0 -> EaselBlockEntity.this.width;
-                    case 1 -> EaselBlockEntity.this.height;
-                    default -> -1;
-                };
-            }
-
-            @Override
-            public void set(int id, int after) {
-                switch (id) {
-                    case 0 -> EaselBlockEntity.this.width = after;
-                    case 1 -> EaselBlockEntity.this.height = after;
-                }
-            }
-
-            @Override
-            public int getCount() {
-                return 2;
-            }
-        };
-        this.savedPainting = null;
     }
 
     @Override
@@ -62,32 +37,52 @@ public class EaselBlockEntity extends BlockEntity implements MenuProvider {
         return CONTAINER_TITLE;
     }
 
-    public @Nullable PaintingVariant getSavedPainting() {
-        return this.savedPainting;
+    public @Nullable ItemStack getSavedPainting() {
+        return ITEM_HANDLER.getStackInSlot(0);
     }
 
-    public void setSavedPainting(@Nullable PaintingVariant newPainting) {
-        this.savedPainting = newPainting;
-        this.height = Objects.nonNull(newPainting) ? newPainting.getHeight() :  0;
-        this.width = Objects.nonNull(newPainting) ? newPainting.getWidth() : 0;
+    public void setSavedPainting(ItemStack paintingStack) {
+        if (paintingStack.is(Items.PAINTING)) {
+            ITEM_HANDLER.setStackInSlot(0, paintingStack);
+        }
+    }
+
+    public void setSavedPainting(PaintingVariant paintingVariant) {
+        this.setSavedPainting(EaselModUtil.getStackFromPainting(paintingVariant));
+    }
+
+
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+            return lazyItemHandler.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        lazyItemHandler = LazyOptional.of(() -> ITEM_HANDLER);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        lazyItemHandler.invalidate();
     }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
-        ResourceLocation painting = ForgeRegistries.PAINTING_VARIANTS.getKey(this.savedPainting);
-        if (Objects.nonNull(painting)) {
-            tag.putString(SAVED_PAINTING_TAG_KEY, painting.toString());
-        }
+        tag.put(INVENTORY_COMPOUND_KEY, ITEM_HANDLER.serializeNBT());
         super.saveAdditional(tag);
     }
 
     @Override
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
-        if (!tag.getString(SAVED_PAINTING_TAG_KEY).isEmpty()) {
-            ResourceLocation savedPainting = new ResourceLocation(tag.getString(SAVED_PAINTING_TAG_KEY));
-            this.setSavedPainting(ForgeRegistries.PAINTING_VARIANTS.getValue(savedPainting));
-        }
+        ITEM_HANDLER.deserializeNBT(tag.getCompound(INVENTORY_COMPOUND_KEY));
     }
 
     @Nullable

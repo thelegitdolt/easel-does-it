@@ -2,6 +2,7 @@ package com.dolthhaven.easeldoesit.other.util;
 
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ItemStack;
@@ -27,6 +28,21 @@ public class EaselModUtil {
         else {
             return Optional.empty();
         }
+    }
+
+    public static ItemStack getStackFromPainting(PaintingVariant variant) {
+        ItemStack paintingStack = new ItemStack(Items.PAINTING);
+        CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
+        Painting.storeVariant(tag, Holder.direct(variant));
+
+        return paintingStack;
+    }
+
+    public static InteractionHand getOtherHand(InteractionHand hand) {
+        return switch (hand) {
+            case MAIN_HAND -> InteractionHand.OFF_HAND;
+            case OFF_HAND -> InteractionHand.MAIN_HAND;
+        };
     }
 
     public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {

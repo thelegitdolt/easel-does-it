@@ -18,7 +18,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class EaselModBlocks {
     public static final BlockSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getBlockSubHelper();
 
-    public static final RegistryObject<Block> EASEL = HELPER.createBlock("easel", () -> new EaselBlock(WEBlockProps.EASEL));
+    public static final RegistryObject<Block> EASEL = HELPER.createFuelBlock("easel", () -> new EaselBlock(WEBlockProps.EASEL), 300);
 
     public static void setupTabEditors() {
         CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)

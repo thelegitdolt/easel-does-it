@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.common.blocks;
 
 import com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity;
+import com.dolthhaven.easeldoesit.common.gui.EaselMenu;
 import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,10 +10,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.StonecutterMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -42,15 +45,21 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.dolthhaven.easeldoesit.common.blocks.entity.EaselBlockEntity.CONTAINER_TITLE;
+
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    private static final Component CONTAINER_TITLE = Component.translatable("container.easel_does_it.easel");
+
+
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty PAINTING = BooleanProperty.create("painting");
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public EaselBlock(Properties props) {
         super(props);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false).setValue(PAINTING, false));
     }
 
     @Override
@@ -74,7 +83,7 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
-                .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
+                .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER).setValue(PAINTING, false);
     }
 
     @Override
@@ -84,35 +93,64 @@ public class EaselBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateDef) {
-        stateDef.add(WATERLOGGED, FACING);
+        stateDef.add(WATERLOGGED, FACING, PAINTING);
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult result) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof EaselBlockEntity easelBlockEntity) {
+        if (level.getBlockEntity(pos) instanceof EaselBlockEntity easelEntity) {
             ItemStack stack = player.getItemInHand(hand);
 
-            Optional<PaintingVariant> painting = EaselModUtil.getPaintingFromStack(stack);
-            if (painting.isPresent()) {
-                easelBlockEntity.setSavedPainting(painting.orElseThrow());
-                level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
+            boolean toggledPainting = attemptTogglePainting(player, level, pos, hand, stack, easelEntity);
+            if (toggledPainting) {
+                return InteractionResult.SUCCESS;
             }
-            else if (stack.is(Items.PAINTING) && !level.isClientSide()) {
-                ResourceLocation paintingVariantsKey = ForgeRegistries.PAINTING_VARIANTS.getKey(easelBlockEntity.getSavedPainting());
-                if (Objects.nonNull(paintingVariantsKey)) {
-                    player.displayClientMessage(Component.translatable(paintingVariantsKey.toString()), true);
-                }
-                NetworkHooks.openScreen((ServerPlayer) player, easelBlockEntity, pos);
+
+            if (!level.isClientSide()) {
+                player.openMenu(state.getMenuProvider(level, pos));
+                return InteractionResult.CONSUME;
             }
-            else {
-                easelBlockEntity.setSavedPainting(null);
-                level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.BLOCKS);
-            }
+
         }
         return InteractionResult.SUCCESS;
+    }
+
+    private static boolean attemptTogglePainting(Player player, Level level, BlockPos pos, InteractionHand hand, ItemStack heldStack, EaselBlockEntity easelEntity) {
+        if (!player.isCrouching() && player.getItemInHand(EaselModUtil.getOtherHand(hand)).isEmpty()) {
+            return false;
+        }
+
+        if (heldStack.is(Items.PAINTING)) {
+            if (Objects.nonNull(easelEntity.getSavedPainting())) {
+                return false;
+            }
+            level.playSound(player, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
+            heldStack.shrink(1);
+            easelEntity.setSavedPainting(heldStack);
+            return true;
+        }
+        else if (heldStack.isEmpty()) {
+            if (Objects.isNull(easelEntity.getSavedPainting())) {
+                return false;
+            }
+            level.playSound(player, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
+            if (!player.getInventory().add(easelEntity.getSavedPainting())) {
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), easelEntity.getSavedPainting());
+            }
+            easelEntity.setSavedPainting((ItemStack) null);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Nullable
+    @ParametersAreNonnullByDefault
+    public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return new SimpleMenuProvider((p_57074_, inventory, player) ->
+                new EaselMenu(), CONTAINER_TITLE);
     }
 
 }
