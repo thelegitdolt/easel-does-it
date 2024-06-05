@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.common.blocks.entity;
 
+import com.dolthhaven.easeldoesit.common.blocks.EaselBlock;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlockEntities;
 import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.core.BlockPos;
@@ -47,6 +48,12 @@ public class EaselBlockEntity extends BlockEntity {
             return lazyItemHandler.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    public void togglePaintingModel(BlockState state, boolean painting) {
+        if (level != null) {
+            level.setBlock(this.getBlockPos(), state.setValue(EaselBlock.PAINTING, painting), 3);
+        }
     }
 
     @Override

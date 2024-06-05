@@ -13,5 +13,4 @@ public class EaselModBlockEntities {
     public static final BlockEntitySubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getBlockEntitySubHelper();
 
     public static final RegistryObject<BlockEntityType<EaselBlockEntity>> EASEL = HELPER.createBlockEntity("easel", EaselBlockEntity::new, EaselBlock.class);
-
 }
