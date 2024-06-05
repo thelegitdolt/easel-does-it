@@ -30,10 +30,12 @@ public class EaselMenu extends AbstractContainerMenu {
     private int paintingHeight;
     private int paintingWidth;
     private ItemStack input;
+    private final ContainerLevelAccess access;
     final Slot inputSlot;
     final Slot resultSlot;
     public final Container container;
     final ResultContainer resultContainer;
+    long lastSoundTime;
     Runnable slotUpdateListener = () -> {};
 
 
@@ -41,7 +43,7 @@ public class EaselMenu extends AbstractContainerMenu {
         this(containerId, inventory, inventory.player.level().getBlockEntity(extraData.readBlockPos()), ContainerLevelAccess.NULL);
     }
 
-    public EaselMenu(int containerId, Inventory inventory, BlockEntity blockEntity, final ContainerLevelAccess container) {
+    public EaselMenu(int containerId, Inventory inventory, BlockEntity blockEntity, final ContainerLevelAccess containerAccess) {
         super(EaselModMenuTypes.EASEL.get(), containerId);
         this.easelEntity = (EaselBlockEntity) blockEntity;
         this.level = inventory.player.level();
@@ -56,6 +58,7 @@ public class EaselMenu extends AbstractContainerMenu {
         this.currentPainting = null;
         this.paintingWidth = 0;
         this.paintingHeight = 0;
+        this.access = containerAccess;
 
         this.container = new SimpleContainer(1) {
             public void setChanged() {
@@ -67,7 +70,7 @@ public class EaselMenu extends AbstractContainerMenu {
 
         this.input = ItemStack.EMPTY;
         this.inputSlot = this.addSlot(new EaselInputSlot(this.container, 0, 15, 35));
-        this.resultSlot = this.addSlot(new EaselOutputSlot(this.container, this, 1, 143, 35));
+        this.resultSlot = this.addSlot(new EaselOutputSlot(this.container, access, this, 1, 143, 35));
 
         this.addDataSlot(this.selectedPaintingIndex);
     }
@@ -80,6 +83,10 @@ public class EaselMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(@NotNull Player player) {
         return false;
+    }
+
+    public void setupResultSlot() {
+
     }
 
     public List<PaintingVariant> getPossiblePaintings() {
@@ -159,5 +166,13 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public Slot getInputSlot() {
         return this.inputSlot;
+    }
+
+    public long getLastSoundTime() {
+        return lastSoundTime;
+    }
+
+    public void setLastSoundTime(long newTime) {
+        lastSoundTime = newTime;
     }
 }
