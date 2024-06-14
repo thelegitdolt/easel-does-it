@@ -40,6 +40,7 @@ public class EaselBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty PAINTING = BooleanProperty.create("painting");
+
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public EaselBlock(Properties props) {
