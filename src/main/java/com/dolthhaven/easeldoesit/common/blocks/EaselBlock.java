@@ -48,8 +48,9 @@ public class EaselBlock extends BaseEntityBlock {
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(PAINTING, false));
     }
 
-    @Override
+
     @SuppressWarnings("deprecation")
+    @Override
     @ParametersAreNonnullByDefault
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
