@@ -22,27 +22,13 @@ import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends Block {
+    // https://www.youtube.com/watch?v=O2DdUAP-7yk
+    // https://www.youtube.com/watch?v=IOFbegpYY0k
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    private static final VoxelShape SHAPE_NORTH = Shapes.joinUnoptimized(
-            Block.box(0, 0, 0, 16, 2, 16),
-            Block.box(1, 2, 2, 15, 15, 16),
-            BooleanOp.OR
-    );
-    private static final VoxelShape SHAPE_SOUTH = Shapes.joinUnoptimized(
-            Block.box(0, 0, 0, 16, 2, 16),
-            Block.box(1, 2, 0, 15, 15, 14),
-            BooleanOp.OR
-    );
-    private static final VoxelShape SHAPE_EAST = Shapes.joinUnoptimized(
-            Block.box(0, 0, 0, 16, 2, 16),
-            Block.box(0, 2, 1, 14, 15, 15),
-            BooleanOp.OR
-    );
-    private static final VoxelShape SHAPE_WEST = Shapes.joinUnoptimized(
-            Block.box(0, 0, 0, 16, 2, 16),
-            Block.box(2, 2, 1, 16, 15, 15),
-            BooleanOp.OR
-    );
+    private static final VoxelShape SHAPE_NORTH;
+    private static final VoxelShape SHAPE_SOUTH;
+    private static final VoxelShape SHAPE_EAST;
+    private static final VoxelShape SHAPE_WEST;
 
     public EaselBlock(Properties props) {
         super(props);
@@ -78,8 +64,31 @@ public class EaselBlock extends Block {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> stateBuilder) {
         super.createBlockStateDefinition(stateBuilder);
         stateBuilder.add(FACING);
+    }
+
+    static {
+        SHAPE_NORTH = Shapes.joinUnoptimized(
+                Block.box(0, 0, 0, 16, 2, 16),
+                Block.box(1, 2, 2, 15, 15, 16),
+                BooleanOp.OR
+        );
+        SHAPE_SOUTH = Shapes.joinUnoptimized(
+                Block.box(0, 0, 0, 16, 2, 16),
+                Block.box(1, 2, 0, 15, 15, 14),
+                BooleanOp.OR
+        );
+        SHAPE_EAST = Shapes.joinUnoptimized(
+                Block.box(0, 0, 0, 16, 2, 16),
+                Block.box(0, 2, 1, 14, 15, 15),
+                BooleanOp.OR
+        );
+        SHAPE_WEST = Shapes.joinUnoptimized(
+                Block.box(0, 0, 0, 16, 2, 16),
+                Block.box(2, 2, 1, 16, 15, 15),
+                BooleanOp.OR
+        );
     }
 }

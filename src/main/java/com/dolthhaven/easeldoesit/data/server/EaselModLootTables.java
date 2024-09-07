@@ -1,4 +1,4 @@
-package com.dolthhaven.easeldoesit.data.server.tags;
+package com.dolthhaven.easeldoesit.data.server;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;

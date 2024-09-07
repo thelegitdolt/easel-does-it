@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "0": {
+      "tag": "minecraft:planks"
+    },
+    "_": {
+      "tag": "minecraft:wooden_slabs"
+    }
+  },
+  "pattern": [
+    " 0",
+    "0/",
+    "__"
+  ],
+  "result": {
+    "item": "easel_does_it:easel"
+  },
+  "show_notification": true
+}
