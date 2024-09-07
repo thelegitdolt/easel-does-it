@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "easel_does_it:block/easel",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "easel_does_it:block/easel"
+    },
+    "facing=south": {
+      "model": "easel_does_it:block/easel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "easel_does_it:block/easel",
+      "y": 270
+    }
+  }
+}

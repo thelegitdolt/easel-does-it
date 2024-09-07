@@ -1,0 +1,39 @@
+modLoader = "javafml"
+loaderVersion = "[32,)"
+issueTrackerURL = "https://github.com/thelegitdolt/easel-does-it/issues"
+license = "https://github.com/thelegitdolt/easel-does-it/blob/main/LICENSE"
+
+[[mods]]
+    modId = "easel_does_it"
+    version = "${file.jarVersion}"
+    logoFile = "logo.png"
+    itemIcon = "easel_does_it:easel"
+    configBackground = "minecraft:textures/block/mud_bricks.png"
+    authors = "Doltum, Drewy"
+    credits = ""
+    displayURL = "https://www.youtube.com"
+    displayName = "Easel Does It"
+    description = '''
+        Adds the easel, which makes using paintings much easel-ier.
+    '''
+
+[[dependencies.easel_does_it]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "[1.20.1,1.20.2)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.easel_does_it]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "[43.3.0,)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.easel_does_it]]
+    modId = "blueprint"
+    mandatory = true
+    versionRange = "[7.1.0,)"
+    ordering = "AFTER"
+    side = "BOTH"

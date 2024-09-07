@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.dolthhaven.easeldoesit.core.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "refmap": "easel_does_it.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}
