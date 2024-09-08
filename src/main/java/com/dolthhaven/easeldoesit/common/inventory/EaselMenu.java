@@ -38,7 +38,6 @@ public class EaselMenu extends AbstractContainerMenu {
         return stillValid(this.access, player, EaselModBlocks.EASEL.get());
     }
 
-
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {

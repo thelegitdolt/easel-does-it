@@ -77,11 +77,6 @@ public class EaselBlock extends Block {
     }
 
     @Override
-    public boolean useShapeForLightOcclusion(@NotNull BlockState state) {
-        return true;
-    }
-
-    @Override
     public @NotNull BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
