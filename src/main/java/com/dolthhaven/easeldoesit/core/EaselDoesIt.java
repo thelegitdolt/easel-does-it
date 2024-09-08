@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.core;
 
+import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
 import com.dolthhaven.easeldoesit.data.server.EaselModRecipes;
@@ -38,16 +39,17 @@ public class EaselDoesIt
 
         // Register the commonSetup method for modloading
         bus.addListener(this::commonSetup);
-
+        bus.addListener(this::clientSetup);
         // do the data set up
         bus.addListener(this::dataSetup);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
-
-        // register the items i love blueprint!!
+        // register the stuffs!! i love blueprint!!
         REGISTRY_HELPER.register(bus);
+
+        EaselModMenuTypes.MENUS.register(bus);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
 //        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -58,6 +60,12 @@ public class EaselDoesIt
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+    }
+
+    private void clientSetup(final FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            EaselModMenuTypes.registerScreens();
+        });
     }
 
     private void dataSetup(final GatherDataEvent event) {
