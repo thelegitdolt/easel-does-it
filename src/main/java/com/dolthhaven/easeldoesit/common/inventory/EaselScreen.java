@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
+    // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
+
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui

@@ -99,4 +99,8 @@ public class EaselDoesIt
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
+
+    public static void log(String str) {
+        LOGGER.info(str);
+    }
 }

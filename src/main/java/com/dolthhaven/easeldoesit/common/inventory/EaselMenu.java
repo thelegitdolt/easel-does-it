@@ -2,26 +2,28 @@ package com.dolthhaven.easeldoesit.common.inventory;
 
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
+import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class EaselMenu extends AbstractContainerMenu {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/common/inventory/SawmillMenu.java
-
     private final ContainerLevelAccess access;
-
     // slots
     Runnable slotUpdateListener = () -> {
     };
-    private ItemStack input = ItemStack.EMPTY;
     final Slot inputSlot;
     final Slot resultSlot;
     public final Container inputContainer = new SimpleContainer(1) {
@@ -33,6 +35,11 @@ public class EaselMenu extends AbstractContainerMenu {
         }
     };
     final ResultContainer resultContainer = new ResultContainer();
+
+    private final DataSlot paintingIndex = DataSlot.standalone();
+    private final DataSlot paintingHeight = DataSlot.standalone();
+    private final DataSlot paintingWidth = DataSlot.standalone();
+    private List<PaintingVariant> possiblePaintings = Lists.newArrayList();
 
 
     public EaselMenu(int id, Inventory inv) {
@@ -79,23 +86,55 @@ public class EaselMenu extends AbstractContainerMenu {
 
     @Override
     public void slotsChanged(@NotNull Container container) {
-        ItemStack itemstack = this.inputSlot.getItem();
+        ItemStack inputStack = this.inputSlot.getItem();
         super.slotsChanged(container);
+        setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(32, 32, true));
+        setPaintingIndex(isValidPaintingIndex(inputStack.getCount()) ? inputStack.getCount() : 0);
+
         if (container == this.inputContainer) {
             createResult();
         }
     }
 
+    private void createResult() {
+        if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
+            PaintingVariant variant = this.possiblePaintings.get(getPaintingIndex());
 
-    void createResult() {
-        if (this.inputSlot.getItem().is(Items.PAINTING)) {
-            ItemStack stack = new ItemStack(Items.DIAMOND);
+            ItemStack stack = EaselModUtil.getStackFromPainting(variant);
             this.resultSlot.set(stack);
         }
         else {
             this.resultSlot.set(ItemStack.EMPTY);
         }
         this.broadcastChanges();
+    }
+
+    public List<PaintingVariant> getPossiblePaintings() {
+        return this.possiblePaintings;
+    }
+
+    public void setPossiblePaintings(List<PaintingVariant> paintings) {
+        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(ForgeRegistries.PAINTING_VARIANTS::getKey)).toList();
+    }
+
+    public int getPaintingHeight() {
+        return this.paintingHeight.get();
+    }
+
+    public int getPaintingWidth() {
+        return this.paintingWidth.get();
+    }
+
+    public int getPaintingIndex() {
+        return this.paintingIndex.get();
+    }
+
+    public void setPaintingIndex(int newIndex) {
+        this.paintingIndex.set(newIndex);
+    }
+
+    private boolean isValidPaintingIndex(int index) {
+        return index >= 0 && index < this.possiblePaintings.size();
     }
 
     @Override
