@@ -55,6 +55,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(graphics); // render black shading behind background, mowzies mobs
+        renderTooltip(graphics, mouseX, mouseY);
+
         super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
