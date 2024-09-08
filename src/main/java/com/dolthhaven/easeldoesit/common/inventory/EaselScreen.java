@@ -54,14 +54,16 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics); // render black shading behind background, mowzies mobs
+        super.render(graphics, mouseX, mouseY, partialTicks);
+
         renderTooltip(graphics, mouseX, mouseY);
 
-        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        renderBackground(graphics); // render black shading behind background, mowzies mobs
+
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BG_LOCATION);
