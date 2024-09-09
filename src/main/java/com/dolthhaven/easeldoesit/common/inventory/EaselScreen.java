@@ -3,21 +3,27 @@ package com.dolthhaven.easeldoesit.common.inventory;
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
+    private static final int CANVAS_X_POS = 56;
+    private static final int CANVAS_Y_POS = 14;
 
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
     private final int imageWidth, imageHeight; // sides of the gui
@@ -69,5 +75,12 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         RenderSystem.setShaderTexture(0, BG_LOCATION);
 
         graphics.blit(BG_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+        PaintingVariant currentPainting = this.menu.getCurrentPainting();
+        TextureAtlasSprite currentPaintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
+
+        graphics.blit(this.leftPos + CANVAS_X_POS, this.topPos + CANVAS_Y_POS,
+                0, currentPainting.getWidth(), currentPainting.getHeight(), currentPaintingSprite); // draw the currentPainting painting
     }
+
 }

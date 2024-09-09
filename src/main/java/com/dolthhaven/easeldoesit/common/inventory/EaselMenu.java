@@ -40,6 +40,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private final DataSlot paintingHeight = DataSlot.standalone();
     private final DataSlot paintingWidth = DataSlot.standalone();
     private List<PaintingVariant> possiblePaintings = Lists.newArrayList();
+    private ItemStack input = ItemStack.EMPTY;
 
 
     public EaselMenu(int id, Inventory inv) {
@@ -82,17 +83,40 @@ public class EaselMenu extends AbstractContainerMenu {
             }
         });
         // add slots on the thing
+
+        // menu defaults to 0 when first opened
+        setPaintingWidth(0);
+        setPaintingHeight(0);
     }
 
     @Override
     public void slotsChanged(@NotNull Container container) {
         ItemStack inputStack = this.inputSlot.getItem();
         super.slotsChanged(container);
-        setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(32, 32, true));
+        setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(32, 32));
+        // lol
         setPaintingIndex(isValidPaintingIndex(inputStack.getCount()) ? inputStack.getCount() : 0);
 
         if (container == this.inputContainer) {
             createResult();
+        }
+    }
+
+    /**
+     * Method ran when you change the paintings
+     * It will:
+     * - Reset possible paintings
+     * - Reset index to 0
+     */
+    private void onPaintingDimensionChanged() {
+        ItemStack inputStack = this.inputSlot.getItem();
+
+        if (inputStack.is(Items.PAINTING)) {
+            setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
+
+            if (!getPossiblePaintings().isEmpty()) {
+                setPaintingIndex(0);
+            }
         }
     }
 
@@ -125,6 +149,18 @@ public class EaselMenu extends AbstractContainerMenu {
         return this.paintingWidth.get();
     }
 
+    public void setPaintingHeight(int newHeight) {
+        this.paintingHeight.set(newHeight);
+    }
+
+    public void setPaintingWidth(int newWidth) {
+        this.paintingWidth.set(newWidth);
+    }
+
+    public int getPossiblePaintingsSize() {
+        return possiblePaintings.size();
+    }
+
     public int getPaintingIndex() {
         return this.paintingIndex.get();
     }
@@ -135,6 +171,10 @@ public class EaselMenu extends AbstractContainerMenu {
 
     private boolean isValidPaintingIndex(int index) {
         return index >= 0 && index < this.possiblePaintings.size();
+    }
+
+    public PaintingVariant getCurrentPainting() {
+        return getPossiblePaintings().get(getPaintingIndex());
     }
 
     @Override

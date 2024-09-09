@@ -41,9 +41,13 @@ public class EaselModUtil {
         return paintingStack;
     }
 
-    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height, boolean placeable) {
+    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {
+        return getAllPaintingsOfDimensions(width, height, false);
+    }
+
+    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height, boolean includeUnplaceable) {
         return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
                 .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
-                .filter(painting -> placeable || ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow().is(PaintingVariantTags.PLACEABLE)).toList();
+                .filter(painting -> includeUnplaceable || ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow().is(PaintingVariantTags.PLACEABLE)).toList();
     }
 }
