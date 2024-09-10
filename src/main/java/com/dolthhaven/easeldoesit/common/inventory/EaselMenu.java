@@ -2,10 +2,11 @@ package com.dolthhaven.easeldoesit.common.inventory;
 
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
-import com.dolthhaven.easeldoesit.other.util.EaselModUtil;
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -40,8 +41,6 @@ public class EaselMenu extends AbstractContainerMenu {
     private final DataSlot paintingHeight = DataSlot.standalone();
     private final DataSlot paintingWidth = DataSlot.standalone();
     private List<PaintingVariant> possiblePaintings = Lists.newArrayList();
-    private ItemStack input = ItemStack.EMPTY;
-
 
     public EaselMenu(int id, Inventory inv) {
         this(id, inv, ContainerLevelAccess.NULL);
@@ -74,7 +73,6 @@ public class EaselMenu extends AbstractContainerMenu {
                 if (!input.isEmpty()) {
                     EaselMenu.this.createResult();
                 }
-
                 super.onTake(player, stack);
             }
 
@@ -93,7 +91,6 @@ public class EaselMenu extends AbstractContainerMenu {
     public void slotsChanged(@NotNull Container container) {
         ItemStack inputStack = this.inputSlot.getItem();
         super.slotsChanged(container);
-        setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(32, 32));
         // lol
         setPaintingIndex(isValidPaintingIndex(inputStack.getCount()) ? inputStack.getCount() : 0);
 
@@ -102,35 +99,37 @@ public class EaselMenu extends AbstractContainerMenu {
         }
     }
 
-    /**
-     * Method ran when you change the paintings
-     * It will:
-     * - Reset possible paintings
-     * - Reset index to 0
-     */
-    private void onPaintingDimensionChanged() {
-        ItemStack inputStack = this.inputSlot.getItem();
-
-        if (inputStack.is(Items.PAINTING)) {
-            setPossiblePaintings(EaselModUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
-
-            if (!getPossiblePaintings().isEmpty()) {
-                setPaintingIndex(0);
-            }
-        }
-    }
-
     private void createResult() {
         if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
-            PaintingVariant variant = this.possiblePaintings.get(getPaintingIndex());
+            PaintingVariant variant = getCurrentPainting();
 
-            ItemStack stack = EaselModUtil.getStackFromPainting(variant);
+            ItemStack stack = PaintingUtil.getStackFromPainting(variant);
             this.resultSlot.set(stack);
         }
         else {
             this.resultSlot.set(ItemStack.EMPTY);
         }
         this.broadcastChanges();
+    }
+
+    /**
+     * Method ran when you change the paintings
+     * It will:
+     * - Reset possible paintings
+     * - Reset index to 0
+     */
+    public void dimensionChanged() {
+        ItemStack inputStack = this.inputSlot.getItem();
+
+        if (inputStack.is(Items.PAINTING)) {
+            setPossiblePaintings(PaintingUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
+
+            if (!getPossiblePaintings().isEmpty()) {
+//                setPaintingIndex(0);
+            }
+        }
+
+        broadcastChanges();
     }
 
     public List<PaintingVariant> getPossiblePaintings() {
@@ -174,7 +173,12 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public PaintingVariant getCurrentPainting() {
-        return getPossiblePaintings().get(getPaintingIndex());
+        try {
+            return getPossiblePaintings().get(getPaintingIndex());
+        }
+        catch (IndexOutOfBoundsException e) {
+            return ForgeRegistries.PAINTING_VARIANTS.getValue(PaintingVariants.KEBAB.location());
+        }
     }
 
     @Override
@@ -194,6 +198,15 @@ public class EaselMenu extends AbstractContainerMenu {
     @Override
     public @NotNull MenuType<?> getType() {
         return EaselModMenuTypes.EASEL_MENU.get();
+    }
+
+    @Override
+    public void removed(@NotNull Player player) {
+        super.removed(player);
+        this.resultContainer.removeItemNoUpdate(1);
+        this.access.execute((p_40313_, p_40314_) -> {
+            this.clearContainer(player, this.inputContainer);
+        });
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
