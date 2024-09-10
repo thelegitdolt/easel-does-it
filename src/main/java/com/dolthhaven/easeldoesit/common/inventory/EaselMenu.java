@@ -1,8 +1,10 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -100,13 +102,15 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void createResult() {
+        EaselDoesIt.log("The painting index is: " + getPaintingIndex());
         if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
             PaintingVariant variant = getCurrentPainting();
-
+            EaselDoesIt.log("SOMETHING IS SEXING.... REAL......");
             ItemStack stack = PaintingUtil.getStackFromPainting(variant);
             this.resultSlot.set(stack);
         }
         else {
+            EaselDoesIt.log("NOT SEXING!!!!!");
             this.resultSlot.set(ItemStack.EMPTY);
         }
         this.broadcastChanges();
@@ -120,16 +124,11 @@ public class EaselMenu extends AbstractContainerMenu {
      */
     public void dimensionChanged() {
         ItemStack inputStack = this.inputSlot.getItem();
+        setPossiblePaintings(PaintingUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
 
         if (inputStack.is(Items.PAINTING)) {
-            setPossiblePaintings(PaintingUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
-
-            if (!getPossiblePaintings().isEmpty()) {
-//                setPaintingIndex(0);
-            }
+            createResult();
         }
-
-        broadcastChanges();
     }
 
     public List<PaintingVariant> getPossiblePaintings() {

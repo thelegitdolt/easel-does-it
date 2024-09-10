@@ -1,5 +1,8 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
+import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeightPacket;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -12,14 +15,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
+@OnlyIn(Dist.CLIENT)
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
@@ -66,7 +70,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private void addHeightButtons() {
         for (int i = 1; i <= 4; i++) {
-            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, getMenu()::setPaintingHeight))
+            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, this::setMenuPaintingHeight))
                     .pos(this.leftPos + HEIGHT_BUTTONS_START_X, this.topPos + HEIGHT_BUTTONS_START_Y + BUTTONS_DIMENSIONS_LONG * (i - 1))
                     .size(BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG)
                     .build();
@@ -78,7 +82,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private void addWidthButtons() {
         for (int i = 1; i <= 4; i++) {
-            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, getMenu()::setPaintingWidth))
+            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, this::setMenuPaintingWidth))
                     .pos(this.leftPos + WIDTH_BUTTONS_START_X + BUTTONS_DIMENSIONS_LONG * (i - 1), this.topPos + WIDTH_BUTTONS_START_Y)
                     .size(BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT)
                     .build();
@@ -91,7 +95,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private Button.OnPress onPressForButton(int index, Consumer<Integer> setter) {
         return (button) -> {
             setter.accept(index);
-            getMenu().dimensionChanged();
+            this.menu.dimensionChanged();
         };
     }
 
@@ -122,6 +126,17 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         graphics.blit(this.leftPos + PREVIEW_BOX_X_POS, this.topPos + PREVIEW_BOX_Y_POS,
                 0, currentPainting.getWidth(), currentPainting.getHeight(), currentPaintingSprite); // draw the current painting
+
+        graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0);
     }
 
+    private void setMenuPaintingWidth(int newWidth) {
+        this.menu.setPaintingWidth(newWidth);
+        EaselModPacketListener.sendToServer(new C2SSetEaselPaintingWidthPacket((byte) newWidth));
+    }
+
+    private void setMenuPaintingHeight(int newHeight) {
+        this.menu.setPaintingHeight(newHeight);
+        EaselModPacketListener.sendToServer(new C2SSetEaselPaintingHeightPacket((byte) newHeight));
+    }
 }

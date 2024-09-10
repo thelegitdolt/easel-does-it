@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.core;
 
+import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
@@ -61,6 +62,9 @@ public class EaselDoesIt
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            EaselModPacketListener.register();
+        });
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
