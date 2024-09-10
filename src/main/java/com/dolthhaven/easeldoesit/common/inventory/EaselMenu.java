@@ -1,10 +1,8 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -87,14 +85,13 @@ public class EaselMenu extends AbstractContainerMenu {
         // menu defaults to 0 when first opened
         setPaintingWidth(0);
         setPaintingHeight(0);
+
+        setPaintingIndex(0);
     }
 
     @Override
     public void slotsChanged(@NotNull Container container) {
-        ItemStack inputStack = this.inputSlot.getItem();
         super.slotsChanged(container);
-        // lol
-        setPaintingIndex(isValidPaintingIndex(inputStack.getCount()) ? inputStack.getCount() : 0);
 
         if (container == this.inputContainer) {
             createResult();
@@ -102,15 +99,12 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void createResult() {
-        EaselDoesIt.log("The painting index is: " + getPaintingIndex());
         if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
             PaintingVariant variant = getCurrentPainting();
-            EaselDoesIt.log("SOMETHING IS SEXING.... REAL......");
             ItemStack stack = PaintingUtil.getStackFromPainting(variant);
             this.resultSlot.set(stack);
         }
         else {
-            EaselDoesIt.log("NOT SEXING!!!!!");
             this.resultSlot.set(ItemStack.EMPTY);
         }
         this.broadcastChanges();
@@ -120,7 +114,6 @@ public class EaselMenu extends AbstractContainerMenu {
      * Method ran when you change the paintings
      * It will:
      * - Reset possible paintings
-     * - Reset index to 0
      */
     public void dimensionChanged() {
         ItemStack inputStack = this.inputSlot.getItem();
@@ -129,6 +122,10 @@ public class EaselMenu extends AbstractContainerMenu {
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
+    }
+
+    public void indexChanged() {
+        createResult();
     }
 
     public List<PaintingVariant> getPossiblePaintings() {
@@ -167,8 +164,8 @@ public class EaselMenu extends AbstractContainerMenu {
         this.paintingIndex.set(newIndex);
     }
 
-    private boolean isValidPaintingIndex(int index) {
-        return index >= 0 && index < this.possiblePaintings.size();
+    public boolean isValidPaintingIndex(int index) {
+        return index >= 0 && index < this.getPossiblePaintingsSize();
     }
 
     public PaintingVariant getCurrentPainting() {

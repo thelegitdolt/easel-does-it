@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.common.network;
 
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeightPacket;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import net.minecraft.network.FriendlyByteBuf;
@@ -51,6 +52,12 @@ public class EaselModPacketListener implements Packet<ServerGamePacketListener> 
                 .decoder(C2SSetEaselPaintingWidthPacket::new)
                 .encoder(C2SSetEaselPaintingWidthPacket::encode)
                 .consumerMainThread(C2SSetEaselPaintingWidthPacket::handle)
+                .add();
+
+        channel.messageBuilder(C2SSetEaselPaintingIndexPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(C2SSetEaselPaintingIndexPacket::new)
+                .encoder(C2SSetEaselPaintingIndexPacket::encode)
+                .consumerMainThread(C2SSetEaselPaintingIndexPacket::handle)
                 .add();
     }
 
