@@ -148,19 +148,9 @@ public class EaselMenu extends AbstractContainerMenu {
         int newIndex = getIndexFromPaintingCoords();
         setPaintingIndex(newIndex);
 
-        logDimensionsIndex();
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
-    }
-
-    private void logDimensionsIndex() {
-        StringBuilder str = new StringBuilder("[");
-        for (DataSlot slot : this.savedPaintingsInEachDimension) {
-            str.append(slot.get()).append(", ");
-        }
-        str.append("]");
-        EaselDoesIt.log("Saved Dimensions, Index: " + str);
     }
 
     /**
