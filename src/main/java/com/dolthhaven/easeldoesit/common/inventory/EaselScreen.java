@@ -102,8 +102,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private Button.OnPress onPressForButton(int index, Consumer<Integer> setter) {
         return (button) -> {
+            this.menu.dimensionChangedPre();
             setter.accept(index);
-            this.menu.dimensionChanged();
+            this.menu.dimensionChangedPost();
         };
     }
 
@@ -128,9 +129,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private Button.OnPress onPressForPickers(Function<Integer, Integer> indexFunction) {
         return (button) -> {
             int newIndex = indexFunction.apply(this.menu.getPaintingIndex());
-            EaselDoesIt.log("Dolt says hi " + newIndex);
             if (this.menu.isValidPaintingIndex(newIndex)) {
-                EaselDoesIt.log("WE ARE SETTING YAY");
                 setMenuIndex(newIndex);
             }
         };

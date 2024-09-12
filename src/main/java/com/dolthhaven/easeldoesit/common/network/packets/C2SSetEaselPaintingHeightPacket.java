@@ -32,8 +32,9 @@ public class C2SSetEaselPaintingHeightPacket {
 
             AbstractContainerMenu menu = player.containerMenu;
             if (menu instanceof EaselMenu easelMenu) {
+                easelMenu.dimensionChangedPre();
                 easelMenu.setPaintingHeight(this.newHeight);
-                easelMenu.dimensionChanged();
+                easelMenu.dimensionChangedPost();
             }
         });
     }

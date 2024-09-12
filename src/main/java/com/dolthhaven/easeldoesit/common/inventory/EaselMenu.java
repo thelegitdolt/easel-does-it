@@ -1,7 +1,9 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
+import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -21,6 +23,9 @@ import java.util.List;
 
 public class EaselMenu extends AbstractContainerMenu {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/common/inventory/SawmillMenu.java
+    private static final int MIN_DIMENSION = 0;
+    private static final int MAX_DIMENSION = 64;
+
     private final ContainerLevelAccess access;
     // slots
     Runnable slotUpdateListener = () -> {
@@ -40,6 +45,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private final DataSlot paintingIndex = DataSlot.standalone();
     private final DataSlot paintingHeight = DataSlot.standalone();
     private final DataSlot paintingWidth = DataSlot.standalone();
+    private final DataSlot[] savedPaintingsInEachDimension = new DataSlot[16];
     private List<PaintingVariant> possiblePaintings = Lists.newArrayList();
 
     public EaselMenu(int id, Inventory inv) {
@@ -82,6 +88,15 @@ public class EaselMenu extends AbstractContainerMenu {
         });
         // add slots on the thing
 
+
+        // initialize all 16 data slots and stuff
+        for (int i = 0; i < 16; i++) {
+            DataSlot data = DataSlot.standalone();
+            data.set(0);
+            savedPaintingsInEachDimension[i] = (data);
+        }
+
+
         // menu defaults to 0 when first opened
         setPaintingWidth(0);
         setPaintingHeight(0);
@@ -111,17 +126,59 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     /**
-     * Method ran when you change the paintings
+     * Method ran BEFORE you change the painting dimensions
+     * It will:
+     * - save the current painting to the list
+     */
+    public void dimensionChangedPre() {
+        savePaintingForCurrentDimension();
+    }
+
+    /**
+     * Method ran AFTER you change the painting dimensions
      * It will:
      * - Reset possible paintings
      */
-    public void dimensionChanged() {
+    public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
         setPossiblePaintings(PaintingUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
 
+        // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
+        // if it hasn't then it should be set to 0
+        int newIndex = getIndexFromPaintingCoords();
+        setPaintingIndex(newIndex);
+
+        logDimensionsIndex();
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
+    }
+
+    private void logDimensionsIndex() {
+        StringBuilder str = new StringBuilder("[");
+        for (DataSlot slot : this.savedPaintingsInEachDimension) {
+            str.append(slot.get()).append(", ");
+        }
+        str.append("]");
+        EaselDoesIt.log("Saved Dimensions, Index: " + str);
+    }
+
+    /**
+     * TAKES IN A PAINTING COORD AND GETS THE NUMBER WHICH THE PAINTING INDEX SHOULD BE SET TO AFTER THE DIMENSION IS CHANGED
+     * firstDigit is the first digit, secondDigit is the second digit. if we are working with a painting of width 32 and height 64
+     * then we should input getIndexFromPaintingCoords(32, 64)
+     **/
+    private int getIndexFromPaintingCoords() {
+        // LOOK WE ARE DIVIDING BY 16 TO MAKE THE NUMBERS 0, 1, 2, 3, and 4
+        if (!isValidDimension()) {
+            // todo: this number should be -1, make it so that it is
+            return 0;
+        }
+
+        int serializedCord = encodeCords();
+        int savedIndex = this.savedPaintingsInEachDimension[serializedCord].get();
+
+        return savedIndex;
     }
 
     public void indexChanged() {
@@ -134,6 +191,14 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public void setPossiblePaintings(List<PaintingVariant> paintings) {
         this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(ForgeRegistries.PAINTING_VARIANTS::getKey)).toList();
+    }
+
+    /**
+     * Okay so the bases are 0, 1, 2, 3, 4 and the painting heights (as coded) are 0, 16, 32, 64, so yeah.
+     */
+    private void savePaintingForCurrentDimension() {
+        if (!isValidDimension()) return;
+        this.savedPaintingsInEachDimension[encodeCords()].set(getPaintingIndex());
     }
 
     public int getPaintingHeight() {
@@ -168,6 +233,13 @@ public class EaselMenu extends AbstractContainerMenu {
         return index >= 0 && index < this.getPossiblePaintingsSize();
     }
 
+    private boolean isValidDimension() {
+        if (getPaintingHeight() <= MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
+        if (getPaintingWidth() <= MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
+
+        return true;
+    }
+
     public PaintingVariant getCurrentPainting() {
         try {
             return getPossiblePaintings().get(getPaintingIndex());
@@ -189,6 +261,14 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public void registerUpdateListener(Runnable listener) {
         this.slotUpdateListener = listener;
+    }
+
+    private int encodeCords() {
+        return encodeTuple(getPaintingWidth() / 16, getPaintingHeight() / 16);
+    }
+
+    private static int encodeTuple(int width, int height) {
+        return MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(width, height);
     }
 
     @Override

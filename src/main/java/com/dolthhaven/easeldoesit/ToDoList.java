@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit;
 
+@SuppressWarnings("unused")
 public enum ToDoList {
     REGISTER_EASEL_BASIC_BLOCK_PROPERTIES(true),
     MAKE_EASEL_HAVE_A_BLANK_GUI(true),

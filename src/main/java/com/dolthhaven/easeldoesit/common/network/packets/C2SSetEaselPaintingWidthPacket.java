@@ -31,8 +31,9 @@ public class C2SSetEaselPaintingWidthPacket {
 
             AbstractContainerMenu menu = player.containerMenu;
             if (menu instanceof EaselMenu easelMenu) {
+                easelMenu.dimensionChangedPre();
                 easelMenu.setPaintingWidth(this.newWidth);
-                easelMenu.dimensionChanged();
+                easelMenu.dimensionChangedPost();
             }
         });
     }
