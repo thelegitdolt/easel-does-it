@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+@SuppressWarnings("unused")
 public class MathUtil {
     public static int base4From2(int digit1, int digit2) {
         return digit1 * 4 + digit2;

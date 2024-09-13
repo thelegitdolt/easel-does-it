@@ -1,6 +1,5 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
@@ -23,7 +22,7 @@ import java.util.List;
 
 public class EaselMenu extends AbstractContainerMenu {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/common/inventory/SawmillMenu.java
-    private static final int MIN_DIMENSION = 0;
+    private static final int MIN_DIMENSION = 16;
     private static final int MAX_DIMENSION = 64;
 
     private final ContainerLevelAccess access;
@@ -42,11 +41,11 @@ public class EaselMenu extends AbstractContainerMenu {
     };
     final ResultContainer resultContainer = new ResultContainer();
 
-    private final DataSlot paintingIndex = DataSlot.standalone();
     private final DataSlot paintingHeight = DataSlot.standalone();
     private final DataSlot paintingWidth = DataSlot.standalone();
-    private final DataSlot[] savedPaintingsInEachDimension = new DataSlot[16];
-    private List<PaintingVariant> possiblePaintings = Lists.newArrayList();
+    private final DataSlot paintingIndex = DataSlot.standalone();
+    private final DataSlot[] savedIndexInEachDimension = new DataSlot[16]; // an array holding the last visited index before the painting dimension is changed
+    private List<PaintingVariant> possiblePaintings = Lists.newArrayList(); // a list of all paintings of (paintingHeight, paintingWidth)
 
     public EaselMenu(int id, Inventory inv) {
         this(id, inv, ContainerLevelAccess.NULL);
@@ -93,7 +92,7 @@ public class EaselMenu extends AbstractContainerMenu {
         for (int i = 0; i < 16; i++) {
             DataSlot data = DataSlot.standalone();
             data.set(0);
-            savedPaintingsInEachDimension[i] = (data);
+            savedIndexInEachDimension[i] = (data);
         }
 
 
@@ -154,19 +153,17 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     /**
-     * TAKES IN A PAINTING COORD AND GETS THE NUMBER WHICH THE PAINTING INDEX SHOULD BE SET TO AFTER THE DIMENSION IS CHANGED
-     * firstDigit is the first digit, secondDigit is the second digit. if we are working with a painting of width 32 and height 64
-     * then we should input getIndexFromPaintingCoords(32, 64)
+     * So uh yeah we kinda automated everytihng
+     * When change dimensions you uh, look at the saved paintings in each dimension and do that index I suppose
      **/
     private int getIndexFromPaintingCoords() {
-        // LOOK WE ARE DIVIDING BY 16 TO MAKE THE NUMBERS 0, 1, 2, 3, and 4
         if (!isValidDimension()) {
             // todo: this number should be -1, make it so that it is
             return 0;
         }
 
         int serializedCord = encodeCords();
-        int savedIndex = this.savedPaintingsInEachDimension[serializedCord].get();
+        int savedIndex = this.savedIndexInEachDimension[serializedCord].get();
 
         return savedIndex;
     }
@@ -188,7 +185,7 @@ public class EaselMenu extends AbstractContainerMenu {
      */
     private void savePaintingForCurrentDimension() {
         if (!isValidDimension()) return;
-        this.savedPaintingsInEachDimension[encodeCords()].set(getPaintingIndex());
+        this.savedIndexInEachDimension[encodeCords()].set(getPaintingIndex());
     }
 
     public int getPaintingHeight() {
@@ -224,8 +221,8 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private boolean isValidDimension() {
-        if (getPaintingHeight() <= MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
-        if (getPaintingWidth() <= MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
+        if (getPaintingHeight() < MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
+        if (getPaintingWidth() < MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
 
         return true;
     }

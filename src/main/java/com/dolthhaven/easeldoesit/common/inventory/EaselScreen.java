@@ -8,7 +8,9 @@ import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,34 +24,17 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
-    private static final int BUTTONS_DIMENSIONS_LONG = 16;
-    private static final int BUTTONS_DIMENSIONS_SHORT = 7;
-    private static final int HEIGHT_BUTTONS_START_X = 48;
-    private static final int HEIGHT_BUTTONS_START_Y = 14;
-
-    private static final int WIDTH_BUTTONS_START_X = 56;
-    private static final int WIDTH_BUTTONS_START_Y = 6;
-
-    private static final int PICKER_X = 123;
-    private static final int PICKER_TOP_Y = 14;
-    private static final int PICKER_BOTTOM_Y = 72;
-    private static final int PICKER_X_DIMENSION = 11;
-    private static final int PICKER_Y_DIMENSION = 7;
-
-    private static final int PREVIEW_BOX_X = 56;
-    private static final int PREVIEW_BOX_Y = 14;
 
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
-    private final List<Button> paintingDimensionsButtons = Lists.newArrayList();
+    private final List<EaselDimensionsButton> paintingDimensionsButtons = Lists.newArrayList();
     private final List<Button> paintingPickers = Lists.newArrayList();
 
 
@@ -76,36 +61,29 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         addPickers();
     }
 
-    private void addHeightButtons() {
-        for (int i = 1; i <= 4; i++) {
-            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, this::setMenuPaintingHeight))
-                    .pos(this.leftPos + HEIGHT_BUTTONS_START_X, this.topPos + HEIGHT_BUTTONS_START_Y + BUTTONS_DIMENSIONS_LONG * (i - 1))
-                    .size(BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG)
-                    .build();
-
-            addRenderableWidget(button);
-            paintingDimensionsButtons.add(button);
-        }
-    }
-
     private void addWidthButtons() {
         for (int i = 1; i <= 4; i++) {
-            Button button = Button.builder(Component.empty(), onPressForButton(i * BUTTONS_DIMENSIONS_LONG, this::setMenuPaintingWidth))
-                    .pos(this.leftPos + WIDTH_BUTTONS_START_X + BUTTONS_DIMENSIONS_LONG * (i - 1), this.topPos + WIDTH_BUTTONS_START_Y)
-                    .size(BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT)
-                    .build();
+            EaselDimensionsButton button = new EaselWidthButton(
+                    this.leftPos + WIDTH_BUTTONS_START_X + BUTTONS_DIMENSIONS_LONG * (i - 1),
+                    this.topPos + WIDTH_BUTTONS_START_Y,
+                    i);
 
             addRenderableWidget(button);
             paintingDimensionsButtons.add(button);
         }
     }
 
-    private Button.OnPress onPressForButton(int index, Consumer<Integer> setter) {
-        return (button) -> {
-            this.menu.dimensionChangedPre();
-            setter.accept(index);
-            this.menu.dimensionChangedPost();
-        };
+    private void addHeightButtons() {
+        for (int i = 1; i <= 4; i++) {
+            EaselDimensionsButton button = new EaselHeightsButton(
+                    this.leftPos + HEIGHT_BUTTONS_START_X,
+                    this.topPos + HEIGHT_BUTTONS_START_Y + BUTTONS_DIMENSIONS_LONG * (i - 1),
+                    i);
+
+            addRenderableWidget(button);
+
+            paintingDimensionsButtons.add(button);
+        }
     }
 
     private void addPickers() {
@@ -135,10 +113,14 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         };
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseID) {
+        return super.mouseClicked(mouseX, mouseY, mouseID);
+    }
 
     @Override
-    public boolean mouseClicked(double p_97748_, double p_97749_, int p_97750_) {
-        return super.mouseClicked(p_97748_, p_97749_, p_97750_);
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseID) {
+        return super.mouseReleased(mouseX, mouseY, mouseID);
     }
 
     @Override
@@ -158,16 +140,17 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         graphics.blit(BG_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        drawPainting(graphics);
+        renderPainting(graphics);
 
         graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
     }
+
 
     /**
      * handles the drawing of the paintings.
      * @param graphics
      */
-    private void drawPainting(GuiGraphics graphics) {
+    private void renderPainting(GuiGraphics graphics) {
         // draw nothing if one width or height is 0
         if (this.menu.getPaintingWidth() == 0 || this.menu.getPaintingWidth() == 0) return;
 
@@ -194,4 +177,139 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         this.menu.setPaintingIndex(newIndex);
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingIndexPacket((short) newIndex));
     }
+
+    private class EaselHeightsButton extends EaselDimensionsButton {
+        public EaselHeightsButton(int startX, int startY, int index) {
+            super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index);
+        }
+
+        @Override
+        public void onPress() {
+            EaselScreen.this.getMenu().dimensionChangedPre();
+            // !!!!!!!!!!!!!!!!
+            if (EaselScreen.this.getMenu().getPaintingHeight() == this.index * 16) {
+                EaselScreen.this.setMenuPaintingHeight((this.index - 1) * 16);
+            }
+            else {
+                EaselScreen.this.setMenuPaintingHeight(this.index * 16);
+            }
+
+            EaselScreen.this.getMenu().dimensionChangedPost();
+        }
+
+        @Override
+        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            int buttonToRenderX, buttonToRenderY;
+            int paintingHeight = EaselScreen.this.getMenu().getPaintingHeight() / 16;
+
+            if (paintingHeight >= this.index) {
+                buttonToRenderX = HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X;
+                buttonToRenderY = HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y;
+            }
+            else {
+                buttonToRenderX = HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X;
+                buttonToRenderY = HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y;
+            }
+
+            graphics.blit(
+                    BG_LOCATION,
+                    this.getX(), this.getY(),
+                    buttonToRenderX, buttonToRenderY,
+                    this.width, this.height
+            );
+        }
+    }
+
+    private class EaselWidthButton extends EaselDimensionsButton {
+        public EaselWidthButton(int startX, int startY, int index) {
+            super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index);
+        }
+
+        @Override
+        public void onPress() {
+            EaselScreen.this.getMenu().dimensionChangedPre();
+            // !!!!!!!!!!!!!!!!
+            if (EaselScreen.this.getMenu().getPaintingWidth() == this.index * 16) {
+                EaselScreen.this.setMenuPaintingWidth((this.index - 1) * 16);
+            }
+            else {
+                EaselScreen.this.setMenuPaintingWidth(this.index * 16);
+            }
+            EaselScreen.this.getMenu().dimensionChangedPost();
+        }
+
+        @Override
+        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            int buttonToRenderX, buttonToRenderY;
+            int paintingWidth = EaselScreen.this.getMenu().getPaintingWidth() / 16;
+
+            if (paintingWidth >= this.index) {
+                buttonToRenderX = WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X;
+                buttonToRenderY = WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y;
+            }
+            else {
+                buttonToRenderX = WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X;
+                buttonToRenderY = WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y;
+            }
+
+            graphics.blit(BG_LOCATION,
+                    this.getX(), this.getY(),
+                    buttonToRenderX, buttonToRenderY,
+                    this.width, this.height
+            );
+        }
+    }
+
+    private abstract static class EaselDimensionsButton extends AbstractButton {
+        public final int index;
+
+        /**
+         * INDEX IS A NUMBER FROM 1 to 4, not the pixel size of teh painting. IF YOU USE THE PIXEL SIZE OF THE PAINTING
+         * YOU WILL BE LOGGED, IT WILL PROBABLY CRASH THE GAME
+         */
+        public EaselDimensionsButton(int startX, int startY, int width, int height, int index) {
+            super(startX, startY, width, height, Component.empty());
+
+            // crash the game if dolt is a dumbass
+            if (index == 16 || index == 32 || index == 64 || index == 48) {
+                for (int i = 0; i < 20000; i++) {
+                    EaselDoesIt.log("YOU ARE A DUMBASS A DUMBASS YOU DUMB FUCK");
+                }
+            }
+
+            this.index = index;
+        }
+
+        @Override
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
+            this.defaultButtonNarrationText(output);
+        }
+    }
+
+    private static final int BUTTONS_DIMENSIONS_LONG = 16;
+    private static final int BUTTONS_DIMENSIONS_SHORT = 7;
+    private static final int HEIGHT_BUTTONS_START_X = 48;
+    private static final int HEIGHT_BUTTONS_START_Y = 14;
+
+    private static final int WIDTH_BUTTONS_START_X = 56;
+    private static final int WIDTH_BUTTONS_START_Y = 6;
+
+    private static final int PICKER_X = 123;
+    private static final int PICKER_TOP_Y = 14;
+    private static final int PICKER_BOTTOM_Y = 72;
+    private static final int PICKER_X_DIMENSION = 11;
+    private static final int PICKER_Y_DIMENSION = 7;
+
+    private static final int PREVIEW_BOX_X = 56;
+    private static final int PREVIEW_BOX_Y = 14;
+
+    private static final int WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X = 183;
+    private static final int WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y = 0;
+    private static final int HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X = 192;
+    private static final int HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y = 7;
+    private static final int WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X = 176;
+    private static final int WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y = 16;
+    private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X = 176;
+    private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y = 0;
+
 }
