@@ -5,6 +5,7 @@ import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeig
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,7 +35,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
-    private final List<EaselDimensionsButton> paintingDimensionsButtons = Lists.newArrayList();
+    private final EaselWidthButton[] paintingWidthButtons = new EaselWidthButton[4];
+    private final EaselHeightsButton[] paintingHeightButtons = new EaselHeightsButton[4];
+
     private final List<Button> paintingPickers = Lists.newArrayList();
 
 
@@ -63,26 +66,25 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private void addWidthButtons() {
         for (int i = 1; i <= 4; i++) {
-            EaselDimensionsButton button = new EaselWidthButton(
+            EaselWidthButton button = new EaselWidthButton(
                     this.leftPos + WIDTH_BUTTONS_START_X + BUTTONS_DIMENSIONS_LONG * (i - 1),
                     this.topPos + WIDTH_BUTTONS_START_Y,
                     i);
 
             addRenderableWidget(button);
-            paintingDimensionsButtons.add(button);
+            paintingWidthButtons[i - 1] = button;
         }
     }
 
     private void addHeightButtons() {
         for (int i = 1; i <= 4; i++) {
-            EaselDimensionsButton button = new EaselHeightsButton(
+            EaselHeightsButton button = new EaselHeightsButton(
                     this.leftPos + HEIGHT_BUTTONS_START_X,
                     this.topPos + HEIGHT_BUTTONS_START_Y + BUTTONS_DIMENSIONS_LONG * (i - 1),
                     i);
 
             addRenderableWidget(button);
-
-            paintingDimensionsButtons.add(button);
+            paintingHeightButtons[i - 1] = button;
         }
     }
 
@@ -187,11 +189,11 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         public void onPress() {
             EaselScreen.this.getMenu().dimensionChangedPre();
             // !!!!!!!!!!!!!!!!
-            if (EaselScreen.this.getMenu().getPaintingHeight() == this.index * 16) {
-                EaselScreen.this.setMenuPaintingHeight((this.index - 1) * 16);
-            }
-            else {
-                EaselScreen.this.setMenuPaintingHeight(this.index * 16);
+            int newHeights = index * 16;
+            EaselScreen.this.setMenuPaintingHeight(newHeights);
+
+            for (int i = 1; i <= 4; i += 1) {
+                getWidthButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(i * 16, newHeights).isEmpty();
             }
 
             EaselScreen.this.getMenu().dimensionChangedPost();
@@ -220,6 +222,22 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
+    /**
+     * @param index A NUMBER FROM 1 TO 4
+     *              NOT 16 to 64 PLZ HOLY SHIT
+     */
+    private EaselHeightsButton getHeightButtonOfIndex(int index) {
+        return paintingHeightButtons[index - 1];
+    }
+
+    /**
+     * @param index A NUMBER FROM 1 TO 4
+     *              NOT 16 to 64 PLZ HOLY SHIT
+     */
+    private EaselWidthButton getWidthButtonOfIndex(int index) {
+        return paintingWidthButtons[index - 1];
+    }
+
     private class EaselWidthButton extends EaselDimensionsButton {
         public EaselWidthButton(int startX, int startY, int index) {
             super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index);
@@ -229,12 +247,13 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         public void onPress() {
             EaselScreen.this.getMenu().dimensionChangedPre();
             // !!!!!!!!!!!!!!!!
-            if (EaselScreen.this.getMenu().getPaintingWidth() == this.index * 16) {
-                EaselScreen.this.setMenuPaintingWidth((this.index - 1) * 16);
+            int newWidth = index * 16;
+            EaselScreen.this.setMenuPaintingWidth(newWidth);
+
+            for (int i = 1; i <= 4; i += 1) {
+                getHeightButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(newWidth, i * 16).isEmpty();
             }
-            else {
-                EaselScreen.this.setMenuPaintingWidth(this.index * 16);
-            }
+
             EaselScreen.this.getMenu().dimensionChangedPost();
         }
 
