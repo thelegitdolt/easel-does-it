@@ -180,64 +180,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingIndexPacket((short) newIndex));
     }
 
-    private class EaselHeightsButton extends EaselDimensionsButton {
-        public EaselHeightsButton(int startX, int startY, int index) {
-            super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index);
-        }
-
-        @Override
-        public void onPress() {
-            EaselScreen.this.getMenu().dimensionChangedPre();
-            // !!!!!!!!!!!!!!!!
-            int newHeights = index * 16;
-            EaselScreen.this.setMenuPaintingHeight(newHeights);
-
-            for (int i = 1; i <= 4; i += 1) {
-                getWidthButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(i * 16, newHeights).isEmpty();
-            }
-
-            EaselScreen.this.getMenu().dimensionChangedPost();
-        }
-
-        @Override
-        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
-            int buttonToRenderX, buttonToRenderY;
-            int paintingHeight = EaselScreen.this.getMenu().getPaintingHeight() / 16;
-
-            if (paintingHeight >= this.index) {
-                buttonToRenderX = HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X;
-                buttonToRenderY = HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y;
-            }
-            else {
-                buttonToRenderX = HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X;
-                buttonToRenderY = HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y;
-            }
-
-            graphics.blit(
-                    BG_LOCATION,
-                    this.getX(), this.getY(),
-                    buttonToRenderX, buttonToRenderY,
-                    this.width, this.height
-            );
-        }
-    }
-
-    /**
-     * @param index A NUMBER FROM 1 TO 4
-     *              NOT 16 to 64 PLZ HOLY SHIT
-     */
-    private EaselHeightsButton getHeightButtonOfIndex(int index) {
-        return paintingHeightButtons[index - 1];
-    }
-
-    /**
-     * @param index A NUMBER FROM 1 TO 4
-     *              NOT 16 to 64 PLZ HOLY SHIT
-     */
-    private EaselWidthButton getWidthButtonOfIndex(int index) {
-        return paintingWidthButtons[index - 1];
-    }
-
     private class EaselWidthButton extends EaselDimensionsButton {
         public EaselWidthButton(int startX, int startY, int index) {
             super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index);
@@ -250,37 +192,67 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             int newWidth = index * 16;
             EaselScreen.this.setMenuPaintingWidth(newWidth);
 
-            for (int i = 1; i <= 4; i += 1) {
-                getHeightButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(newWidth, i * 16).isEmpty();
-            }
+//            for (int i = 1; i <= 4; i += 1) {
+//                getHeightButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(newWidth, i * 16).isEmpty();
+//            }
 
             EaselScreen.this.getMenu().dimensionChangedPost();
         }
 
         @Override
-        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
-            int buttonToRenderX, buttonToRenderY;
-            int paintingWidth = EaselScreen.this.getMenu().getPaintingWidth() / 16;
+        protected int[] getAtlasPositionsForButtons() {
+            return new int[]{WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y};
+        }
 
-            if (paintingWidth >= this.index) {
-                buttonToRenderX = WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X;
-                buttonToRenderY = WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y;
-            }
-            else {
-                buttonToRenderX = WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X;
-                buttonToRenderY = WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y;
-            }
+        @Override
+        protected int getRelevantDimension() {
+            return EaselScreen.this.getMenu().getPaintingWidth();
+        }
+    }
 
-            graphics.blit(BG_LOCATION,
-                    this.getX(), this.getY(),
-                    buttonToRenderX, buttonToRenderY,
-                    this.width, this.height
-            );
+    private class EaselHeightsButton extends EaselDimensionsButton {
+        public EaselHeightsButton(int startX, int startY, int index) {
+            super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index);
+        }
+
+        @Override
+        public void onPress() {
+            EaselScreen.this.getMenu().dimensionChangedPre();
+            int newHeights = index * 16;
+            EaselScreen.this.setMenuPaintingHeight(newHeights);
+
+//            for (int i = 1; i <= 4; i += 1) {
+//                getWidthButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(i * 16, newHeights).isEmpty();
+//            }
+
+            EaselScreen.this.getMenu().dimensionChangedPost();
+        }
+
+        @Override
+        protected int[] getAtlasPositionsForButtons() {
+            return new int[]{HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y};
+        }
+
+        @Override
+        protected int getRelevantDimension() {
+            return EaselScreen.this.getMenu().getPaintingHeight();
         }
     }
 
     private abstract static class EaselDimensionsButton extends AbstractButton {
         public final int index;
+
+        /**
+         * The position of the button textures on the easel gui atlas sprite.
+         * @return int[] of (clicked_x, clicked_y, not clicked_x, not clicked_y)
+         */
+        protected abstract int[] getAtlasPositionsForButtons();
+
+        /**
+         * @return the value of the relevant dimension
+         * If height it should return the size of the height
+         */
+        protected abstract int getRelevantDimension();
 
         /**
          * INDEX IS A NUMBER FROM 1 to 4, not the pixel size of teh painting. IF YOU USE THE PIXEL SIZE OF THE PAINTING
@@ -297,6 +269,31 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             }
 
             this.index = index;
+        }
+
+        @Override
+        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            int buttonToRenderX, buttonToRenderY;
+            int paintingDimension = getRelevantDimension() / 16;
+
+            if (paintingDimension >= this.index) {
+                buttonToRenderX = getAtlasPositionsForButtons()[0];
+                buttonToRenderY = getAtlasPositionsForButtons()[1];
+            }
+            else {
+                buttonToRenderX = getAtlasPositionsForButtons()[2];
+                buttonToRenderY = getAtlasPositionsForButtons()[3];
+            }
+
+            graphics.blit(BG_LOCATION,
+                    this.getX(), this.getY(),
+                    buttonToRenderX, buttonToRenderY,
+                    this.width, this.height
+            );
+
+            if (this.isHoveredOrFocused()) {
+
+            }
         }
 
         @Override
@@ -330,5 +327,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y = 16;
     private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X = 176;
     private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y = 0;
+//    private static final int DISTANCE_TO_UNHOVERED_COUNTERPART = ;
 
 }
