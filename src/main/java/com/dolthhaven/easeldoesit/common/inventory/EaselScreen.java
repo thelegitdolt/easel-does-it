@@ -176,6 +176,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingIndexPacket((short) newIndex));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private class EaselWidthButton extends EaselDimensionsButton {
         public EaselWidthButton(int startX, int startY, int index) {
             super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index);
@@ -206,6 +207,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     private class EaselHeightsButton extends EaselDimensionsButton {
         public EaselHeightsButton(int startX, int startY, int index) {
             super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index);
@@ -235,6 +237,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     private abstract static class EaselDimensionsButton extends AbstractButton {
         public final int index;
 
@@ -328,5 +331,4 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int HEIGHT_BUTTON_HOVERED_X = 199;
     private static final int HEIGHT_BUTTON_HOVERED_Y = 0;
 //    private static final int DISTANCE_TO_UNHOVERED_COUNTERPART = ;
-
 }

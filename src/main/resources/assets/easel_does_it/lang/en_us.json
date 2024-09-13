@@ -1,4 +1,13 @@
 {
   "block.easel_does_it.easel": "Easel",
-  "container.easel_does_it.easel": "Easel"
+  "container.easel_does_it.easel": "Easel",
+
+  "painting.easel_does_it.hole.author": "five",
+  "painting.easel_does_it.hole.title": "Hole",
+  "painting.easel_does_it.layers.author": "five",
+  "painting.easel_does_it.layers.title": "Layers",
+  "painting.easel_does_it.portal.author": "five",
+  "painting.easel_does_it.portal.title": "Portal",
+  "painting.easel_does_it.vintage.author": "five",
+  "painting.easel_does_it.vintage.title": "Vintage"
 }
