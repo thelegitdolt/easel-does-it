@@ -5,7 +5,6 @@ import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeig
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
-import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,7 +30,6 @@ import java.util.function.Function;
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
-
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
@@ -147,10 +145,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
     }
 
-
     /**
      * handles the drawing of the paintings.
-     * @param graphics
      */
     private void renderPainting(GuiGraphics graphics) {
         // draw nothing if one width or height is 0
@@ -201,7 +197,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         @Override
         protected int[] getAtlasPositionsForButtons() {
-            return new int[]{WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y};
+            return new int[]{WIDTH_BUTTON_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y, WIDTH_BUTTON_HOVERED_X, WIDTH_BUTTON_HOVERED_Y};
         }
 
         @Override
@@ -230,7 +226,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         @Override
         protected int[] getAtlasPositionsForButtons() {
-            return new int[]{HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y};
+            return new int[]{HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_HOVERED_X, HEIGHT_BUTTON_HOVERED_Y};
         }
 
         @Override
@@ -244,7 +240,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         /**
          * The position of the button textures on the easel gui atlas sprite.
-         * @return int[] of (clicked_x, clicked_y, not clicked_x, not clicked_y)
+         * @return int[] of (clicked_x, clicked_y, not clicked_x, not clicked_y, hovered_x, hovered_y)
          */
         protected abstract int[] getAtlasPositionsForButtons();
 
@@ -280,20 +276,20 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 buttonToRenderX = getAtlasPositionsForButtons()[0];
                 buttonToRenderY = getAtlasPositionsForButtons()[1];
             }
-            else {
+            else if (!this.isHovered()){
                 buttonToRenderX = getAtlasPositionsForButtons()[2];
                 buttonToRenderY = getAtlasPositionsForButtons()[3];
             }
+            else {
+                buttonToRenderX = getAtlasPositionsForButtons()[4];
+                buttonToRenderY = getAtlasPositionsForButtons()[5];
+            }
 
             graphics.blit(BG_LOCATION,
-                    this.getX(), this.getY(),
+                    getX(), getY(),
                     buttonToRenderX, buttonToRenderY,
                     this.width, this.height
             );
-
-            if (this.isHoveredOrFocused()) {
-
-            }
         }
 
         @Override
@@ -327,6 +323,10 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int WIDTH_BUTTON_CLICKED_ATLAS_CORDS_Y = 16;
     private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X = 176;
     private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y = 0;
+    private static final int WIDTH_BUTTON_HOVERED_X = 206;
+    private static final int WIDTH_BUTTON_HOVERED_Y = 0;
+    private static final int HEIGHT_BUTTON_HOVERED_X = 199;
+    private static final int HEIGHT_BUTTON_HOVERED_Y = 0;
 //    private static final int DISTANCE_TO_UNHOVERED_COUNTERPART = ;
 
 }
