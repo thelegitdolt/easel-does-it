@@ -5,6 +5,7 @@ import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeig
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -141,8 +142,53 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         graphics.blit(BG_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         renderPainting(graphics);
+        renderPageManager(graphics);
 
         graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
+    }
+
+    private void renderPageManager(GuiGraphics graphics) {
+        int menuPaintingIndex = getMenu().getPaintingIndex();
+        int currentPage = MathUtil.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
+
+        int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
+
+        for (int[] yPosAndIndex : getPageButtonYPositionsAndRepresentedIndex(currentPage, numPaintingsInThisPage)) {
+            int yPos = yPosAndIndex[0];
+            int currentIndex = yPosAndIndex[1];
+
+            int dotXLoc, dotYLoc;
+            if (currentIndex == menuPaintingIndex)  {
+                dotXLoc = PAGE_BUTTON_SELECTED_X;
+                dotYLoc = PAGE_BUTTON_SELECTED_Y;
+            }
+            else {
+                dotXLoc = PAGE_BUTTON_X;
+                dotYLoc = PAGE_BUTTON_Y;
+            }
+
+            graphics.blit(BG_LOCATION,
+                    this.leftPos + PAGES_START_X, this.topPos + yPos,
+                    dotXLoc, dotYLoc,
+                    PAGE_BUTTON_DIMENSIONS, PAGE_BUTTON_DIMENSIONS);
+
+        }
+    }
+
+    private List<int[]> getPageButtonYPositionsAndRepresentedIndex(int currentPage, int numPaintingsInThisPage) {
+        List<int[]> list = Lists.newArrayList();
+        int yPos = (AVAILABLE_PIXELS_PER_PAGE - totalReqPixelsFor(numPaintingsInThisPage)) / 2;
+        yPos += 2;
+        for (int i = 0; i < numPaintingsInThisPage; i++) {
+            list.add(new int[]{yPos + PAGE_BUTTONS_START, (currentPage - 1) * MAX_PAINTINGS_PER_PAGE + i});
+            yPos += 6;
+        }
+
+        return list;
+    }
+
+    private int totalReqPixelsFor(int numPaintingsInPage) {
+        return numPaintingsInPage * 6 + 3;
     }
 
     /**
@@ -301,6 +347,16 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
+    private static final int MAX_PAINTINGS_PER_PAGE = 8;
+    private static final int AVAILABLE_PIXELS_PER_PAGE = 51;
+    private static final int PAGES_START_X = 126;
+    private static final int PAGE_BUTTON_X = 181;
+    private static final int PAGE_BUTTON_Y = 23;
+    private static final int PAGE_BUTTON_SELECTED_X = 176;
+    private static final int PAGE_BUTTON_SELECTED_Y = 23;
+    private static final int PAGE_BUTTON_DIMENSIONS = 5;
+    private static final int PAGE_BUTTONS_START = 21;
+
     private static final int BUTTONS_DIMENSIONS_LONG = 16;
     private static final int BUTTONS_DIMENSIONS_SHORT = 7;
     private static final int HEIGHT_BUTTONS_START_X = 48;
@@ -330,5 +386,4 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int WIDTH_BUTTON_HOVERED_Y = 0;
     private static final int HEIGHT_BUTTON_HOVERED_X = 199;
     private static final int HEIGHT_BUTTON_HOVERED_Y = 0;
-//    private static final int DISTANCE_TO_UNHOVERED_COUNTERPART = ;
 }

@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -55,9 +57,6 @@ public class EaselMenu extends AbstractContainerMenu {
         super(EaselModMenuTypes.EASEL_MENU.get(), id);
         this.access = access;
 
-        addPlayerInventory(inv);
-        addPlayerHotbar(inv);
-
         this.inputSlot = this.addSlot(new Slot(this.inputContainer, 0, 15, 35) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
@@ -87,6 +86,8 @@ public class EaselMenu extends AbstractContainerMenu {
         });
         // add slots on the thing
 
+        addPlayerInventory(inv);
+        addPlayerHotbar(inv);
 
         // initialize all 16 data slots and stuff
         for (int i = 0; i < 16; i++) {
@@ -235,10 +236,57 @@ public class EaselMenu extends AbstractContainerMenu {
             return ForgeRegistries.PAINTING_VARIANTS.getValue(PaintingVariants.KEBAB.location());
         }
     }
-
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player p_38941_, int p_38942_) {
-        return ItemStack.EMPTY;
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+        Slot slot = this.slots.get(index);
+        if (!slot.hasItem()) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack input = slot.getItem();
+        Item item = input.getItem();
+        ItemStack inputCopy = input.copy();
+        // if is result slot
+        if (index == this.inputSlot.getSlotIndex()) {
+            item.onCraftedBy(input, player.level(), player);
+            if (!this.moveItemStackTo(input, 2, 38, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onQuickCraft(input, inputCopy);
+        }
+        else if (index == this.resultSlot.getSlotIndex()) {  // if is input slot
+            if (!this.moveItemStackTo(input, 2, 38, true)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        else if (input.is(Items.PAINTING)) {
+            if (!this.moveItemStackTo(input, 0, 1, false)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        else if (index >= 2 && index < 29) {
+            if (!this.moveItemStackTo(input, 29, 38, false)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        else if (index >= 29 && index < 38 && !this.moveItemStackTo(input, 2, 29, false)) {
+            return ItemStack.EMPTY;
+        }
+
+        if (input.isEmpty()) {
+            slot.set(ItemStack.EMPTY);
+        }
+
+        slot.setChanged();
+        if (input.getCount() == inputCopy.getCount()) {
+            return ItemStack.EMPTY;
+        }
+
+        slot.onTake(player, input);
+        this.broadcastChanges();
+
+        return inputCopy;
     }
 
     @Override
@@ -274,15 +322,15 @@ public class EaselMenu extends AbstractContainerMenu {
 
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
-            for (int l = 0; l < 9; ++l) {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
-        for (int i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+        for (int k = 0; k < 9; ++k) {
+            this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
         }
     }
 }

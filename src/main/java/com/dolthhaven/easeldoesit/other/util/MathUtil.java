@@ -15,4 +15,8 @@ public class MathUtil {
         int second = base4 / 4;
         return new int[]{second, first};
     }
+
+    public static int ceil(double numToCiel) {
+        return (int) Math.ceil(numToCiel);
+    }
 }
