@@ -2,12 +2,16 @@
   "block.easel_does_it.easel": "Drawin' bench",
   "container.easel_does_it.easel": "Drawin' bench",
 
-  "painting.easel_does_it.hole.author": "five",
+  "painting.easel_does_it.culture.author": "glyphy",
+  "painting.easel_does_it.culture.title": "Culture",
+  "painting.easel_does_it.hole.author": "glyphy",
   "painting.easel_does_it.hole.title": "Hole",
-  "painting.easel_does_it.layers.author": "five",
+  "painting.easel_does_it.layers.author": "glyphy",
   "painting.easel_does_it.layers.title": "Layers",
-  "painting.easel_does_it.portal.author": "five",
+  "painting.easel_does_it.monochrome.author": "glyphy",
+  "painting.easel_does_it.monochrome.title": "Monochrome",
+  "painting.easel_does_it.portal.author": "glyphy",
   "painting.easel_does_it.portal.title": "Portal",
-  "painting.easel_does_it.vintage.author": "five",
+  "painting.easel_does_it.vintage.author": "glyphy",
   "painting.easel_does_it.vintage.title": "Vintage"
 }
