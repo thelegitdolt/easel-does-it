@@ -10,11 +10,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -25,7 +25,6 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
@@ -36,8 +35,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private int leftPos, topPos; // leftmost position of gui
     private final EaselWidthButton[] paintingWidthButtons = new EaselWidthButton[4];
     private final EaselHeightsButton[] paintingHeightButtons = new EaselHeightsButton[4];
-
-    private final List<Button> paintingPickers = Lists.newArrayList();
+    private final EaselPickerButton[] paintingPickers = new EaselPickerButton[2];
 
 
     public EaselScreen(EaselMenu menu, Inventory inv, Component component) {
@@ -88,30 +86,35 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     private void addPickers() {
-        Button topPicker = Button.builder(Component.empty(), onPressForPickers((i) -> i - 1))
-                .pos(this.leftPos + PICKER_X, this.topPos + PICKER_TOP_Y)
-                .size(PICKER_X_DIMENSION, PICKER_Y_DIMENSION)
-                .build();
+        EaselPickerButton topPicker = new EaselPickerButton(this.leftPos + PICKER_X, this.topPos + PICKER_TOP_Y, this) {
+            @Override
+            int affectIndex(int oldIndex) {
+                return oldIndex - 1;
+            }
 
-        Button bottomPicker = Button.builder(Component.empty(), onPressForPickers((i) -> i + 1))
-                .pos(this.leftPos + PICKER_X, this.topPos + PICKER_BOTTOM_Y)
-                .size(PICKER_X_DIMENSION, PICKER_Y_DIMENSION)
-                .build();
-
-        this.paintingPickers.add(topPicker);
-        this.paintingPickers.add(bottomPicker);
-
-        this.addWidget(topPicker);
-        this.addWidget(bottomPicker);
-    }
-
-    private Button.OnPress onPressForPickers(Function<Integer, Integer> indexFunction) {
-        return (button) -> {
-            int newIndex = indexFunction.apply(this.menu.getPaintingIndex());
-            if (this.menu.isValidPaintingIndex(newIndex)) {
-                setMenuIndex(newIndex);
+            @Override
+            int[] getTextureAtlasCords() {
+                return new int[]{PICKER_TOP_ATLAS_X, PICKER_ATLAS_Y, PICKER_TOP_HOVERED_ATLAS_X, PICKER_ATLAS_Y, PICKER_TOP_INACTIVE_ATLAS_X, PICKER_ATLAS_Y};
             }
         };
+
+        EaselPickerButton bottomPicker = new EaselPickerButton(this.leftPos + PICKER_X, this.topPos + PICKER_BOTTOM_Y, this) {
+            @Override
+            int affectIndex(int oldIndex) {
+                return oldIndex + 1;
+            }
+
+            @Override
+            int[] getTextureAtlasCords() {
+                return new int[]{PICKER_BOTTOM_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_HOVERED_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_INACTIVE_ATLAS_X, PICKER_ATLAS_Y};
+            }
+        };
+
+        this.paintingPickers[0] = topPicker;
+        this.paintingPickers[1] = bottomPicker;
+
+        this.addRenderableWidget(topPicker);
+        this.addRenderableWidget(bottomPicker);
     }
 
     @Override
@@ -208,18 +211,27 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     private void setMenuPaintingWidth(int newWidth) {
+        this.menu.dimensionChangedPre();
         this.menu.setPaintingWidth(newWidth);
+        this.menu.dimensionChangedPost();
+
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingWidthPacket((byte) newWidth));
+        updatePickers(this.menu.getPaintingIndex());
     }
 
     private void setMenuPaintingHeight(int newHeight) {
+        this.menu.dimensionChangedPre();
         this.menu.setPaintingHeight(newHeight);
+        this.menu.dimensionChangedPost();
+
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingHeightPacket((byte) newHeight));
+        updatePickers(this.menu.getPaintingIndex());
     }
 
     private void setMenuIndex(int newIndex) {
         this.menu.setPaintingIndex(newIndex);
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingIndexPacket((short) newIndex));
+        updatePickers(newIndex);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -250,6 +262,12 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         @Override
         protected int getRelevantDimension() {
             return EaselScreen.this.getMenu().getPaintingWidth();
+        }
+    }
+
+    private void updatePickers(int newIndex) {
+        for (EaselPickerButton button : this.paintingPickers) {
+            button.active = button.canBePressed(newIndex);
         }
     }
 
@@ -347,6 +365,67 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
+    private abstract static class EaselPickerButton extends AbstractButton {
+        private final EaselScreen screen;
+
+        public EaselPickerButton(int startX, int startY, EaselScreen screen) {
+            super(startX, startY, PICKER_X_DIMENSION, PICKER_Y_DIMENSION, CommonComponents.EMPTY);
+            this.screen = screen;
+            this.active = false;
+        }
+
+        @Override
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
+            this.defaultButtonNarrationText(output);
+        }
+
+        abstract int affectIndex(int oldIndex);
+
+        abstract int[] getTextureAtlasCords();
+
+        @Override
+        public void onPress() {
+            int paintingIndex = screen.getMenu().getPaintingIndex();
+            int newIndex = affectIndex(paintingIndex);
+
+            if (canBePressed(paintingIndex)) {
+                screen.setMenuIndex(newIndex);
+            }
+        }
+
+        public boolean canBePressed(int index) {
+            EaselDoesIt.log(index + "and" + affectIndex(index) + " possible painting " + screen.getMenu().getPossiblePaintingsSize());
+            return screen.getMenu().isValidPaintingIndex(affectIndex(index));
+        }
+
+        @Override
+        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            if (screen.getMenu().getPossiblePaintingsSize() == 0)
+                return;
+
+            int atlasXCord, atlasYCord;
+
+            if (!this.isActive()) {
+                atlasXCord = getTextureAtlasCords()[4];
+                atlasYCord = getTextureAtlasCords()[5];
+            }
+            else if (this.isHovered()) {
+                atlasXCord = getTextureAtlasCords()[2];
+                atlasYCord = getTextureAtlasCords()[3];
+            }
+            else {
+                atlasXCord = getTextureAtlasCords()[0];
+                atlasYCord = getTextureAtlasCords()[1];
+            }
+
+            graphics.blit(BG_LOCATION,
+                    getX(), getY(),
+                    atlasXCord, atlasYCord,
+                    this.width, this.height
+            );
+        }
+    }
+
     private static final int MAX_PAINTINGS_PER_PAGE = 8;
     private static final int AVAILABLE_PIXELS_PER_PAGE = 51;
     private static final int PAGES_START_X = 126;
@@ -370,6 +449,14 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int PICKER_BOTTOM_Y = 72;
     private static final int PICKER_X_DIMENSION = 11;
     private static final int PICKER_Y_DIMENSION = 7;
+    private static final int PICKER_ATLAS_Y = 28;
+    private static final int PICKER_BOTTOM_ATLAS_X = 176;
+    private static final int PICKER_TOP_ATLAS_X = 187;
+    private static final int PICKER_BOTTOM_HOVERED_ATLAS_X = 198;
+    private static final int PICKER_TOP_HOVERED_ATLAS_X = 209;
+    private static final int PICKER_BOTTOM_INACTIVE_ATLAS_X = 220;
+    private static final int PICKER_TOP_INACTIVE_ATLAS_X = 231;
+
 
     private static final int PREVIEW_BOX_X = 56;
     private static final int PREVIEW_BOX_Y = 14;

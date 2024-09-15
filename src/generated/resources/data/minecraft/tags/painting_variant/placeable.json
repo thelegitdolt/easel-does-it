@@ -3,6 +3,8 @@
     "easel_does_it:portal",
     "easel_does_it:layers",
     "easel_does_it:hole",
-    "easel_does_it:vintage"
+    "easel_does_it:vintage",
+    "easel_does_it:monochrome",
+    "easel_does_it:culture"
   ]
 }

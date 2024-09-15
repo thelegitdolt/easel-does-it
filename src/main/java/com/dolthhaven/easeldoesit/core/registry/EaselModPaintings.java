@@ -9,8 +9,10 @@ import net.minecraftforge.registries.RegistryObject;
 public class EaselModPaintings {
     public static final DeferredRegister<PaintingVariant> PAINTING_VARIANTS = DeferredRegister.create(ForgeRegistries.PAINTING_VARIANTS, EaselDoesIt.MOD_ID);
 
+    public static final RegistryObject<PaintingVariant> CULTURE = register("culture", 16, 48);
     public static final RegistryObject<PaintingVariant> HOLE = register("hole", 32, 16);
     public static final RegistryObject<PaintingVariant> LAYERS = register("layers", 32, 48);
+    public static final RegistryObject<PaintingVariant> MONOCHROME = register("monochrome", 32, 64);
     public static final RegistryObject<PaintingVariant> PORTAL = register("portal", 48, 32);
     public static final RegistryObject<PaintingVariant> VINTAGE = register("vintage", 16, 16);
 
