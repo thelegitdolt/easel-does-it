@@ -19,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.compress.utils.Lists;
@@ -40,6 +41,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     public EaselScreen(EaselMenu menu, Inventory inv, Component component) {
         super(menu, inv, component);
+
+        this.menu.registerUpdateListener(this::containerChanged);
 
         this.imageWidth = 176;
         this.imageHeight = 166;
@@ -68,6 +71,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                     this.topPos + WIDTH_BUTTONS_START_Y,
                     i);
 
+            button.active = false;
             addRenderableWidget(button);
             paintingWidthButtons[i - 1] = button;
         }
@@ -80,8 +84,28 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                     this.topPos + HEIGHT_BUTTONS_START_Y + BUTTONS_DIMENSIONS_LONG * (i - 1),
                     i);
 
+            button.active = false;
             addRenderableWidget(button);
             paintingHeightButtons[i - 1] = button;
+        }
+    }
+
+    private void containerChanged() {
+        if (this.getMenu().inputSlot.getItem().is(Items.PAINTING)) {
+            for (EaselDimensionsButton button : this.paintingHeightButtons) {
+                button.active = true;
+            }
+            for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = true;
+            }
+        }
+        else {
+            for (EaselDimensionsButton button : this.paintingHeightButtons) {
+                button.active = false;
+            }
+            for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = false;
+            }
         }
     }
 
@@ -144,10 +168,19 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         graphics.blit(BG_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
+        renderPaintingGrid(graphics);
         renderPainting(graphics);
         renderPageManager(graphics);
 
         graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
+    }
+
+    private void renderPaintingGrid(GuiGraphics graphics) {
+        if (isEaselActive()) {
+            graphics.blit(BG_LOCATION,
+                    this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
+                    PREVIEW_BOX_ATLAS_X, PREVIEW_BOX_ATLAS_Y, PREVIEW_BOX_DIMENSIONS, PREVIEW_BOX_DIMENSIONS);
+        }
     }
 
     private void renderPageManager(GuiGraphics graphics) {
@@ -210,6 +243,10 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 0, currentPainting.getWidth(), currentPainting.getHeight(), currentPaintingSprite); // draw the current painting
     }
 
+    private boolean isEaselActive() {
+        return getMenu().inputSlot.getItem().is(Items.PAINTING);
+    }
+
     private void setMenuPaintingWidth(int newWidth) {
         this.menu.dimensionChangedPre();
         this.menu.setPaintingWidth(newWidth);
@@ -237,7 +274,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     @OnlyIn(Dist.CLIENT)
     private class EaselWidthButton extends EaselDimensionsButton {
         public EaselWidthButton(int startX, int startY, int index) {
-            super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index);
+            super(startX, startY, BUTTONS_DIMENSIONS_LONG, BUTTONS_DIMENSIONS_SHORT, index, EaselScreen.this);
         }
 
         @Override
@@ -274,7 +311,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     @OnlyIn(Dist.CLIENT)
     private class EaselHeightsButton extends EaselDimensionsButton {
         public EaselHeightsButton(int startX, int startY, int index) {
-            super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index);
+            super(startX, startY, BUTTONS_DIMENSIONS_SHORT, BUTTONS_DIMENSIONS_LONG, index, EaselScreen.this);
         }
 
         @Override
@@ -304,6 +341,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     @OnlyIn(Dist.CLIENT)
     private abstract static class EaselDimensionsButton extends AbstractButton {
         public final int index;
+        public final EaselScreen screen;
 
         /**
          * The position of the button textures on the easel gui atlas sprite.
@@ -321,21 +359,19 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
          * INDEX IS A NUMBER FROM 1 to 4, not the pixel size of teh painting. IF YOU USE THE PIXEL SIZE OF THE PAINTING
          * YOU WILL BE LOGGED, IT WILL PROBABLY CRASH THE GAME
          */
-        public EaselDimensionsButton(int startX, int startY, int width, int height, int index) {
+        public EaselDimensionsButton(int startX, int startY, int width, int height, int index, EaselScreen screen) {
             super(startX, startY, width, height, Component.empty());
 
-            // crash the game if dolt is a dumbass
-            if (index == 16 || index == 32 || index == 64 || index == 48) {
-                for (int i = 0; i < 20000; i++) {
-                    EaselDoesIt.log("YOU ARE A DUMBASS A DUMBASS YOU DUMB FUCK");
-                }
-            }
-
             this.index = index;
+            this.screen = screen;
         }
 
         @Override
         protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            if (!this.screen.isEaselActive()) {
+                return;
+            }
+
             int buttonToRenderX, buttonToRenderY;
             int paintingDimension = getRelevantDimension() / 16;
 
@@ -394,7 +430,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         public boolean canBePressed(int index) {
-            EaselDoesIt.log(index + "and" + affectIndex(index) + " possible painting " + screen.getMenu().getPossiblePaintingsSize());
             return screen.getMenu().isValidPaintingIndex(affectIndex(index));
         }
 
@@ -457,9 +492,11 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int PICKER_BOTTOM_INACTIVE_ATLAS_X = 220;
     private static final int PICKER_TOP_INACTIVE_ATLAS_X = 231;
 
-
     private static final int PREVIEW_BOX_X = 56;
     private static final int PREVIEW_BOX_Y = 14;
+    private static final int PREVIEW_BOX_ATLAS_X = 176;
+    private static final int PREVIEW_BOX_ATLAS_Y = 35;
+    private static final int PREVIEW_BOX_DIMENSIONS = 64;
 
     private static final int WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_X = 183;
     private static final int WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y = 0;
