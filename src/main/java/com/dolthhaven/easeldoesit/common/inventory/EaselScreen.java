@@ -91,11 +91,14 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     private void containerChanged() {
-        if (this.getMenu().inputSlot.getItem().is(Items.PAINTING)) {
+        if (isEaselActive()) {
             for (EaselDimensionsButton button : this.paintingHeightButtons) {
                 button.active = true;
             }
             for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = true;
+            }
+            for (EaselPickerButton button : this.paintingPickers) {
                 button.active = true;
             }
         }
@@ -104,6 +107,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 button.active = false;
             }
             for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = false;
+            }
+            for (EaselPickerButton button : this.paintingPickers) {
                 button.active = false;
             }
         }
@@ -133,6 +139,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 return new int[]{PICKER_BOTTOM_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_HOVERED_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_INACTIVE_ATLAS_X, PICKER_ATLAS_Y};
             }
         };
+
+        topPicker.active = false;
+        bottomPicker.active = false;
 
         this.paintingPickers[0] = topPicker;
         this.paintingPickers[1] = bottomPicker;
@@ -184,6 +193,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     private void renderPageManager(GuiGraphics graphics) {
+        if (!isEaselActive())
+            return;
+
         int menuPaintingIndex = getMenu().getPaintingIndex();
         int currentPage = MathUtil.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
 
@@ -232,7 +244,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
      */
     private void renderPainting(GuiGraphics graphics) {
         // draw nothing if one width or height is 0
-        if (this.menu.getPaintingWidth() == 0 || this.menu.getPaintingWidth() == 0) return;
+        if (!isEaselActive()) return;
 
         if (this.menu.getPossiblePaintingsSize() == 0) return;
 
@@ -435,6 +447,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         @Override
         protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+            if (!screen.isEaselActive())
+                return;
+
             if (screen.getMenu().getPossiblePaintingsSize() == 0)
                 return;
 
