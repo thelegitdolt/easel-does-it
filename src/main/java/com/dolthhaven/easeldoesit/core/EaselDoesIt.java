@@ -5,6 +5,7 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
+import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
 import com.dolthhaven.easeldoesit.data.server.EaselModRecipes;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
@@ -92,6 +93,7 @@ public class EaselDoesIt
 
         boolean client = event.includeClient();
         dataGen.addProvider(client, new EaselModBlockStates(packOutput, helper));
+        dataGen.addProvider(client, new EaselModSoundProvider(packOutput, helper));
     }
 
     @SubscribeEvent

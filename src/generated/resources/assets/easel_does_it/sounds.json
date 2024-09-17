@@ -1,0 +1,8 @@
+{
+  "ui.easel.take_result": {
+    "sounds": [
+      "easel_does_it:ui/easel/draw1"
+    ],
+    "subtitle": "subtitle.ui.easel_does_it.easel.draw_painting"
+  }
+}

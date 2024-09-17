@@ -90,31 +90,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
-    private void containerChanged() {
-        if (isEaselActive()) {
-            for (EaselDimensionsButton button : this.paintingHeightButtons) {
-                button.active = true;
-            }
-            for (EaselDimensionsButton button : this.paintingWidthButtons) {
-                button.active = true;
-            }
-            for (EaselPickerButton button : this.paintingPickers) {
-                button.active = true;
-            }
-        }
-        else {
-            for (EaselDimensionsButton button : this.paintingHeightButtons) {
-                button.active = false;
-            }
-            for (EaselDimensionsButton button : this.paintingWidthButtons) {
-                button.active = false;
-            }
-            for (EaselPickerButton button : this.paintingPickers) {
-                button.active = false;
-            }
-        }
-    }
-
     private void addPickers() {
         EaselPickerButton topPicker = new EaselPickerButton(this.leftPos + PICKER_X, this.topPos + PICKER_TOP_Y, this) {
             @Override
@@ -150,14 +125,29 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         this.addRenderableWidget(bottomPicker);
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseID) {
-        return super.mouseClicked(mouseX, mouseY, mouseID);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseID) {
-        return super.mouseReleased(mouseX, mouseY, mouseID);
+    private void containerChanged() {
+        if (isEaselActive()) {
+            for (EaselDimensionsButton button : this.paintingHeightButtons) {
+                button.active = true;
+            }
+            for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = true;
+            }
+            for (EaselPickerButton button : this.paintingPickers) {
+                button.active = true;
+            }
+        }
+        else {
+            for (EaselDimensionsButton button : this.paintingHeightButtons) {
+                button.active = false;
+            }
+            for (EaselDimensionsButton button : this.paintingWidthButtons) {
+                button.active = false;
+            }
+            for (EaselPickerButton button : this.paintingPickers) {
+                button.active = false;
+            }
+        }
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
+import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -28,11 +30,13 @@ public class EaselMenu extends AbstractContainerMenu {
     private static final int MAX_DIMENSION = 64;
 
     private final ContainerLevelAccess access;
+    long lastSoundTime;
+
     // slots
     Runnable slotUpdateListener = () -> {
     };
-    final Slot inputSlot;
-    final Slot resultSlot;
+    public final Slot inputSlot;
+    public final Slot resultSlot;
     public final Container inputContainer = new SimpleContainer(1) {
         @Override
         public void setChanged() {
@@ -71,17 +75,20 @@ public class EaselMenu extends AbstractContainerMenu {
 
             @Override
             public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
-                stack.onCraftedBy(player.level(), player, stack.getCount());
-                EaselMenu.this.resultContainer.awardUsedRecipes(player, this.getRelevantItems());
                 ItemStack input = EaselMenu.this.inputSlot.remove(1);
                 if (!input.isEmpty()) {
                     EaselMenu.this.createResult();
                 }
-                super.onTake(player, stack);
-            }
 
-            private List<ItemStack> getRelevantItems() {
-                return List.of(EaselMenu.this.inputSlot.getItem());
+                access.execute((level, pos) -> {
+                    long l = level.getGameTime();
+                    if (EaselMenu.this.lastSoundTime != l) {
+                        level.playSound(null, pos, EaselModSoundEvents.UI_EASEL_TAKE_RESULT.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                        EaselMenu.this.lastSoundTime = l;
+                    }
+                });
+
+                super.onTake(player, stack);
             }
         });
         // add slots on the thing
@@ -294,7 +301,7 @@ public class EaselMenu extends AbstractContainerMenu {
         return stillValid(this.access, player, EaselModBlocks.EASEL.get());
     }
 
-    public void registerUpdateListener(Runnable listener) {
+    public void     registerUpdateListener(Runnable listener) {
         this.slotUpdateListener = listener;
     }
 
