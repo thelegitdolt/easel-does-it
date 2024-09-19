@@ -4,12 +4,14 @@ import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
+import com.dolthhaven.easeldoesit.core.registry.EaselModVillagers;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
 import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
 import com.dolthhaven.easeldoesit.data.server.EaselModRecipes;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModPaintingTags;
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModPoiTags;
 import com.mojang.logging.LogUtils;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import net.minecraft.client.Minecraft;
@@ -56,6 +58,8 @@ public class EaselDoesIt
 
         EaselModMenuTypes.MENUS.register(bus);
         EaselModPaintings.PAINTING_VARIANTS.register(bus);
+        EaselModVillagers.POI_TYPES.register(bus);
+        EaselModVillagers.VILLAGER_PROFESSIONS.register(bus);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
 //        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -87,6 +91,7 @@ public class EaselDoesIt
         boolean server = event.includeServer();
         EaselModBlockTags easelModBlockTags = new EaselModBlockTags(packOutput, provider, helper);
         dataGen.addProvider(server, easelModBlockTags);
+        dataGen.addProvider(server, new EaselModPoiTags(packOutput, provider, helper));
         dataGen.addProvider(server, new EaselModPaintingTags(packOutput, provider, helper));
         dataGen.addProvider(server, new EaselModLootTables(packOutput));
         dataGen.addProvider(server, new EaselModRecipes(packOutput));

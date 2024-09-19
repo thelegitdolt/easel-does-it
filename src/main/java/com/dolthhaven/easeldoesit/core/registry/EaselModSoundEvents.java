@@ -11,4 +11,6 @@ public class EaselModSoundEvents {
     private static final SoundSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getSoundSubHelper();
 
     public static final RegistryObject<SoundEvent> UI_EASEL_TAKE_RESULT = HELPER.createSoundEvent("ui.easel.take_result");
+    public static final RegistryObject<SoundEvent> VILLAGER_WORK_ARTIST = HELPER.createSoundEvent("entity.villager.work_artist");
+
 }

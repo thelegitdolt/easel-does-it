@@ -2,6 +2,8 @@
   "block.easel_does_it.easel": "Easel",
   "container.easel_does_it.easel": "Easel",
 
+  "entity.minecraft.villager.easel_does_it.artist": "Artist",
+
   "subtitle.ui.easel_does_it.easel.draw_painting": "Easel Draws",
 
   "painting.easel_does_it.culture.author": "glyphy",
