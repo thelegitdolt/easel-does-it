@@ -1,0 +1,11 @@
+{
+  "values": [
+    "minecraft:green_dye",
+    "minecraft:black_dye",
+    "minecraft:brown_dye",
+    {
+      "id": "dye_depot:amber_dye",
+      "required": false
+    }
+  ]
+}

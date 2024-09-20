@@ -10,6 +10,7 @@ import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
 import com.dolthhaven.easeldoesit.data.server.EaselModRecipes;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModItemTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModPaintingTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModPoiTags;
 import com.mojang.logging.LogUtils;
@@ -91,6 +92,7 @@ public class EaselDoesIt
         boolean server = event.includeServer();
         EaselModBlockTags easelModBlockTags = new EaselModBlockTags(packOutput, provider, helper);
         dataGen.addProvider(server, easelModBlockTags);
+        dataGen.addProvider(server, new EaselModItemTags(packOutput, provider, easelModBlockTags.contentsGetter(), helper));
         dataGen.addProvider(server, new EaselModPoiTags(packOutput, provider, helper));
         dataGen.addProvider(server, new EaselModPaintingTags(packOutput, provider, helper));
         dataGen.addProvider(server, new EaselModLootTables(packOutput));
