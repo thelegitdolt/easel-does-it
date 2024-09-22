@@ -1,8 +1,10 @@
 package com.dolthhaven.easeldoesit.common.villagers;
 
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +16,60 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class EaselModItemListings {
+    public static class ItemBuyingTrade implements VillagerTrades.ItemListing {
+        private final Item boughtItem;
+        private final UniformInt costCount;
+        private final UniformInt emeraldCount;
+        private final int maxUses;
+        private final int villagerXp;
+        private final float priceMultiplier;
+
+        public ItemBuyingTrade(Item boughtItem, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
+            this.boughtItem = boughtItem;
+            this.costCount = costCount;
+            this.emeraldCount = emeraldCount;
+            this.maxUses = maxUses;
+            this.villagerXp = villagerXp;
+            this.priceMultiplier = priceMultiplier;
+        }
+
+        @Nullable
+        @Override
+        public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
+            int cost = costCount.sample(random);
+            int emerald = emeraldCount.sample(random);
+            return new MerchantOffer(new ItemStack(boughtItem, cost), new ItemStack(Items.EMERALD, emerald), this.maxUses, this.villagerXp, this.priceMultiplier);
+        }
+    }
+
+
+    public static class ItemSellingTrade implements VillagerTrades.ItemListing {
+        private final Item boughtItem;
+        private final UniformInt costCount;
+        private final UniformInt emeraldCount;
+        private final int maxUses;
+        private final int villagerXp;
+        private final float priceMultiplier;
+
+        public ItemSellingTrade(Item boughtItem, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
+            this.boughtItem = boughtItem;
+            this.costCount = costCount;
+            this.emeraldCount = emeraldCount;
+            this.maxUses = maxUses;
+            this.villagerXp = villagerXp;
+            this.priceMultiplier = priceMultiplier;
+        }
+
+        @Nullable
+        @Override
+        public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
+            int cost = costCount.sample(random);
+            int emerald = emeraldCount.sample(random);
+            return new MerchantOffer(new ItemStack(boughtItem, cost), new ItemStack(Items.EMERALD, emerald), this.maxUses, this.villagerXp, this.priceMultiplier);
+        }
+    }
+
+
     public static class RandomItemsBuyingTrade implements VillagerTrades.ItemListing {
         private final List<Item> allowedItems;
         private final UniformInt costCount;
@@ -73,6 +129,27 @@ public class EaselModItemListings {
             int cost = costCount.sample(source);
             int emerald = emeraldCount.sample(source);
             return new MerchantOffer(new ItemStack(Items.EMERALD, emerald), new ItemStack(item, cost), this.maxUses, this.villagerXp, this.priceMultiplier);
+        }
+    }
+
+    public static class SellPaintingVariantTrade implements VillagerTrades.ItemListing {
+        private final PaintingVariant variant;
+        private final UniformInt emeraldCost;
+        private final int maxUses;
+
+        public SellPaintingVariantTrade(PaintingVariant variant, UniformInt emeraldCost, int maxUses) {
+            this.variant = variant;
+            this.emeraldCost = emeraldCost;
+            this.maxUses = maxUses;
+        }
+
+        @Nullable
+        @Override
+        public MerchantOffer getOffer(@NotNull Entity p_219693_, @NotNull RandomSource p_219694_) {
+            ItemStack paintingStack = PaintingUtil.getStackFromPainting(this.variant);
+            ItemStack emeraldStack = new ItemStack(Items.EMERALD, emeraldCost.sample(p_219694_));
+
+            return new MerchantOffer(emeraldStack, paintingStack, maxUses, 25, 0.01F);
         }
     }
 }
