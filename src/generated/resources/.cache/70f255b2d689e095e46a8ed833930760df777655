@@ -1,2 +1,3 @@
-// 1.20.1	2024-09-20T20:39:56.694311	Tags for minecraft:painting_variant mod id easel_does_it
+// 1.20.1	2024-09-22T04:31:58.962359	Tags for minecraft:painting_variant mod id easel_does_it
+a5e8fec1d8aab4cd9b6e5686435f4ad62a0e2ff9 data/easel_does_it/tags/painting_variant/should_drop_itself.json
 8e9fbca82de459d59016fb067f2252e837e95db8 data/minecraft/tags/painting_variant/placeable.json

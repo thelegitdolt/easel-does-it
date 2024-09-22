@@ -37,7 +37,7 @@ public class EaselModEvents {
 
 
 
-            trades.get(2).add(new ItemSellingTrade(
+            trades.get(2).add(new ItemBuyingTrade(
                     Items.ITEM_FRAME, UniformInt.of(1, 1), UniformInt.of(1, 1), 12,
                     10, 0.01f)
             );
@@ -75,7 +75,7 @@ public class EaselModEvents {
             trades.get(3).add(new RandomItemsSellingTrade(
                     UniformInt.of(1, 1),
                     ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_glazed_terracotta")),
-                    UniformInt.of(3, 3), 12, 10, 0.01f
+                    UniformInt.of(2, 2), 12, 10, 0.01f
             ));
 
 
