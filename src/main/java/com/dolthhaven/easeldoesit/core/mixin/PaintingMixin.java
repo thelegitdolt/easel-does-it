@@ -1,8 +1,6 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
-import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
 import net.minecraft.core.Holder;
@@ -33,8 +31,7 @@ public abstract class PaintingMixin extends HangingEntity {
     private void EaselDoesIt$PaintingsDropTheirOwnVariants(Entity p_31925_, CallbackInfo ci) {
         IDataManager iDataManager = (IDataManager) this;
 
-        if (!this.getVariant().is(EaselModTags.Paintings.ALWAYS_DROP_ITSELF) &&
-            !iDataManager.getValue(EaselModTrackedData.PAINTING_SHOULD_DROP_SELF)) {
+        if (!iDataManager.getValue(EaselModTrackedData.PAINTING_SHOULD_DROP_SELF)) {
             return;
         }
 

@@ -1,19 +1,90 @@
 {
-  "variants": {
-    "facing=east": {
-      "model": "easel_does_it:block/easel",
-      "y": 90
+  "multipart": [
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "painting": "false"
+      }
     },
-    "facing=north": {
-      "model": "easel_does_it:block/easel"
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel_painting",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "painting": "true"
+      }
     },
-    "facing=south": {
-      "model": "easel_does_it:block/easel",
-      "y": 180
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "painting": "false"
+      }
     },
-    "facing=west": {
-      "model": "easel_does_it:block/easel",
-      "y": 270
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel_painting",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "painting": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "painting": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel_painting",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "painting": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "painting": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "easel_does_it:block/easel_painting",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "painting": "true"
+      }
     }
-  }
+  ]
 }

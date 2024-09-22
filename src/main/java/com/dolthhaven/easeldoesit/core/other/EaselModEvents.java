@@ -67,7 +67,7 @@ public class EaselModEvents {
             if (ModList.get().isLoaded(EaselModConstants.FARMERS_DELIGHT)) {
                 trades.get(2).add(new ItemBuyingTrade(
                         EaselModConstants.CANVAS,
-                        UniformInt.of(9, 11),
+                        UniformInt.of(6, 8),
                         ONE, 16, 10, 0.01f));
             }
 
@@ -90,10 +90,10 @@ public class EaselModEvents {
 
 
 
-            trades.get(4).add(new RandomItemsSellingTrade(
-                    ONE,
-                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_glazed_terracotta")),
-                    UniformInt.of(2, 2), 12, 10, 0.01f
+            trades.get(4).add(new ItemBuyingTrade(
+                    Items.CHARCOAL,
+                    UniformInt.of(12, 14),
+                    ONE, 12, 10, 0.01f
             ));
             trades.get(4).add(new ItemBuyingTrade(
                     Items.PAINTING,

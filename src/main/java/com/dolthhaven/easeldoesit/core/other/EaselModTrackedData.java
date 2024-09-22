@@ -4,6 +4,8 @@ import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.teamabnormals.blueprint.common.world.storage.tracking.DataProcessors;
 import com.teamabnormals.blueprint.common.world.storage.tracking.TrackedData;
 import com.teamabnormals.blueprint.common.world.storage.tracking.TrackedDataManager;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class EaselModTrackedData {
     // of the 16 bits of a short:
@@ -18,7 +20,8 @@ public class EaselModTrackedData {
         TrackedDataManager.INSTANCE.registerData(EaselDoesIt.rl("painting_should_drop_self"), PAINTING_SHOULD_DROP_SELF);
     }
 
-    public static int[] decodePainting(short painting) {
+    @Contract(value = "_ -> new", pure = true)
+    public static int @NotNull [] decodePainting(short painting) {
         return new int[]{
                 (((painting & 0xC000) >>> 14) + 1) * 16,
                 (((painting & 0x3000) >>> 12) + 1) * 16,

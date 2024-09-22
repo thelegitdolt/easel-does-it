@@ -1,6 +1,5 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
@@ -8,7 +7,6 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -345,7 +343,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void savePainting(@NotNull Player player) {
-        if (!isValidDimension() || !isValidPaintingIndex(getPaintingIndex())) return;
+        if (!isValidDimension()) return;
 
         IDataManager manager = (IDataManager) player;
         short paintingIndex = EaselModTrackedData.encodePainting(new int[]{

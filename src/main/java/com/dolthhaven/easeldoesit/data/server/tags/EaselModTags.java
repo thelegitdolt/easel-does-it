@@ -17,10 +17,5 @@ public class EaselModTags {
     }
 
     public static class Paintings {
-        public static final TagKey<PaintingVariant> ALWAYS_DROP_ITSELF = paintingTag("always_drop_self");
-
-        private static TagKey<PaintingVariant> paintingTag(String name) {
-            return TagKey.create(Registries.PAINTING_VARIANT, EaselDoesIt.rl(name));
-        }
     }
 }
