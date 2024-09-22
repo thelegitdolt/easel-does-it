@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.dolthhaven.easeldoesit.core.registry.EaselModConstants.AMBER_DYE;
+import static com.dolthhaven.easeldoesit.core.other.EaselModConstants.*;
 import static net.minecraft.world.item.Items.*;
 
 public class EaselModItemTags extends ItemTagsProvider {

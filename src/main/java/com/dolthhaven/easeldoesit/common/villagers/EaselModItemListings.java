@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.common.villagers;
 
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +33,10 @@ public class EaselModItemListings {
             this.maxUses = maxUses;
             this.villagerXp = villagerXp;
             this.priceMultiplier = priceMultiplier;
+        }
+
+        public ItemBuyingTrade(ResourceLocation itemRl, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
+            this(ForgeRegistries.ITEMS.getValue(itemRl), costCount, emeraldCount, maxUses, villagerXp, priceMultiplier);
         }
 
         @Nullable
@@ -88,7 +94,7 @@ public class EaselModItemListings {
         }
 
         public RandomItemsBuyingTrade(List<Item> allowedItems, UniformInt costCount, UniformInt emeraldCount) {
-            this(allowedItems, costCount, emeraldCount, 16, 3, 0.05F);
+            this(allowedItems, costCount, emeraldCount, 16, 2, 0.05F);
         }
 
         @Nullable
@@ -119,7 +125,7 @@ public class EaselModItemListings {
         }
 
         public RandomItemsSellingTrade(List<Item> allowedItems, UniformInt costCount, UniformInt emeraldCount) {
-            this(emeraldCount, allowedItems, costCount, 16, 3, 0.05F);
+            this(emeraldCount, allowedItems, costCount, 16, 2, 0.05F);
         }
 
         @Nullable
@@ -150,6 +156,23 @@ public class EaselModItemListings {
             ItemStack emeraldStack = new ItemStack(Items.EMERALD, emeraldCost.sample(p_219694_));
 
             return new MerchantOffer(emeraldStack, paintingStack, maxUses, 25, 0.01F);
+        }
+    }
+
+
+    public static class EitherOrTrade implements VillagerTrades.ItemListing {
+        private final VillagerTrades.ItemListing tradeOne;
+        private final VillagerTrades.ItemListing tradeTwo;
+
+        public EitherOrTrade(VillagerTrades.ItemListing tradeOne, VillagerTrades.ItemListing tradeTwo) {
+            this.tradeOne = tradeOne;
+            this.tradeTwo = tradeTwo;
+        }
+
+        @Nullable
+        @Override
+        public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
+            return random.nextBoolean() ? tradeOne.getOffer(entity, random) : tradeTwo.getOffer(entity, random);
         }
     }
 }
