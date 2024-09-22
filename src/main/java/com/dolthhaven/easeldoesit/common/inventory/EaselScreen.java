@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
@@ -151,6 +152,12 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
+        EaselDoesIt.log(mouseX + ", " + mouseY + ", " + speed);
+        return super.mouseScrolled(mouseX, mouseY, speed);
+    }
+
+    @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
 
@@ -250,18 +257,14 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     private void setMenuPaintingWidth(int newWidth) {
-        this.menu.dimensionChangedPre();
         this.menu.setPaintingWidth(newWidth);
-        this.menu.dimensionChangedPost();
 
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingWidthPacket((byte) newWidth));
         updatePickers(this.menu.getPaintingIndex());
     }
 
     private void setMenuPaintingHeight(int newHeight) {
-        this.menu.dimensionChangedPre();
         this.menu.setPaintingHeight(newHeight);
-        this.menu.dimensionChangedPost();
 
         EaselModPacketListener.sendToServer(new C2SSetEaselPaintingHeightPacket((byte) newHeight));
         updatePickers(this.menu.getPaintingIndex());

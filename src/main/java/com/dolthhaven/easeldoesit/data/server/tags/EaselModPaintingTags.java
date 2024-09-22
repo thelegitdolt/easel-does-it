@@ -24,6 +24,6 @@ public class EaselModPaintingTags extends PaintingVariantTagsProvider {
                 PORTAL.getKey(), LAYERS.getKey(), HOLE.getKey(),
                 VINTAGE.getKey(), MONOCHROME.getKey()
         );
-        this.tag(EaselModTags.Paintings.SHOULD_DROP_ITSELF).add(CULTURE.getKey());
+        this.tag(EaselModTags.Paintings.ALWAYS_DROP_ITSELF).add(CULTURE.getKey());
     }
 }

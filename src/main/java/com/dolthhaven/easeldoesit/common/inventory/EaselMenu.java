@@ -1,10 +1,13 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -103,12 +106,20 @@ public class EaselMenu extends AbstractContainerMenu {
             savedIndexInEachDimension[i] = (data);
         }
 
-
-        // menu defaults to 0 when first opened
-        setPaintingWidth(0);
-        setPaintingHeight(0);
-
-        setPaintingIndex(0);
+        // uhhh tracked data???
+        // Set easel initial conditions
+        short savedPaintingData = ((IDataManager) (inv.player)).getValue(EaselModTrackedData.PLAYER_CURRENT_PAINTING_INDEX);
+        if (savedPaintingData == 0) {
+            setPaintingWidth(0);
+            setPaintingHeight(0);
+            setPaintingIndex(0);
+        }
+        else {
+            int[] dataInfo = EaselModTrackedData.decodePainting(savedPaintingData);
+            setPaintingWidth(dataInfo[0]);
+            setPaintingHeight(dataInfo[1]);
+            setPaintingIndex(dataInfo[2]);
+        }
     }
 
     @Override
@@ -205,11 +216,15 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public void setPaintingHeight(int newHeight) {
+        this.dimensionChangedPre();
         this.paintingHeight.set(newHeight);
+        this.dimensionChangedPost();
     }
 
     public void setPaintingWidth(int newWidth) {
+        this.dimensionChangedPre();
         this.paintingWidth.set(newWidth);
+        this.dimensionChangedPost();
     }
 
     public int getPossiblePaintingsSize() {
@@ -301,7 +316,7 @@ public class EaselMenu extends AbstractContainerMenu {
         return stillValid(this.access, player, EaselModBlocks.EASEL.get());
     }
 
-    public void     registerUpdateListener(Runnable listener) {
+    public void registerUpdateListener(Runnable listener) {
         this.slotUpdateListener = listener;
     }
 
@@ -325,6 +340,20 @@ public class EaselMenu extends AbstractContainerMenu {
         this.access.execute((p_40313_, p_40314_) -> {
             this.clearContainer(player, this.inputContainer);
         });
+
+        savePainting(player);
+    }
+
+    private void savePainting(@NotNull Player player) {
+        if (!isValidDimension() || !isValidPaintingIndex(getPaintingIndex())) return;
+
+        IDataManager manager = (IDataManager) player;
+        short paintingIndex = EaselModTrackedData.encodePainting(new int[]{
+                this.getPaintingWidth() / 16 - 1,
+                this.getPaintingHeight() / 16 - 1,
+                this.getPaintingIndex()});
+
+        manager.setValue(EaselModTrackedData.PLAYER_CURRENT_PAINTING_INDEX, paintingIndex);
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

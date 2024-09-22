@@ -5,6 +5,7 @@
   "minVersion": "0.8",
   "refmap": "easel_does_it.refmap.json",
   "mixins": [
+    "HangingEntityItemMixin",
     "PaintingMixin"
   ],
   "client": [

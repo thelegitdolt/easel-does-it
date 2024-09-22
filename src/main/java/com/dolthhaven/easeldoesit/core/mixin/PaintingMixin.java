@@ -1,7 +1,10 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -28,11 +31,15 @@ public abstract class PaintingMixin extends HangingEntity {
             at = @At(value = "INVOKE", shift = At.Shift.BEFORE,
                     target = "Lnet/minecraft/world/entity/decoration/Painting;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private void EaselDoesIt$PaintingsDropTheirOwnVariants(Entity p_31925_, CallbackInfo ci) {
-        if (this.getVariant().is(EaselModTags.Paintings.SHOULD_DROP_ITSELF)) {
-            ItemStack paintingStack = PaintingUtil.getStackFromPainting(this.getVariant().get());
-            this.spawnAtLocation(paintingStack);
-            ci.cancel();
+        IDataManager iDataManager = (IDataManager) this;
+
+        if (!this.getVariant().is(EaselModTags.Paintings.ALWAYS_DROP_ITSELF) &&
+            !iDataManager.getValue(EaselModTrackedData.PAINTING_SHOULD_DROP_SELF)) {
+            return;
         }
 
+        ItemStack paintingStack = PaintingUtil.getStackFromPainting(this.getVariant().get());
+        this.spawnAtLocation(paintingStack);
+        ci.cancel();
     }
 }

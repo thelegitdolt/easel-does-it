@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.core;
 
 import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
+import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
@@ -61,6 +62,8 @@ public class EaselDoesIt
         EaselModPaintings.PAINTING_VARIANTS.register(bus);
         EaselModVillagers.POI_TYPES.register(bus);
         EaselModVillagers.VILLAGER_PROFESSIONS.register(bus);
+
+        EaselModTrackedData.registerTrackedData();
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
 //        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
