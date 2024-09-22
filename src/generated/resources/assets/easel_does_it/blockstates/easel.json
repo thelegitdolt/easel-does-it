@@ -2,8 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "easel_does_it:block/easel",
-        "uvlock": true
+        "model": "easel_does_it:block/easel"
       },
       "when": {
         "facing": "north",
@@ -23,7 +22,6 @@
     {
       "apply": {
         "model": "easel_does_it:block/easel",
-        "uvlock": true,
         "y": 90
       },
       "when": {
@@ -45,7 +43,6 @@
     {
       "apply": {
         "model": "easel_does_it:block/easel",
-        "uvlock": true,
         "y": 180
       },
       "when": {
@@ -67,7 +64,6 @@
     {
       "apply": {
         "model": "easel_does_it:block/easel",
-        "uvlock": true,
         "y": 270
       },
       "when": {

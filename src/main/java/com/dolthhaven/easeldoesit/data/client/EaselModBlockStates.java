@@ -42,7 +42,7 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
 
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             int rotation = (int) (direction.toYRot() + 180.0F) % 360;
-            builder.part().modelFile(model).rotationY(rotation).uvLock(true).addModel()
+            builder.part().modelFile(model).rotationY(rotation).addModel()
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, false);
 
             builder.part().modelFile(paintingModel).rotationY(rotation).uvLock(true).addModel()

@@ -144,13 +144,11 @@ public class EaselBlock extends BaseEntityBlock {
         level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(entity, state));
     }
 
-    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState prevState, boolean p_54535_) {
-        super.onRemove(state, level, pos, prevState, p_54535_);
-        if (!state.is(prevState.getBlock())) {
-            if (state.getValue(HAS_PAINTING)) {
-                this.popPainting(state, level, pos);
-            }
-        }
+    @Override
+    public void playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+        super.playerWillDestroy(level, pos, state, player);
+        if (!level.isClientSide && !player.isCreative())
+            popPainting(state, level, pos);
     }
 
     private void popPainting(BlockState state, Level level, BlockPos pos) {
