@@ -153,7 +153,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
-        EaselDoesIt.log(mouseX + ", " + mouseY + ", " + speed);
         return super.mouseScrolled(mouseX, mouseY, speed);
     }
 
