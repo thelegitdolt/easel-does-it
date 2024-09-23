@@ -177,7 +177,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         renderPaintingGrid(graphics);
         renderPainting(graphics);
         renderPageManager(graphics);
+    }
 
+    private void renderDebugString(GuiGraphics graphics) {
         graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
     }
 
