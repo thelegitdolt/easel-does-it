@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,13 +30,17 @@ public class EaselModEvents {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
 
+            List<Item> dyes = ModUtil.getAllDyedItems(str -> new ResourceLocation(str + "_dye"));
+            List<Item> rare_dyes = ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES);
+
+
             trades.get(1).add(new RandomItemsSellingTrade(
-                    ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES),
+                    rare_dyes,
                     UniformInt.of(3, 3),
                     ONE));
 
             trades.get(1).add(new RandomItemsBuyingTrade(
-                    ModUtil.getAllDyedItems(str -> new ResourceLocation(str + "_dye")),
+                    dyes,
                     UniformInt.of(14, 19),
                     ONE));
 
@@ -48,13 +53,13 @@ public class EaselModEvents {
 
             // villager buy dye
             trades.get(2).add(new RandomItemsBuyingTrade(
-                    ModUtil.getAllDyedItems(str -> new ResourceLocation(str + "_dye")),
+                    dyes,
                     ONE,
                     UniformInt.of(3, 3), 16, 10, 0.01f));
             // villager sell dye
             trades.get(2).add(new RandomItemsSellingTrade(
                     ONE,
-                    ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES),
+                    rare_dyes,
                     UniformInt.of(3, 3), 16, 10, 0.01f));
             trades.get(2).add(new RandomItemsSellingTrade(
                     UniformInt.of(1, 1),
@@ -74,25 +79,25 @@ public class EaselModEvents {
 
 
             trades.get(3).add(new RandomItemsBuyingTrade(
-                    ModUtil.getAllDyedItems(str -> new ResourceLocation(str + "_dye")),
+                    dyes,
                     UniformInt.of(14, 19),
                     ONE, 16, 10, 0.01f));
             trades.get(3).add(new RandomItemsSellingTrade(
-                    ONE,
+                    UniformInt.of(2, 2),
                     ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_terracotta")),
-                    UniformInt.of(2, 2), 12, 10, 0.01f
+                    UniformInt.of(4, 4), 12, 10, 0.01f
             ));
             trades.get(3).add(new RandomItemsSellingTrade(
-                    ONE,
+                    UniformInt.of(2, 2),
                     ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_glazed_terracotta")),
-                    UniformInt.of(2, 2), 12, 10, 0.01f
+                    UniformInt.of(4, 4), 12, 10, 0.01f
             ));
 
 
 
             trades.get(4).add(new ItemBuyingTrade(
                     Items.CHARCOAL,
-                    UniformInt.of(12, 14),
+                    UniformInt.of(6, 9),
                     ONE, 12, 10, 0.01f
             ));
             trades.get(4).add(new ItemBuyingTrade(

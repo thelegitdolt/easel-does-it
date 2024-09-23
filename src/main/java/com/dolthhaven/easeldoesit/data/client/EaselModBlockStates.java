@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -39,13 +40,21 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
         ModelFile paintingModel = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(easel) + "_painting"), this.models().existingFileHelper);
 
         MultiPartBlockStateBuilder builder = this.getMultipartBuilder(easel.get());
+//
+//        VariantBlockStateBuilder builder = this.getVariantBuilder(easel.get());
+//
+//        for (Direction direction : Direction.Plane.HORIZONTAL) {
+//            int rotation = (int) (direction.toYRot() + 180.0F) % 360;
+//            builder.partialState().with(EaselBlock.FACING, direction).with(EaselBlock.HAS_PAINTING, true)
+//                    .setModels(new ConfiguredModel(paintingModel)).
+//        }
 
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             int rotation = (int) (direction.toYRot() + 180.0F) % 360;
             builder.part().modelFile(model).rotationY(rotation).addModel()
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, false);
 
-            builder.part().modelFile(paintingModel).rotationY(rotation).uvLock(true).addModel()
+            builder.part().modelFile(paintingModel).rotationY(rotation).addModel()
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, true);
 
         }

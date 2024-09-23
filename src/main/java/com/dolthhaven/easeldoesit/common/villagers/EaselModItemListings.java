@@ -101,6 +101,7 @@ public class EaselModItemListings {
         @Override
         public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource source) {
             Item item = allowedItems.get(source.nextInt(allowedItems.size()));
+
             int cost = costCount.sample(source);
             int emerald = emeraldCount.sample(source);
             return new MerchantOffer(new ItemStack(item, cost), new ItemStack(Items.EMERALD, emerald), this.maxUses, this.villagerXp, this.priceMultiplier);
@@ -132,6 +133,7 @@ public class EaselModItemListings {
         @Override
         public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource source) {
             Item item = allowedItems.get(source.nextInt(allowedItems.size()));
+
             int cost = costCount.sample(source);
             int emerald = emeraldCount.sample(source);
             return new MerchantOffer(new ItemStack(Items.EMERALD, emerald), new ItemStack(item, cost), this.maxUses, this.villagerXp, this.priceMultiplier);
