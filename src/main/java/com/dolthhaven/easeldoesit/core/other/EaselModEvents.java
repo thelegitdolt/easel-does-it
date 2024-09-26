@@ -45,7 +45,7 @@ public class EaselModEvents {
                     ONE));
 
 
-            trades.get(2).add(new ItemBuyingTrade(
+            trades.get(2).add(new ItemSellingTrade(
                     Items.ITEM_FRAME, UniformInt.of(1, 1), UniformInt.of(1, 1), 12,
                     10, 0.01f)
             );

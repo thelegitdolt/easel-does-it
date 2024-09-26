@@ -57,8 +57,8 @@ public class EaselModItemListings {
         private final int villagerXp;
         private final float priceMultiplier;
 
-        public ItemSellingTrade(Item boughtItem, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
-            this.boughtItem = boughtItem;
+        public ItemSellingTrade(Item soldItem, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
+            this.boughtItem = soldItem;
             this.costCount = costCount;
             this.emeraldCount = emeraldCount;
             this.maxUses = maxUses;

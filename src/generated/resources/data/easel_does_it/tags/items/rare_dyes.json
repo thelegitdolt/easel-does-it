@@ -7,6 +7,10 @@
     {
       "id": "dye_depot:amber_dye",
       "required": false
+    },
+    {
+      "id": "dye_depot:coral_dye",
+      "required": false
     }
   ]
 }

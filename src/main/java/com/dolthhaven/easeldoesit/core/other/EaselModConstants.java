@@ -9,6 +9,7 @@ public class EaselModConstants {
     public static final String FARMERS_DELIGHT = "farmersdelight";
 
     public static ResourceLocation AMBER_DYE = dyeDepot("amber_dye");
+    public static ResourceLocation CORAL_DYE = dyeDepot("coral_dye");
     public static ResourceLocation CANVAS = farmersDelight("canvas");
 
 

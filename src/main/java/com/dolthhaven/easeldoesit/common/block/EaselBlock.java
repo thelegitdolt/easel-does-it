@@ -3,6 +3,8 @@ package com.dolthhaven.easeldoesit.common.block;
 import com.dolthhaven.easeldoesit.common.block.entity.EaselBlockEntity;
 import com.dolthhaven.easeldoesit.common.inventory.EaselMenu;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.other.util.MathUtil;
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -14,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -23,7 +26,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -39,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock {
@@ -100,13 +103,8 @@ public class EaselBlock extends BaseEntityBlock {
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
-        if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof EaselBlockEntity easel && !easel.isEmpty()) {
-                player.setItemInHand(hand, easel.clearContent());
-                level.playSound(null, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
-                return InteractionResult.SUCCESS;
-            }
+        if (tryTakePainting(player, hand, level, pos)) {
+           return InteractionResult.SUCCESS;
         }
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
@@ -116,6 +114,22 @@ public class EaselBlock extends BaseEntityBlock {
             player.awardStat(Stats.INTERACT_WITH_STONECUTTER);
             return InteractionResult.CONSUME;
         }
+    }
+
+    public static boolean tryTakePainting(Player player, InteractionHand hand, Level level, BlockPos pos) {
+        if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            if (entity instanceof EaselBlockEntity easel && !easel.isEmpty()) {
+                ItemStack paintingStack = easel.clearContent();
+
+                if (!player.getInventory().add(paintingStack))
+                    player.drop(paintingStack, false);
+
+                level.playSound(null, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean tryPlacePainting(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
@@ -162,6 +176,32 @@ public class EaselBlock extends BaseEntityBlock {
             itementity.setDefaultPickUpDelay();
             level.addFreshEntity(itementity);
             easelEntity.clearContent();
+        }
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof EaselBlockEntity easel) {
+            ItemStack stack = easel.getPainting();
+            if (stack.isEmpty()) return 0;
+            Optional<PaintingVariant> maybeVariant = PaintingUtil.getPaintingFromStack(stack);
+
+            if (maybeVariant.isEmpty()) return 15;
+            else {
+                PaintingVariant variant = maybeVariant.get();
+                return MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
+                    variant.getWidth() / 16,
+                    variant.getHeight() / 16
+                );
+            }
+        }
+        else {
+            return 0;
         }
     }
 

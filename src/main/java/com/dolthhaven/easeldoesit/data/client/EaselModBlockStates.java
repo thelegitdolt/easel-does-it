@@ -1,7 +1,9 @@
 package com.dolthhaven.easeldoesit.data.client;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
+import com.dolthhaven.easeldoesit.common.block.VillagerStatueBlock;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.core.registry.EaselModItems;
 import com.teamabnormals.blueprint.core.data.client.BlueprintBlockStateProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
@@ -9,6 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
@@ -21,6 +24,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.EASEL;
+import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.STATUE;
 
 @SuppressWarnings("unused")
 public class EaselModBlockStates extends BlueprintBlockStateProvider {
@@ -33,6 +37,19 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         this.easel(EASEL);
+        this.doubleBlock(STATUE);
+    }
+
+    private void doubleBlock(RegistryObject<? extends Block> doubleBlock) {
+        ModelFile topModel = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(doubleBlock) + "_top"), this.models().existingFileHelper);
+        ModelFile bottomModel = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(doubleBlock) + "_bottom"), this.models().existingFileHelper);
+
+        MultiPartBlockStateBuilder builder = this.getMultipartBuilder(doubleBlock.get());
+
+        builder.part().modelFile(topModel).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.UPPER);
+        builder.part().modelFile(bottomModel).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.LOWER);
+
+        this.itemModels().basicItem(EaselModItems.STATUE.get());
     }
 
     private void easel(RegistryObject<? extends Block> easel) {

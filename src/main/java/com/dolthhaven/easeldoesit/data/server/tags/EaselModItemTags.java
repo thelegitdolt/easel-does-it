@@ -23,8 +23,6 @@ public class EaselModItemTags extends ItemTagsProvider {
     protected void addTags(HolderLookup.@NotNull Provider p_256380_) {
         this.tag(EaselModTags.Items.RARE_DYES).add(
             GREEN_DYE, BLACK_DYE, BROWN_DYE, CYAN_DYE
-        ).addOptional(
-            AMBER_DYE
-        );
+        ).addOptional(AMBER_DYE).addOptional(CORAL_DYE);
     }
 }

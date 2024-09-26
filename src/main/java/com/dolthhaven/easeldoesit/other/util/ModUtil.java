@@ -1,13 +1,16 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+import com.dolthhaven.easeldoesit.core.other.EaselModConstants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ModUtil {
@@ -16,7 +19,19 @@ public class ModUtil {
     }
 
     public static List<Item> getAllDyedItems(Function<String, ResourceLocation> thing) {
-        return Arrays.stream(DyeColor.values()).map(DyeColor::getName)
-                .map(name -> ForgeRegistries.ITEMS.getValue(thing.apply(name))).toList();
+        if (!ModList.get().isLoaded(EaselModConstants.DYE_DEPOT)) {
+            return Arrays.stream(DyeColor.values())
+                    .map(dye -> ForgeRegistries.ITEMS.getValue(thing.apply(dye.getName()))).toList();
+        }
+        else {
+            return Arrays.stream(DyeColor.values()).map(dye -> thing.apply(dye.getName()))
+                    .map(amogus -> {
+                        if (ForgeRegistries.ITEMS.getValue(amogus) == null) {
+                            return EaselModConstants.dyeDepot(amogus.getPath());
+                        }
+                        else return amogus;
+                    })
+                    .map(ForgeRegistries.ITEMS::getValue).filter(Objects::nonNull).toList();
+        }
     }
 }

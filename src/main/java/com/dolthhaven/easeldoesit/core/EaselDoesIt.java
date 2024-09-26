@@ -2,10 +2,7 @@ package com.dolthhaven.easeldoesit.core;
 
 import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
-import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
-import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
-import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
-import com.dolthhaven.easeldoesit.core.registry.EaselModVillagers;
+import com.dolthhaven.easeldoesit.core.registry.*;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
 import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
@@ -82,6 +79,7 @@ public class EaselDoesIt
     private void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             EaselModBlocks.setUpTabEditors();
+            EaselModItems.setUpTabEditors();
             EaselModMenuTypes.registerScreens();
         });
     }

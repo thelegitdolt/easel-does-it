@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "easel_does_it:block/statue_top"
+      },
+      "when": {
+        "half": "upper"
+      }
+    },
+    {
+      "apply": {
+        "model": "easel_does_it:block/statue_bottom"
+      },
+      "when": {
+        "half": "lower"
+      }
+    }
+  ]
+}

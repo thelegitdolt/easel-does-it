@@ -1,3 +1,5 @@
-// 1.20.1	2024-09-22T21:45:25.477205	Block States: easel_does_it
+// 1.20.1	2024-09-25T15:47:48.659886	Block States: easel_does_it
 cc85a46fc411f5c01d8ccfce94ed982315eefd1e assets/easel_does_it/blockstates/easel.json
+abad5fdb3d0e59225c8e9e5a15d066acc511ce3b assets/easel_does_it/blockstates/statue.json
 995d69a118435e76b6011e879901a4c80abbcb87 assets/easel_does_it/models/item/easel.json
+80683dfee33c39e443d4bd0107170116ee4ca5cd assets/easel_does_it/models/item/statue.json
