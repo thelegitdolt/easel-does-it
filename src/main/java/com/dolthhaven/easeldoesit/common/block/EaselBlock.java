@@ -4,6 +4,7 @@ import com.dolthhaven.easeldoesit.common.block.entity.EaselBlockEntity;
 import com.dolthhaven.easeldoesit.common.inventory.EaselMenu;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
+import com.dolthhaven.easeldoesit.other.util.ModUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,6 +41,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -89,10 +91,11 @@ public class EaselBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
-        if (super.getStateForPlacement(context) == null)
+        BlockState superState = super.getStateForPlacement(context);
+        if (Objects.isNull(superState))
             return null;
 
-        return Objects.requireNonNull(super.getStateForPlacement(context)).setValue(HAS_PAINTING, false).setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return superState.setValue(HAS_PAINTING, false).setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -205,6 +208,17 @@ public class EaselBlock extends BaseEntityBlock {
         }
     }
 
+    @Override
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {
+        return RenderShape.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new EaselBlockEntity(pos, state);
+    }
+
     static {
         SHAPE_NORTH = Shapes.joinUnoptimized(
                 Block.box(0, 0, 0, 16, 2, 16),
@@ -226,16 +240,5 @@ public class EaselBlock extends BaseEntityBlock {
                 Block.box(2, 2, 1, 16, 15, 15),
                 BooleanOp.OR
         );
-    }
-
-    @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {
-        return RenderShape.MODEL;
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new EaselBlockEntity(pos, state);
     }
 }

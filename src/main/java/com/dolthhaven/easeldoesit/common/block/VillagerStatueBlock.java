@@ -11,26 +11,43 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class VillagerStatueBlock extends Block {
+import java.util.Objects;
+
+public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
     public static EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    public static DirectionProperty FACING = BlockStateProperties.FACING;
 
     public VillagerStatueBlock(Properties props) {
         super(props);
-        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER));
+        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(FACING, Direction.NORTH));
     }
 
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(HALF);
+    protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(HALF).add(FACING);
+    }
+
+    @Override
+    public @NotNull BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public @NotNull BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Nullable
@@ -42,7 +59,8 @@ public class VillagerStatueBlock extends Block {
         DoubleBlockHalf doubleblockhalf = state.getValue(HALF);
         if (direction.getAxis() != Direction.Axis.Y || doubleblockhalf == DoubleBlockHalf.LOWER != (direction == Direction.UP) || changedState.is(this) && changedState.getValue(HALF) != doubleblockhalf) {
             return doubleblockhalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canSurvive(level, changedPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, changedState, level, changedPos, p_52899_);
-        } else {
+        }
+        else {
             return Blocks.AIR.defaultBlockState();
         }
     }
@@ -51,7 +69,8 @@ public class VillagerStatueBlock extends Block {
     public boolean canSurvive(BlockState state, @NotNull LevelReader level, @NotNull BlockPos pos) {
         if (state.getValue(HALF) != DoubleBlockHalf.UPPER) {
             return super.canSurvive(state, level, pos);
-        } else {
+        }
+        else {
             BlockState blockstate = level.getBlockState(pos.below());
             if (state.getBlock() != this) return super.canSurvive(state, level, pos);  //Forge: This function is called during world gen and placement, before this block is set, so if we are not 'here' then assume it's the pre-check.
             return blockstate.is(this) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER;
@@ -62,12 +81,22 @@ public class VillagerStatueBlock extends Block {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
         Level level = context.getLevel();
-        return blockpos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(blockpos.above()).canBeReplaced(context) ? super.getStateForPlacement(context) : null;
+        BlockState aboveState = level.getBlockState(blockpos.above());
+
+        if (!level.isOutsideBuildHeight(blockpos) && aboveState.canBeReplaced(context)) {
+            BlockState placeState = super.getStateForPlacement(context);
+            if (Objects.nonNull(placeState)) {
+                return placeState.setValue(FACING, context.getHorizontalDirection().getOpposite());
+            }
+        }
+        return null;
     }
 
-    public void setPlacedBy(Level level, BlockPos p_52873_, @NotNull BlockState p_52874_, LivingEntity p_52875_, @NotNull ItemStack p_52876_) {
-        BlockPos blockpos = p_52873_.above();
-        level.setBlock(blockpos, this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER), 3);
+    @Override
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity entity, @NotNull ItemStack stack) {
+        BlockPos blockpos = pos.above();
+        Direction facing = state.getValue(FACING);
+        level.setBlock(blockpos, this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER).setValue(FACING, facing), 3);
     }
 
     @Override
@@ -98,6 +127,5 @@ public class VillagerStatueBlock extends Block {
                 level.levelEvent(player, 2001, blockpos, Block.getId(blockstate));
             }
         }
-
     }
 }

@@ -7,6 +7,7 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModItems;
 import com.teamabnormals.blueprint.core.data.client.BlueprintBlockStateProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -46,9 +47,14 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
 
         MultiPartBlockStateBuilder builder = this.getMultipartBuilder(doubleBlock.get());
 
-        builder.part().modelFile(topModel).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.UPPER);
-        builder.part().modelFile(bottomModel).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.LOWER);
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            int rotation = (int) (direction.toYRot() + 180) % 360;
 
+            builder.part().modelFile(topModel).rotationY(rotation).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.UPPER)
+                    .condition(VillagerStatueBlock.FACING, direction);
+            builder.part().modelFile(bottomModel).rotationY(rotation).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.LOWER)
+                    .condition(VillagerStatueBlock.FACING, direction);
+        }
         this.itemModels().basicItem(EaselModItems.STATUE.get());
     }
 
@@ -57,23 +63,14 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
         ModelFile paintingModel = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(easel) + "_painting"), this.models().existingFileHelper);
 
         MultiPartBlockStateBuilder builder = this.getMultipartBuilder(easel.get());
-//
-//        VariantBlockStateBuilder builder = this.getVariantBuilder(easel.get());
-//
-//        for (Direction direction : Direction.Plane.HORIZONTAL) {
-//            int rotation = (int) (direction.toYRot() + 180.0F) % 360;
-//            builder.partialState().with(EaselBlock.FACING, direction).with(EaselBlock.HAS_PAINTING, true)
-//                    .setModels(new ConfiguredModel(paintingModel)).
-//        }
 
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            int rotation = (int) (direction.toYRot() + 180.0F) % 360;
+            int rotation = (int) (direction.toYRot() + 180) % 360;
             builder.part().modelFile(model).rotationY(rotation).addModel()
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, false);
 
             builder.part().modelFile(paintingModel).rotationY(rotation).addModel()
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, true);
-
         }
 
         this.blockItem(easel.get());
