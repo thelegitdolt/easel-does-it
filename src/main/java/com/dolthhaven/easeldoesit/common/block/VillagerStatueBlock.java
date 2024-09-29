@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -21,6 +22,10 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +34,11 @@ import java.util.Objects;
 public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
     public static EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static DirectionProperty FACING = BlockStateProperties.FACING;
+
+    private static final VoxelShape TOP_SHAPE_NS;
+    private static final VoxelShape TOP_SHAPE_WE;
+    private static final VoxelShape BOTTOM_SHAPE_NS;
+    private static final VoxelShape BOTTOM_SHAPE_WE;
 
     public VillagerStatueBlock(Properties props) {
         super(props);
@@ -49,6 +59,25 @@ public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
     public @NotNull BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
+
+    @Override
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter p_60556_, @NotNull BlockPos p_60557_, @NotNull CollisionContext p_60558_) {
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
+            return switch (state.getValue(FACING)) {
+                case NORTH -> BOTTOM_SHAPE_NS;
+                case SOUTH -> BOTTOM_SHAPE_NS;
+                default -> BOTTOM_SHAPE_WE;
+            };
+        }
+        else {
+            return switch (state.getValue(FACING)) {
+                case NORTH -> TOP_SHAPE_NS;
+                case SOUTH -> TOP_SHAPE_NS;
+                default -> TOP_SHAPE_WE;
+            };
+        }
+    }
+
 
     @Nullable
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
@@ -127,5 +156,29 @@ public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
                 level.levelEvent(player, 2001, blockpos, Block.getId(blockstate));
             }
         }
+    }
+
+    static {
+        BOTTOM_SHAPE_NS = Shapes.join(
+                Block.box(1, 0, 1, 15, 1, 15),
+                Block.box(4, 1, 6, 12, 16, 10),
+                BooleanOp.OR
+        );
+        BOTTOM_SHAPE_WE = Shapes.join(
+                Block.box(1, 0, 1, 15, 1, 15),
+                Block.box(6, 1, 4, 10, 16, 12),
+                BooleanOp.OR
+        );
+
+        TOP_SHAPE_NS = Shapes.join(
+                Block.box(4, 10, 4, 12, 20, 12),
+                Block.box(4, 0, 5, 12, 10, 11),
+                BooleanOp.OR
+        );
+        TOP_SHAPE_WE = Shapes.join(
+                Block.box(4, 10, 4, 12, 20, 12),
+                Block.box(5, 0, 4, 11, 10, 12),
+                BooleanOp.OR
+        );
     }
 }
