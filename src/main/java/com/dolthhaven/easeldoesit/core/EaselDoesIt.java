@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.core;
 
 import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
+import com.dolthhaven.easeldoesit.core.other.EaselModCompat;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.*;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
@@ -72,6 +73,7 @@ public class EaselDoesIt
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            EaselModCompat.doCompat();
             EaselModPacketListener.register();
         });
     }

@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.EASEL;
-import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.STATUE;
 
 @SuppressWarnings("unused")
 public class EaselModBlockStates extends BlueprintBlockStateProvider {
@@ -38,7 +37,7 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         this.easel(EASEL);
-        this.doubleBlock(STATUE);
+//        this.doubleBlock(STATUE);
     }
 
     private void doubleBlock(RegistryObject<? extends Block> doubleBlock) {
@@ -55,7 +54,6 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
             builder.part().modelFile(bottomModel).rotationY(rotation).addModel().condition(VillagerStatueBlock.HALF, DoubleBlockHalf.LOWER)
                     .condition(VillagerStatueBlock.FACING, direction);
         }
-        this.itemModels().basicItem(EaselModItems.STATUE.get());
     }
 
     private void easel(RegistryObject<? extends Block> easel) {

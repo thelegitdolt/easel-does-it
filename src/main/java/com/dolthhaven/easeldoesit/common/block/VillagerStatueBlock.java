@@ -64,15 +64,13 @@ public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
     public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter p_60556_, @NotNull BlockPos p_60557_, @NotNull CollisionContext p_60558_) {
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             return switch (state.getValue(FACING)) {
-                case NORTH -> BOTTOM_SHAPE_NS;
-                case SOUTH -> BOTTOM_SHAPE_NS;
+                case NORTH, SOUTH -> BOTTOM_SHAPE_NS;
                 default -> BOTTOM_SHAPE_WE;
             };
         }
         else {
             return switch (state.getValue(FACING)) {
-                case NORTH -> TOP_SHAPE_NS;
-                case SOUTH -> TOP_SHAPE_NS;
+                case NORTH, SOUTH -> TOP_SHAPE_NS;
                 default -> TOP_SHAPE_WE;
             };
         }

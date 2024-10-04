@@ -21,6 +21,6 @@ public class EaselModBlockTags extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         this.tag(BlockTags.MINEABLE_WITH_AXE).add(EaselModBlocks.EASEL.get());
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(EaselModBlocks.STATUE.get());
+//        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(EaselModBlocks.STATUE.get());
     }
 }

@@ -26,8 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.EASEL;
-import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.STATUE;
+import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.*;
 
 public class EaselModLootTables extends LootTableProvider {
     public EaselModLootTables(PackOutput packOutput) {
@@ -50,7 +49,17 @@ public class EaselModLootTables extends LootTableProvider {
         @Override
         protected void generate() {
             this.dropSelf(EASEL.get());
-            this.doubleBlock(STATUE);
+
+
+//            this.doubleBlock(STATUE);
+//            this.doubleBlock(EXPOSED_STATUE);
+//            this.doubleBlock(WEATHERED_STATUE);
+//            this.doubleBlock(OXIDIZED_STATUE);
+//
+//            this.doubleBlock(WAXED_STATUE);
+//            this.doubleBlock(EXPOSED_WAXED_STATUE);
+//            this.doubleBlock(WEATHERED_WAXED_STATUE);
+//            this.doubleBlock(OXIDIZED_WAXED_STATUE);
         }
 
         @Override

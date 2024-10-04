@@ -2,6 +2,7 @@ package com.dolthhaven.easeldoesit.core.registry;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
 import com.dolthhaven.easeldoesit.common.block.VillagerStatueBlock;
+import com.dolthhaven.easeldoesit.common.block.WeatheringVillagerStatueBlock;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.teamabnormals.blueprint.core.util.item.CreativeModeTabContentsPopulator;
 import com.teamabnormals.blueprint.core.util.registry.BlockSubRegistryHelper;
@@ -20,7 +21,19 @@ public class EaselModBlocks {
     public static final BlockSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getBlockSubHelper();
 
     public static final RegistryObject<Block> EASEL = HELPER.createFuelBlock("easel", () -> new EaselBlock(Properties.EASEL), 300);
-    public static final RegistryObject<Block> STATUE = HELPER.createBlockNoItem("statue", () -> new VillagerStatueBlock(Properties.STATUE));
+
+
+//    public static final RegistryObject<Block> STATUE = HELPER.createBlockNoItem("statue", () -> new WeatheringVillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> EXPOSED_STATUE = HELPER.createBlockNoItem("exposed_statue", () -> new WeatheringVillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> WEATHERED_STATUE = HELPER.createBlockNoItem("weathered_statue", () -> new WeatheringVillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> OXIDIZED_STATUE = HELPER.createBlockNoItem("oxidized_statue", () -> new WeatheringVillagerStatueBlock(Properties.STATUE));
+//
+//
+//    public static final RegistryObject<Block> WAXED_STATUE = HELPER.createBlockNoItem("waxed_statue", () -> new VillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> EXPOSED_WAXED_STATUE = HELPER.createBlockNoItem("exposed_waxed_statue", () -> new VillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> WEATHERED_WAXED_STATUE = HELPER.createBlockNoItem("weathered_waxed_statue", () -> new VillagerStatueBlock(Properties.STATUE));
+//    public static final RegistryObject<Block> OXIDIZED_WAXED_STATUE = HELPER.createBlockNoItem("oxidized_waxed_statue", () -> new VillagerStatueBlock(Properties.STATUE));
+
 
     public static void setUpTabEditors() {
         CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
