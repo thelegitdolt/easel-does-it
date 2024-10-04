@@ -15,5 +15,5 @@
       "weight": 2
     }
   },
-  "selector": "minecraft:worldgen/template_pool/village/snowy/housesworldgen/template_pool/village/snowy/houses"
+  "selector": "minecraft:worldgen/template_pool/village/snowy/houses"
 }

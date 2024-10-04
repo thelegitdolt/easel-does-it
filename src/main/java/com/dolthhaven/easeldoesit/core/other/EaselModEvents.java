@@ -8,10 +8,13 @@ import com.dolthhaven.easeldoesit.other.util.ModUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerDataHolder;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.event.village.WandererTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +27,7 @@ import static com.dolthhaven.easeldoesit.common.villagers.EaselModItemListings.*
 @Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID)
 public class EaselModEvents {
     private static final UniformInt ONE = UniformInt.of(1, 1);
-
+    
     @SubscribeEvent
     public static void addCustomTrades(VillagerTradesEvent event) {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {

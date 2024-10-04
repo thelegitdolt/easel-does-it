@@ -355,9 +355,9 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+        for (int invRow = 0; invRow < 3; ++invRow) {
+            for (int invCol = 0; invCol < 9; ++invCol) {
+                this.addSlot(new Slot(playerInventory, invCol + invRow * 9 + 9, 8 + invCol * 18, 84 + invRow * 18));
             }
         }
     }
