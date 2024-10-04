@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.redstone.Redstone;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -191,13 +192,14 @@ public class EaselBlock extends BaseEntityBlock {
     public int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof EaselBlockEntity easel) {
             ItemStack stack = easel.getPainting();
-            if (stack.isEmpty()) return 0;
+            if (stack.isEmpty()) return Redstone.SIGNAL_MIN;
             Optional<PaintingVariant> maybeVariant = PaintingUtil.getPaintingFromStack(stack);
 
-            if (maybeVariant.isEmpty()) return 15;
+            if (maybeVariant.isEmpty()) return Redstone.SIGNAL_MAX;
+
             else {
                 PaintingVariant variant = maybeVariant.get();
-                return Math.min(15, MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
+                return Math.min(Redstone.SIGNAL_MAX, MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
                     variant.getWidth() / 16,
                     variant.getHeight() / 16
                 ));
