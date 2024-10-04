@@ -59,6 +59,7 @@ public abstract class HangingEntityItemMixin {
         Player player = context.getPlayer();
         if (player == null) return;
         if (this.type != EntityType.PAINTING || !player.isShiftKeyDown()) return;
+
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);

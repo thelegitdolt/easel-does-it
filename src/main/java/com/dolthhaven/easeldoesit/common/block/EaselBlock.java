@@ -197,10 +197,10 @@ public class EaselBlock extends BaseEntityBlock {
             if (maybeVariant.isEmpty()) return 15;
             else {
                 PaintingVariant variant = maybeVariant.get();
-                return MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
+                return Math.min(15, MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
                     variant.getWidth() / 16,
                     variant.getHeight() / 16
-                );
+                ));
             }
         }
         else {
