@@ -1,17 +1,27 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HangingEntityItem;
 import net.minecraft.world.item.ItemStack;
@@ -26,9 +36,37 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import javax.swing.text.html.Option;
+import java.util.List;
+import java.util.Optional;
+
 @Mixin(HangingEntityItem.class)
 public abstract class HangingEntityItemMixin {
     @Shadow @Final private EntityType<? extends HangingEntity> type;
+
+    @WrapOperation(method = "lambda$appendHoverText$0(Ljava/util/List;Lnet/minecraft/resources/ResourceKey;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/MutableComponent;withStyle(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/MutableComponent;"))
+    private static MutableComponent EaselDoesIt$TreasurePaintingVariantsHaveBlueText(MutableComponent instance, ChatFormatting formatting, Operation<MutableComponent> original) {
+        if (instance.getContents() instanceof TranslatableContents contents) {
+            if (!contents.getKey().contains("title")) {
+                return original.call(instance, formatting);
+            }
+
+            Optional<Holder<PaintingVariant>> variantMaybe = PaintingUtil.fromLanguageKey(contents.getKey());
+            if (variantMaybe.isEmpty()) {
+                return original.call(instance, formatting);
+            }
+            else if (!variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
+                return original.call(instance, formatting);
+            }
+            else {
+                return instance.withStyle(ChatFormatting.AQUA);
+            }
+        }
+
+        return original.call(instance, formatting);
+    }
+
 
     @Inject(method = "useOn", locals = LocalCapture.CAPTURE_FAILSOFT,
             at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/world/entity/EntityType;updateCustomEntityTag(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/nbt/CompoundTag;)V"))
@@ -50,7 +88,7 @@ public abstract class HangingEntityItemMixin {
             return;
 
         if (level.isClientSide) {
-            ((Painting) hangingentity).setVariant(PaintingUtil.getHolder(PaintingUtil.getPaintingFromStack(hangingStack).orElseThrow()));
+            ((Painting) hangingentity).setVariant(PaintingUtil.getHolder(PaintingUtil.readPresetVariant(hangingStack).orElseThrow()));
         }
     }
 

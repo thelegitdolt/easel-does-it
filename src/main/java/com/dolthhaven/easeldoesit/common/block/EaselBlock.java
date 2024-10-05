@@ -4,7 +4,6 @@ import com.dolthhaven.easeldoesit.common.block.entity.EaselBlockEntity;
 import com.dolthhaven.easeldoesit.common.inventory.EaselMenu;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
-import com.dolthhaven.easeldoesit.other.util.ModUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +41,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -193,7 +191,7 @@ public class EaselBlock extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof EaselBlockEntity easel) {
             ItemStack stack = easel.getPainting();
             if (stack.isEmpty()) return Redstone.SIGNAL_MIN;
-            Optional<PaintingVariant> maybeVariant = PaintingUtil.getPaintingFromStack(stack);
+            Optional<PaintingVariant> maybeVariant = PaintingUtil.readPresetVariant(stack);
 
             if (maybeVariant.isEmpty()) return Redstone.SIGNAL_MAX;
 

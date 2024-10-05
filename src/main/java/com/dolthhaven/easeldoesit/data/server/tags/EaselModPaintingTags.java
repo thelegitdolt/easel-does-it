@@ -22,7 +22,11 @@ public class EaselModPaintingTags extends PaintingVariantTagsProvider {
     public void addTags(HolderLookup.@NotNull Provider provider) {
         this.tag(PaintingVariantTags.PLACEABLE).add(
                 PORTAL.getKey(), LAYERS.getKey(), HOLE.getKey(),
-                VINTAGE.getKey(), MONOCHROME.getKey()
+                VINTAGE.getKey(), MONOCHROME.getKey(), CULTURE.getKey()
+        );
+
+        this.tag(EaselModTags.Paintings.TREASURE).add(
+                CULTURE.getKey()
         );
     }
 }

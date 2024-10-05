@@ -1,18 +1,14 @@
 package com.dolthhaven.easeldoesit.core.registry;
 
-import com.dolthhaven.easeldoesit.common.block.VillagerStatueBlock;
-import com.dolthhaven.easeldoesit.common.block.WeatheringVillagerStatueBlock;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.core.util.item.CreativeModeTabContentsPopulator;
 import com.teamabnormals.blueprint.core.util.registry.ItemSubRegistryHelper;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EaselModItems {
@@ -33,7 +29,8 @@ public class EaselModItems {
 
     public static void setUpTabEditors() {
         CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
-                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS);
+                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makePresetVariantPaintingStack(EaselModPaintings.CULTURE.get()));
     }
 
     public static class Properties {

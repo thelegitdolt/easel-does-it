@@ -17,5 +17,10 @@ public class EaselModTags {
     }
 
     public static class Paintings {
+        public static final TagKey<PaintingVariant> TREASURE = tag("treasure");
+
+        private static TagKey<PaintingVariant> tag(String name) {
+            return TagKey.create(Registries.PAINTING_VARIANT, EaselDoesIt.rl(name));
+        }
     }
 }

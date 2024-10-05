@@ -2,6 +2,7 @@ package com.dolthhaven.easeldoesit.other.util;
 
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -9,12 +10,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
-    public static Optional<PaintingVariant> getPaintingFromStack(ItemStack stack) {
+    public static Optional<PaintingVariant> readPresetVariant(ItemStack stack) {
         if (!stack.is(Items.PAINTING)) return Optional.empty();
 
         CompoundTag tag = stack.getTag();
@@ -30,7 +33,11 @@ public class PaintingUtil {
         }
     }
 
-    public static ItemStack getStackFromPainting(PaintingVariant variant) {
+    public static ItemStack makePresetVariantPaintingStack(Supplier<PaintingVariant> variant) {
+        return makePresetVariantPaintingStack(variant.get());
+    }
+
+    public static ItemStack makePresetVariantPaintingStack(PaintingVariant variant) {
         ItemStack paintingStack = new ItemStack(Items.PAINTING, 1);
 
         CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
@@ -52,5 +59,12 @@ public class PaintingUtil {
 
     public static Holder<PaintingVariant> getHolder(PaintingVariant painting) {
         return ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow();
+    }
+
+    public static Optional<Holder<PaintingVariant>> fromLanguageKey(String key) {
+        String[] keys = key.split("\\.");
+        return ForgeRegistries.PAINTING_VARIANTS.getHolder(
+                new ResourceLocation(keys[1], keys[2])
+        );
     }
 }

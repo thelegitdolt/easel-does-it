@@ -132,7 +132,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private void createResult() {
         if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
             PaintingVariant variant = getCurrentPainting();
-            ItemStack stack = PaintingUtil.getStackFromPainting(variant);
+            ItemStack stack = PaintingUtil.makePresetVariantPaintingStack(variant);
             this.resultSlot.set(stack);
         }
         else {
