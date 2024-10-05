@@ -47,18 +47,13 @@ public abstract class HangingEntityItemMixin {
     @WrapOperation(method = "lambda$appendHoverText$0(Ljava/util/List;Lnet/minecraft/resources/ResourceKey;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/MutableComponent;withStyle(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/MutableComponent;"))
     private static MutableComponent EaselDoesIt$TreasurePaintingVariantsHaveBlueText(MutableComponent instance, ChatFormatting formatting, Operation<MutableComponent> original) {
-        if (instance.getContents() instanceof TranslatableContents contents) {
-            if (!contents.getKey().contains("title")) {
+        if (instance.getContents() instanceof TranslatableContents contents && contents.getKey().contains("title")) {
+            Optional<Holder<PaintingVariant>> variantMaybe = PaintingUtil.fromLanguageKey(contents.getKey());
+
+            if (variantMaybe.isEmpty() || !variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
                 return original.call(instance, formatting);
             }
 
-            Optional<Holder<PaintingVariant>> variantMaybe = PaintingUtil.fromLanguageKey(contents.getKey());
-            if (variantMaybe.isEmpty()) {
-                return original.call(instance, formatting);
-            }
-            else if (!variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
-                return original.call(instance, formatting);
-            }
             else {
                 return instance.withStyle(ChatFormatting.AQUA);
             }
