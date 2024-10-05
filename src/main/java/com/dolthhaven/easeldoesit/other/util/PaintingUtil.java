@@ -1,19 +1,23 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.PaintingVariantTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
@@ -33,11 +37,11 @@ public class PaintingUtil {
         }
     }
 
-    public static ItemStack makePresetVariantPaintingStack(Supplier<PaintingVariant> variant) {
-        return makePresetVariantPaintingStack(variant.get());
+    public static ItemStack createPresetVariantPaintingStack(Supplier<PaintingVariant> variant) {
+        return createPresetVariantPaintingStack(variant.get());
     }
 
-    public static ItemStack makePresetVariantPaintingStack(PaintingVariant variant) {
+    public static ItemStack createPresetVariantPaintingStack(PaintingVariant variant) {
         ItemStack paintingStack = new ItemStack(Items.PAINTING, 1);
 
         CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
@@ -55,6 +59,15 @@ public class PaintingUtil {
                 .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
                 .filter(painting -> includeUnplaceable || getHolder(painting).is(PaintingVariantTags.PLACEABLE))
                 .toList();
+    }
+
+    public static Set<ItemStack> getAllPaintingsOfTag(TagKey<PaintingVariant> tag) {
+        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
+                .map(PaintingUtil::getHolder)
+                .filter(h -> h.is(tag))
+                .map(Holder::value)
+                .map(PaintingUtil::createPresetVariantPaintingStack)
+                .collect(Collectors.toSet());
     }
 
     public static Holder<PaintingVariant> getHolder(PaintingVariant painting) {

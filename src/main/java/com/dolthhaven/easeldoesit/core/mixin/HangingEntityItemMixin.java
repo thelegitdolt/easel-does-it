@@ -1,7 +1,6 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
-import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
@@ -14,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.InteractionResult;
@@ -36,8 +34,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import javax.swing.text.html.Option;
-import java.util.List;
 import java.util.Optional;
 
 @Mixin(HangingEntityItem.class)

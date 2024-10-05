@@ -27,7 +27,7 @@ public abstract class PaintingMixin extends HangingEntity {
 
     @Inject(method = "dropItem", cancellable = true,
             at = @At(value = "INVOKE", shift = At.Shift.BEFORE,
-                    target = "Lnet/minecraft/world/entity/decoration/Painting;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"))
+                     target = "Lnet/minecraft/world/entity/decoration/Painting;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private void EaselDoesIt$PaintingsDropTheirOwnVariants(Entity p_31925_, CallbackInfo ci) {
         IDataManager iDataManager = (IDataManager) this;
 
@@ -35,7 +35,7 @@ public abstract class PaintingMixin extends HangingEntity {
             return;
         }
 
-        ItemStack paintingStack = PaintingUtil.makePresetVariantPaintingStack(this.getVariant().get());
+        ItemStack paintingStack = PaintingUtil.createPresetVariantPaintingStack(this.getVariant());
         this.spawnAtLocation(paintingStack);
         ci.cancel();
     }

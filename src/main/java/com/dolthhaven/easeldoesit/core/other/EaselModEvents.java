@@ -5,29 +5,47 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
 import com.dolthhaven.easeldoesit.core.registry.EaselModVillagers;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.ModUtil;
+import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerDataHolder;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.event.village.WandererTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.dolthhaven.easeldoesit.common.villagers.EaselModItemListings.*;
 
 @Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID)
 public class EaselModEvents {
     private static final UniformInt ONE = UniformInt.of(1, 1);
-    
+
+    @SubscribeEvent
+    public static void changeCreativeTab(BuildCreativeModeTabContentsEvent event) {
+        Set<ItemStack> shouldRemoveFromCreativeTab = PaintingUtil.getAllPaintingsOfTag(EaselModTags.Paintings.TREASURE);
+
+        for (ItemStack stack : shouldRemoveFromCreativeTab) {
+            event.getEntries().remove(stack);
+        }
+    }
+
     @SubscribeEvent
     public static void addCustomTrades(VillagerTradesEvent event) {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {

@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EaselModItems {
@@ -30,7 +31,7 @@ public class EaselModItems {
     public static void setUpTabEditors() {
         CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
                 .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makePresetVariantPaintingStack(EaselModPaintings.CULTURE.get()));
+                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.createPresetVariantPaintingStack(EaselModPaintings.CULTURE));
     }
 
     public static class Properties {

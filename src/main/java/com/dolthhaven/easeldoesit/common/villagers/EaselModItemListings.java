@@ -154,7 +154,7 @@ public class EaselModItemListings {
         @Nullable
         @Override
         public MerchantOffer getOffer(@NotNull Entity p_219693_, @NotNull RandomSource p_219694_) {
-            ItemStack paintingStack = PaintingUtil.makePresetVariantPaintingStack(this.variant);
+            ItemStack paintingStack = PaintingUtil.createPresetVariantPaintingStack(this.variant);
             ItemStack emeraldStack = new ItemStack(Items.EMERALD, emeraldCost.sample(p_219694_));
 
             return new MerchantOffer(emeraldStack, paintingStack, maxUses, 25, 0.01F);
