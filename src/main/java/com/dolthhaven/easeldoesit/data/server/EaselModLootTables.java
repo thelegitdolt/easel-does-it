@@ -36,7 +36,6 @@ public class EaselModLootTables extends LootTableProvider {
         ));
     }
 
-
     @Override
     protected void validate(@NotNull Map<ResourceLocation, LootTable> map, @NotNull ValidationContext context) {
     }
