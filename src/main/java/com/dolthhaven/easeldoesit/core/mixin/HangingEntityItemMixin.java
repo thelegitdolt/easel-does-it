@@ -49,10 +49,7 @@ public abstract class HangingEntityItemMixin {
             if (variantMaybe.isEmpty() || !variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
                 return original.call(instance, formatting);
             }
-
-            else {
-                return instance.withStyle(ChatFormatting.AQUA);
-            }
+            return instance.withStyle(ChatFormatting.AQUA);
         }
 
         return original.call(instance, formatting);
