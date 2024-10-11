@@ -88,22 +88,19 @@ public class EaselDoesIt
 
     private void dataSetup(final GatherDataEvent event) {
         DataGenerator dataGen = event.getGenerator();
-        PackOutput packOutput = dataGen.getPackOutput();
-        CompletableFuture<Provider> provider = event.getLookupProvider();
-        ExistingFileHelper helper = event.getExistingFileHelper();
 
         boolean server = event.includeServer();
-        EaselModBlockTags easelModBlockTags = new EaselModBlockTags(packOutput, provider, helper);
+        EaselModBlockTags easelModBlockTags = new EaselModBlockTags(event);
         dataGen.addProvider(server, easelModBlockTags);
-        dataGen.addProvider(server, new EaselModItemTags(packOutput, provider, easelModBlockTags.contentsGetter(), helper));
-        dataGen.addProvider(server, new EaselModPoiTags(packOutput, provider, helper));
-        dataGen.addProvider(server, new EaselModPaintingTags(packOutput, provider, helper));
-        dataGen.addProvider(server, new EaselModLootTables(packOutput));
-        dataGen.addProvider(server, new EaselModRecipes(packOutput));
+        dataGen.addProvider(server, new EaselModItemTags(event, easelModBlockTags.contentsGetter()));
+        dataGen.addProvider(server, new EaselModPoiTags(event));
+        dataGen.addProvider(server, new EaselModPaintingTags(event));
+        dataGen.addProvider(server, new EaselModLootTables(event));
+        dataGen.addProvider(server, new EaselModRecipes(event));
 
         boolean client = event.includeClient();
-        dataGen.addProvider(client, new EaselModBlockStates(packOutput, helper));
-        dataGen.addProvider(client, new EaselModSoundProvider(packOutput, helper));
+        dataGen.addProvider(client, new EaselModBlockStates(event));
+        dataGen.addProvider(client, new EaselModSoundProvider(event));
     }
 
     @SubscribeEvent

@@ -9,12 +9,13 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 import java.util.function.Consumer;
 
 public class EaselModRecipes extends BlueprintRecipeProvider {
-    public EaselModRecipes(PackOutput output) {
-        super(EaselDoesIt.MOD_ID, output);
+    public EaselModRecipes(GatherDataEvent event) {
+        super(EaselDoesIt.MOD_ID, event.getGenerator().getPackOutput());
     }
 
     public void buildRecipes(Consumer<FinishedRecipe> consumer) {

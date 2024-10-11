@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +30,8 @@ import java.util.stream.Stream;
 import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.*;
 
 public class EaselModLootTables extends LootTableProvider {
-    public EaselModLootTables(PackOutput packOutput) {
-        super(packOutput, BuiltInLootTables.all(), ImmutableList.of(
+    public EaselModLootTables(GatherDataEvent e) {
+        super(e.getGenerator().getPackOutput(), BuiltInLootTables.all(), ImmutableList.of(
                 new LootTableProvider.SubProviderEntry(EaselModBlockLoot::new, LootContextParamSets.BLOCK)
         ));
     }

@@ -6,14 +6,15 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.PoiTypeTagsProvider;
 import net.minecraft.tags.PoiTypeTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class EaselModPoiTags extends PoiTypeTagsProvider {
-    public EaselModPoiTags(PackOutput output, CompletableFuture<HolderLookup.Provider> holder, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, holder, EaselDoesIt.MOD_ID, existingFileHelper);
+    public EaselModPoiTags(GatherDataEvent e) {
+        super(e.getGenerator().getPackOutput(), e.getLookupProvider(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
     }
 
     @Override

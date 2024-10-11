@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,8 +15,8 @@ import static com.dolthhaven.easeldoesit.core.other.EaselModConstants.*;
 import static net.minecraft.world.item.Items.*;
 
 public class EaselModItemTags extends ItemTagsProvider {
-    public EaselModItemTags(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, CompletableFuture<TagLookup<Block>> blockTags, ExistingFileHelper helper) {
-        super(output, provider, blockTags, EaselDoesIt.MOD_ID, helper);
+    public EaselModItemTags(GatherDataEvent event, CompletableFuture<TagLookup<Block>> blockTags) {
+        super(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags, EaselDoesIt.MOD_ID, event.getExistingFileHelper());
     }
 
 

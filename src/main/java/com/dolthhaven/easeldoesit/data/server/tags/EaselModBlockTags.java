@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class EaselModBlockTags extends BlockTagsProvider {
 
-    public EaselModBlockTags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, EaselDoesIt.MOD_ID, existingFileHelper);
+    public EaselModBlockTags(GatherDataEvent event) {
+        super(event.getGenerator().getPackOutput(), event.getLookupProvider(), EaselDoesIt.MOD_ID, event.getExistingFileHelper());
     }
 
     @Override

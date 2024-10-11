@@ -18,6 +18,7 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -30,8 +31,8 @@ import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.EASEL;
 public class EaselModBlockStates extends BlueprintBlockStateProvider {
     private static final String ITEM_GENERATED = "item/generated";
 
-    public EaselModBlockStates(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, EaselDoesIt.MOD_ID, exFileHelper);
+    public EaselModBlockStates(GatherDataEvent e) {
+        super(e.getGenerator().getPackOutput(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinition;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
@@ -16,14 +17,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class EaselModSoundProvider extends SoundDefinitionsProvider {
-    /**
-     * Creates a new instance of this data provider.
-     *
-     * @param output The {@linkplain PackOutput} instance provided by the data generator.
-     * @param helper The existing file helper provided by the event you are initializing this provider in.
-     */
-    public EaselModSoundProvider(PackOutput output, ExistingFileHelper helper) {
-        super(output, EaselDoesIt.MOD_ID, helper);
+    public EaselModSoundProvider(GatherDataEvent e) {
+        super(e.getGenerator().getPackOutput(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
     }
 
     @Override

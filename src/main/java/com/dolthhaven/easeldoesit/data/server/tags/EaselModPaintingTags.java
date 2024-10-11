@@ -2,20 +2,16 @@ package com.dolthhaven.easeldoesit.data.server.tags;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.PaintingVariantTagsProvider;
 import net.minecraft.tags.PaintingVariantTags;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static com.dolthhaven.easeldoesit.core.registry.EaselModPaintings.*;
 
-import java.util.concurrent.CompletableFuture;
-
 public class EaselModPaintingTags extends PaintingVariantTagsProvider {
-    public EaselModPaintingTags(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, provider, EaselDoesIt.MOD_ID, existingFileHelper);
+    public EaselModPaintingTags(GatherDataEvent event) {
+        super(event.getGenerator().getPackOutput(), event.getLookupProvider(), EaselDoesIt.MOD_ID, event.getExistingFileHelper());
     }
 
     @Override
