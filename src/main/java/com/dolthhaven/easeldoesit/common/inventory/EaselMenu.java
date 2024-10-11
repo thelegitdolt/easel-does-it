@@ -268,7 +268,7 @@ public class EaselMenu extends AbstractContainerMenu {
         ItemStack inputCopy = input.copy();
         // if is result slot
         if (index == this.inputSlot.getSlotIndex()) {
-            item.onCraftedBy(input, player.level(), player);
+            item.onCraftedBy(input, player.level, player);
             if (!this.moveItemStackTo(input, 2, 38, false)) {
                 return ItemStack.EMPTY;
             }

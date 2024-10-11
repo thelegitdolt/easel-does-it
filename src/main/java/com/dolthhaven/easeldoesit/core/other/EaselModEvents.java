@@ -38,15 +38,6 @@ public class EaselModEvents {
     private static final UniformInt ONE = UniformInt.of(1, 1);
 
     @SubscribeEvent
-    public static void changeCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        Set<ItemStack> shouldRemoveFromCreativeTab = PaintingUtil.getAllPaintingsOfTag(EaselModTags.Paintings.TREASURE);
-
-        for (ItemStack stack : shouldRemoveFromCreativeTab) {
-            event.getEntries().remove(stack);
-        }
-    }
-
-    @SubscribeEvent
     public static void addCustomTrades(VillagerTradesEvent event) {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
@@ -129,14 +120,7 @@ public class EaselModEvents {
             if (ModList.get().isLoaded(EaselModConstants.FARMERS_DELIGHT)) {
                 trades.get(4).add(new RandomItemsSellingTrade(
                         UniformInt.of(2, 2),
-                        ModUtil.getAllDyedItems(dye -> EaselModConstants.farmersDelight(dye + "_hanging_canvas_sign")),
-                        ONE, 12, 10, 0.01f
-                ));
-            }
-            if (ModList.get().isLoaded(EaselModConstants.CLAYWORKS)) {
-                trades.get(4).add(new RandomItemsSellingTrade(
-                        ONE,
-                        ModUtil.getAllDyedItems(dye -> EaselModConstants.clayworks(dye + "_decorated_pot")),
+                        ModUtil.getAllDyedItems(dye -> EaselModConstants.farmersDelight(dye + "_canvas_sign")),
                         ONE, 12, 10, 0.01f
                 ));
             }

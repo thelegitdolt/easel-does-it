@@ -7,6 +7,7 @@ import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidt
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -158,40 +159,40 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
+        super.render(pose, mouseX, mouseY, partialTicks);
 
-        renderTooltip(graphics, mouseX, mouseY);
+        renderTooltip(pose, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        renderBackground(graphics); // render black shading behind background, mowzies mobs
+    protected void renderBg(@NotNull PoseStack pose, float partialTick, int mouseX, int mouseY) {
+        renderBackground(pose); // render black shading behind background, mowzies mobs
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BG_LOCATION);
 
-        graphics.blit(BG_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        this.blit(pose, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        renderPaintingGrid(graphics);
-        renderPainting(graphics);
-        renderPageManager(graphics);
+        renderPaintingGrid(pose);
+        renderPainting(pose);
+        renderPageManager(pose);
     }
 
-    private void renderDebugString(GuiGraphics graphics) {
-        graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
+    private void renderDebugString(PoseStack pose) {
+        drawString(pose, this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
     }
 
-    private void renderPaintingGrid(GuiGraphics graphics) {
+    private void renderPaintingGrid(PoseStack pose) {
         if (isEaselActive()) {
-            graphics.blit(BG_LOCATION,
+            this.blit(pose,
                     this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
                     PREVIEW_BOX_ATLAS_X, PREVIEW_BOX_ATLAS_Y, PREVIEW_BOX_DIMENSIONS, PREVIEW_BOX_DIMENSIONS);
         }
     }
 
-    private void renderPageManager(GuiGraphics graphics) {
+    private void renderPageManager(PoseStack pose) {
         if (!isEaselActive())
             return;
 
@@ -214,7 +215,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 dotYLoc = PAGE_BUTTON_Y;
             }
 
-            graphics.blit(BG_LOCATION,
+            this.blit(pose,
                     this.leftPos + PAGES_START_X, this.topPos + yPos,
                     dotXLoc, dotYLoc,
                     PAGE_BUTTON_DIMENSIONS, PAGE_BUTTON_DIMENSIONS);
@@ -241,7 +242,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     /**
      * handles the drawing of the paintings.
      */
-    private void renderPainting(GuiGraphics graphics) {
+    private void renderPainting(PoseStack pose) {
         // draw nothing if one width or height is 0
         if (!isEaselActive()) return;
 
@@ -250,7 +251,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         PaintingVariant currentPainting = this.menu.getCurrentPainting();
         TextureAtlasSprite currentPaintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
 
-        graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
+        blit(pose, this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
                 0, currentPainting.getWidth(), currentPainting.getHeight(), currentPaintingSprite); // draw the current painting
     }
 
@@ -343,6 +344,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         protected int getRelevantDimension() {
             return EaselScreen.this.getMenu().getPaintingHeight();
         }
+
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -374,7 +376,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         @Override
-        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+        public void render(@NotNull PoseStack pose, int p_282682_, int p_281714_, float p_282542_) {
             if (!this.screen.isEaselActive()) {
                 return;
             }
@@ -386,7 +388,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 buttonToRenderX = getAtlasPositionsForButtons()[0];
                 buttonToRenderY = getAtlasPositionsForButtons()[1];
             }
-            else if (!this.isHovered()){
+            else if (!this.isHovered){
                 buttonToRenderX = getAtlasPositionsForButtons()[2];
                 buttonToRenderY = getAtlasPositionsForButtons()[3];
             }
@@ -395,15 +397,16 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 buttonToRenderY = getAtlasPositionsForButtons()[5];
             }
 
-            graphics.blit(BG_LOCATION,
-                    getX(), getY(),
+            this.blit(pose,
+                    x, y,
                     buttonToRenderX, buttonToRenderY,
                     this.width, this.height
             );
         }
 
+
         @Override
-        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
+        public void updateNarration(@NotNull NarrationElementOutput output) {
             this.defaultButtonNarrationText(output);
         }
     }
@@ -418,7 +421,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         @Override
-        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
+        public void updateNarration(@NotNull NarrationElementOutput output) {
             this.defaultButtonNarrationText(output);
         }
 
@@ -441,7 +444,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         @Override
-        protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
+        public void render(@NotNull PoseStack pose, int p_282682_, int p_281714_, float p_282542_) {
             if (!screen.isEaselActive())
                 return;
 
@@ -454,7 +457,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 atlasXCord = getTextureAtlasCords()[4];
                 atlasYCord = getTextureAtlasCords()[5];
             }
-            else if (this.isHovered()) {
+            else if (this.isHovered) {
                 atlasXCord = getTextureAtlasCords()[2];
                 atlasYCord = getTextureAtlasCords()[3];
             }
@@ -463,8 +466,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 atlasYCord = getTextureAtlasCords()[1];
             }
 
-            graphics.blit(BG_LOCATION,
-                    getX(), getY(),
+            this.blit(pose,
+                    x, y,
                     atlasXCord, atlasYCord,
                     this.width, this.height
             );

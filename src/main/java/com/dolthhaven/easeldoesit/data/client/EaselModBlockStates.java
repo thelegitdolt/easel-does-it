@@ -3,21 +3,16 @@ package com.dolthhaven.easeldoesit.data.client;
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
 import com.dolthhaven.easeldoesit.common.block.VillagerStatueBlock;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
-import com.dolthhaven.easeldoesit.core.registry.EaselModItems;
-import com.teamabnormals.blueprint.core.data.client.BlueprintBlockStateProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.data.PackOutput;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
-import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -28,11 +23,11 @@ import java.util.function.Supplier;
 import static com.dolthhaven.easeldoesit.core.registry.EaselModBlocks.EASEL;
 
 @SuppressWarnings("unused")
-public class EaselModBlockStates extends BlueprintBlockStateProvider {
+public class EaselModBlockStates extends BlockStateProvider {
     private static final String ITEM_GENERATED = "item/generated";
 
     public EaselModBlockStates(GatherDataEvent e) {
-        super(e.getGenerator().getPackOutput(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
+        super(e.getGenerator(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
     }
 
     @Override
@@ -57,7 +52,7 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
         }
     }
 
-    private void easel(RegistryObject<? extends Block> easel) {
+    private void easel(RegistryObject<Block> easel) {
         ModelFile model = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(easel)), this.models().existingFileHelper);
         ModelFile paintingModel = new ModelFile.ExistingModelFile(EaselDoesIt.rl("block/" + getName(easel) + "_painting"), this.models().existingFileHelper);
 
@@ -72,8 +67,7 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
                     .condition(HorizontalDirectionalBlock.FACING, direction).condition(EaselBlock.HAS_PAINTING, true);
         }
 
-        this.blockItem(easel.get());
-
+        this.itemModel(easel);
     }
 
     private ConfiguredModel existingModel(String nameSpace) {
@@ -89,5 +83,13 @@ public class EaselModBlockStates extends BlueprintBlockStateProvider {
 
     private String getName(Supplier<? extends ItemLike> object) {
         return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(object.get().asItem())).getPath();
+    }
+
+    private void itemModel(RegistryObject<Block> block) {
+        this.itemModels().withExistingParent(getItemName(block.get()), this.blockTexture(block.get()));
+    }
+
+    private static String getItemName(ItemLike item) {
+        return ForgeRegistries.ITEMS.getKey(item.asItem()).getPath();
     }
 }

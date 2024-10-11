@@ -2,7 +2,7 @@ package com.dolthhaven.easeldoesit.data.server.tags;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.teamabnormals.blueprint.core.util.TagUtil;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.Item;
@@ -20,7 +20,7 @@ public class EaselModTags {
         public static final TagKey<PaintingVariant> TREASURE = tag("treasure");
 
         private static TagKey<PaintingVariant> tag(String name) {
-            return TagKey.create(Registries.PAINTING_VARIANT, EaselDoesIt.rl(name));
+            return TagKey.create(Registry.PAINTING_VARIANT_REGISTRY, EaselDoesIt.rl(name));
         }
     }
 }

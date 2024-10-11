@@ -3,9 +3,7 @@ package com.dolthhaven.easeldoesit.data.client;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
-import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinition;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -18,7 +16,7 @@ import java.util.function.Consumer;
 
 public class EaselModSoundProvider extends SoundDefinitionsProvider {
     public EaselModSoundProvider(GatherDataEvent e) {
-        super(e.getGenerator().getPackOutput(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
+        super(e.getGenerator(), EaselDoesIt.MOD_ID, e.getExistingFileHelper());
     }
 
     @Override
