@@ -51,7 +51,6 @@ public class EaselModLootTables extends LootTableProvider {
         protected void generate() {
             this.dropSelf(EASEL.get());
 
-
 //            this.doubleBlock(STATUE);
 //            this.doubleBlock(EXPOSED_STATUE);
 //            this.doubleBlock(WEATHERED_STATUE);
