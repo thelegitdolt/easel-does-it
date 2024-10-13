@@ -9,9 +9,9 @@ license = "https://github.com/thelegitdolt/easel-does-it/blob/main/LICENSE"
     logoFile = "logo.png"
     itemIcon = "easel_does_it:easel"
     configBackground = "minecraft:textures/block/mud_bricks.png"
-    authors = "Doltum, Drewy"
-    credits = ""
-    displayURL = "https://www.youtube.com"
+    authors = "Doltum, Glyphy"
+    credits = "Huge thanks to Kaupenjoe for his modding tutorials. Wouldn't have been possible without it"
+    displayURL = "https://modrinth.com/mod/easel-does-it"
     displayName = "Easel Does It"
     description = '''
         Adds the easel, which makes using paintings much easel-ier.

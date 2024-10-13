@@ -71,7 +71,7 @@ public class EaselModItemListings {
         public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
             int cost = costCount.sample(random);
             int emerald = emeraldCount.sample(random);
-            return new MerchantOffer(new ItemStack(boughtItem, cost), new ItemStack(Items.EMERALD, emerald), this.maxUses, this.villagerXp, this.priceMultiplier);
+            return new MerchantOffer(new ItemStack(Items.EMERALD, emerald), new ItemStack(boughtItem, cost), this.maxUses, this.villagerXp, this.priceMultiplier);
         }
     }
 

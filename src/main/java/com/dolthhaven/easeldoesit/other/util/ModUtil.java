@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -26,12 +27,12 @@ public class ModUtil {
         else {
             return Arrays.stream(DyeColor.values()).map(dye -> thing.apply(dye.getName()))
                     .map(rl -> {
-                        if (ForgeRegistries.ITEMS.getValue(rl) == null) {
+                        if (ForgeRegistries.ITEMS.getValue(rl) == Items.AIR) {
                             return EaselModConstants.dyeDepot(rl.getPath());
                         }
                         else return rl;
                     })
-                    .map(ForgeRegistries.ITEMS::getValue).filter(Objects::nonNull).toList();
+                    .map(ForgeRegistries.ITEMS::getValue).filter(item -> item != Items.AIR).toList();
         }
     }
 }
