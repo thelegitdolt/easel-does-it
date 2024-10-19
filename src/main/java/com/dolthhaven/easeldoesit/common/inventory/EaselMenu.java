@@ -7,6 +7,7 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -19,9 +20,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private final DataSlot paintingWidth = DataSlot.standalone();
     private final DataSlot paintingIndex = DataSlot.standalone();
     private final DataSlot[] savedIndexInEachDimension = new DataSlot[16]; // an array holding the last visited index before the painting dimension is changed
-    private List<PaintingVariant> possiblePaintings = Lists.newArrayList(); // a list of all paintings of (paintingHeight, paintingWidth)
+    private List<PaintingVariant> possiblePaintings = new ArrayList<>(); // a list of all paintings of (paintingHeight, paintingWidth)
 
     public EaselMenu(int id, Inventory inv) {
         this(id, inv, ContainerLevelAccess.NULL);
