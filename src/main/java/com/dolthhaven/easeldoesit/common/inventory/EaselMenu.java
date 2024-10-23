@@ -7,7 +7,6 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
