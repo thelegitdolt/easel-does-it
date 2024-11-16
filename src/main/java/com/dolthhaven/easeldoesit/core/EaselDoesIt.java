@@ -4,6 +4,7 @@ import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
 import com.dolthhaven.easeldoesit.core.other.EaselModCompat;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.*;
+import com.dolthhaven.easeldoesit.core.registry.other.EaselModRecipeSerializers;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
 import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
@@ -59,6 +60,7 @@ public class EaselDoesIt
         EaselModMenuTypes.MENUS.register(bus);
         EaselModPaintings.PAINTING_VARIANTS.register(bus);
         EaselModVillagers.POI_TYPES.register(bus);
+        EaselModRecipeSerializers.RECIPE_SERIALIZERS.register(bus);
         EaselModVillagers.VILLAGER_PROFESSIONS.register(bus);
 
         EaselModTrackedData.registerTrackedData();

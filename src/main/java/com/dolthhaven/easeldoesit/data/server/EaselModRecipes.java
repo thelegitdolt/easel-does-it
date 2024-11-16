@@ -2,11 +2,13 @@ package com.dolthhaven.easeldoesit.data.server;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
+import com.dolthhaven.easeldoesit.core.registry.other.EaselModRecipeSerializers;
 import com.teamabnormals.blueprint.core.data.server.BlueprintRecipeProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -36,5 +38,7 @@ public class EaselModRecipes extends BlueprintRecipeProvider {
                 .pattern("/0")
                 .pattern("__")
                 .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(consumer, EaselDoesIt.rl("easel_mirrored"));
+
+        SpecialRecipeBuilder.special(EaselModRecipeSerializers.PAINTING_UNSET.get()).save(consumer, "painting_variant_unset");
     }
 }

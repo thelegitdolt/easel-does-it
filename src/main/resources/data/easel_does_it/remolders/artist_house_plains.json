@@ -10,7 +10,7 @@
         "processors": "minecraft:mossify_10_percent",
         "projection": "rigid"
       },
-      "weight": 20
+      "weight": 2
     }
   },
   "selector": "minecraft:worldgen/template_pool/village/plains/houses"
