@@ -16,13 +16,10 @@ import com.dolthhaven.easeldoesit.data.server.tags.EaselModPoiTags;
 import com.mojang.logging.LogUtils;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -33,12 +30,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-import java.util.concurrent.CompletableFuture;
-
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt
 {
     public static final String MOD_ID = "easel_does_it";
+    public static final String GIT_URL = "https://github.com/thelegitdolt/easel-does-it";
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -106,9 +102,7 @@ public class EaselDoesIt
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("HELLO from server starting");
-    }
+    public void onServerStarting(ServerStartingEvent event) {}
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {

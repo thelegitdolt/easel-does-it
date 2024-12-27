@@ -1,6 +1,7 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
@@ -49,9 +50,16 @@ public abstract class HangingEntityItemMixin {
         if (instance.getContents() instanceof TranslatableContents contents && contents.getKey().contains("title")) {
             Optional<Holder<PaintingVariant>> variantMaybe = PaintingUtil.fromLanguageKey(contents.getKey());
 
-            if (variantMaybe.isEmpty() || !variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
+            if (variantMaybe.isEmpty()) {
+                EaselDoesIt.log("FAIL TO CONVERT MAKE A PAINTING in #easel_does_it:treasure TAG WITH LANGUAGE KEY "
+                        + contents.getKey() + " THIS IS BAD, REPORT TO " + EaselDoesIt.GIT_URL);
                 return original.call(instance, formatting);
             }
+
+            if (!variantMaybe.get().is(EaselModTags.Paintings.TREASURE)) {
+                return original.call(instance, formatting);
+            }
+
             return instance.withStyle(ChatFormatting.AQUA);
         }
 
