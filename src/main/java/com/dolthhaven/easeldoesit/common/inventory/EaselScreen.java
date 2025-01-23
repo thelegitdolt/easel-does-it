@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
@@ -32,9 +33,11 @@ import java.util.List;
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
+    private static final int SCROLL_THRESHOLD = 30;
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
+    private double nextScrollTime = (double) SCROLL_THRESHOLD / 2;
     private final EaselWidthButton[] paintingWidthButtons = new EaselWidthButton[4];
     private final EaselHeightsButton[] paintingHeightButtons = new EaselHeightsButton[4];
     private final EaselPickerButton[] paintingPickers = new EaselPickerButton[2];
@@ -153,7 +156,28 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
-        return super.mouseScrolled(mouseX, mouseY, speed);
+        EaselDoesIt.log("X: %,.2f, Y: %,.2f, Speed: %,.2f".formatted(mouseX, mouseY, speed));
+
+        double increment = MathUtil.normalizeScroll(speed);
+        nextScrollTime += speed;
+
+
+        if (nextScrollTime < 0) {
+            nextScrollTime += SCROLL_THRESHOLD;
+            int newIndex = this.menu.getPaintingIndex() - 1;
+            if (this.menu.isLegalIndex(newIndex)) {
+                setMenuIndex(newIndex);
+            }
+        }
+        else if (nextScrollTime > SCROLL_THRESHOLD) {
+            nextScrollTime -= SCROLL_THRESHOLD;
+            int newIndex = this.menu.getPaintingIndex() + 1;
+            if (this.menu.isLegalIndex(newIndex)) {
+                setMenuIndex(newIndex);
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -195,7 +219,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             return;
 
         int menuPaintingIndex = getMenu().getPaintingIndex();
-        int currentPage = MathUtil.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
+        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
 
         int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
 
@@ -247,10 +271,10 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         if (this.menu.getPossiblePaintingsSize() == 0) return;
 
         PaintingVariant currentPainting = this.menu.getCurrentPainting();
-        TextureAtlasSprite currentPaintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
+        TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
 
         graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
-                0, currentPainting.getWidth(), currentPainting.getHeight(), currentPaintingSprite); // draw the current painting
+                0, currentPainting.getWidth(), currentPainting.getHeight(), paintingSprite); // draw the current painting
     }
 
     private boolean isEaselActive() {
@@ -436,7 +460,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         public boolean canBePressed(int index) {
-            return screen.getMenu().isValidPaintingIndex(affectIndex(index));
+            return screen.getMenu().isLegalIndex(affectIndex(index));
         }
 
         @Override

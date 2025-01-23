@@ -130,7 +130,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void createResult() {
-        if (this.inputSlot.getItem().is(Items.PAINTING) && isValidPaintingIndex(getPaintingIndex())) {
+        if (this.inputSlot.getItem().is(Items.PAINTING) && isLegalIndex(getPaintingIndex())) {
             PaintingVariant variant = getCurrentPainting();
             ItemStack stack = PaintingUtil.createPresetVariantPaintingStack(variant);
             this.resultSlot.set(stack);
@@ -174,7 +174,7 @@ public class EaselMenu extends AbstractContainerMenu {
      * When change dimensions you uh, look at the saved paintings in each dimension and do that index I suppose
      **/
     private int getIndexFromPaintingCoords() {
-        if (!isValidDimension()) {
+        if (!isLegalDimensions()) {
             // todo: this number should be -1, make it so that it is
             return 0;
         }
@@ -201,7 +201,7 @@ public class EaselMenu extends AbstractContainerMenu {
      * Okay so the bases are 0, 1, 2, 3, 4 and the painting heights (as coded) are 0, 16, 32, 64, so yeah.
      */
     private void savePaintingForCurrentDimension() {
-        if (!isValidDimension()) return;
+        if (!isLegalDimensions()) return;
         this.savedIndexInEachDimension[encodeCords()].set(getPaintingIndex());
     }
 
@@ -237,11 +237,11 @@ public class EaselMenu extends AbstractContainerMenu {
         this.paintingIndex.set(newIndex);
     }
 
-    public boolean isValidPaintingIndex(int index) {
+    public boolean isLegalIndex(int index) {
         return index >= 0 && index < this.getPossiblePaintingsSize();
     }
 
-    private boolean isValidDimension() {
+    private boolean isLegalDimensions() {
         if (getPaintingHeight() < MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
         if (getPaintingWidth() < MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
 
@@ -343,7 +343,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void savePainting(@NotNull Player player) {
-        if (!isValidDimension()) return;
+        if (!isLegalDimensions()) return;
 
         IDataManager manager = (IDataManager) player;
         short paintingIndex = EaselModTrackedData.encodePainting(new int[]{

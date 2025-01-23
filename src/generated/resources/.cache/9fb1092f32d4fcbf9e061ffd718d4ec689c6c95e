@@ -1,6 +1,6 @@
-// 1.20.1	2024-11-16T13:04:27.48639	Recipes
+// 1.20.1	2025-01-22T17:38:42.357521	Recipes
 1c17e692fd6f898069e0efe759a0d82f2f90c3a7 data/easel_does_it/advancements/recipes/decorations/easel.json
 8dfdbe13c401515743cd324b52112315c7eeed8d data/easel_does_it/advancements/recipes/decorations/easel_mirrored.json
-bda8acabce7005ceeb670c827a243b14bdf5a8c6 data/easel_does_it/recipes/easel.json
-acdec831dea95e4a9df8ce20b3fa46008cff65bc data/easel_does_it/recipes/easel_mirrored.json
+5d831638ff8870d5ac4ce04ced7077135fdf4d22 data/easel_does_it/recipes/easel.json
+b1115e0dccab2ed02f4e552abf676e754f6480fa data/easel_does_it/recipes/easel_mirrored.json
 59ffb7dec1af84338579be52c2b81dce3fb9d49a data/minecraft/recipes/painting_variant_unset.json

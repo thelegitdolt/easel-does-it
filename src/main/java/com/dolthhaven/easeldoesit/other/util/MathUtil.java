@@ -16,7 +16,9 @@ public class MathUtil {
         return new int[]{second, first};
     }
 
-    public static int ceil(double numToCiel) {
-        return (int) Math.ceil(numToCiel);
+    public static double normalizeScroll(double velocity) {
+        double sign = velocity > 0 ? 1 : -1;
+        double newVal = 2 / (1 + Math.exp(-Math.abs(velocity) / 3) ) + 3;
+        return newVal * sign;
     }
 }

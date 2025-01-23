@@ -22,21 +22,17 @@ public class EaselModRecipes extends BlueprintRecipeProvider {
 
     public void buildRecipes(Consumer<FinishedRecipe> consumer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EaselModBlocks.EASEL.get())
-                .define('_', ItemTags.WOODEN_SLABS)
-                .define('/', Items.STICK)
                 .define('0', ItemTags.PLANKS)
                 .pattern(" 0")
-                .pattern("0/")
-                .pattern("__")
+                .pattern("0 ")
+                .pattern("00")
                 .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EaselModBlocks.EASEL.get())
-                .define('_', ItemTags.WOODEN_SLABS)
-                .define('/', Items.STICK)
                 .define('0', ItemTags.PLANKS)
                 .pattern("0 ")
-                .pattern("/0")
-                .pattern("__")
+                .pattern(" 0")
+                .pattern("00")
                 .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(consumer, EaselDoesIt.rl("easel_mirrored"));
 
         SpecialRecipeBuilder.special(EaselModRecipeSerializers.PAINTING_UNSET.get()).save(consumer, "painting_variant_unset");
