@@ -24,7 +24,9 @@ import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,6 +41,7 @@ public class EaselDoesIt
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public EaselDoesIt() {
+        ModLoadingContext context = ModLoadingContext.get();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the commonSetup method for modloading
@@ -60,6 +63,8 @@ public class EaselDoesIt
         EaselModVillagers.VILLAGER_PROFESSIONS.register(bus);
 
         EaselModTrackedData.registerTrackedData();
+
+        context.registerConfig(ModConfig.Type.COMMON, EaselModConfig.COMMON_SPEC);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
 //        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -108,8 +113,6 @@ public class EaselDoesIt
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
 

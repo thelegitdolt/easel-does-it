@@ -33,7 +33,7 @@ import java.util.List;
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
-    private static final int SCROLL_THRESHOLD = 30;
+    private static final byte SCROLL_THRESHOLD = 30;
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui

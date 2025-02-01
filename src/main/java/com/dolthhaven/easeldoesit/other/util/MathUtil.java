@@ -18,6 +18,10 @@ public class MathUtil {
 
     public static double normalizeScroll(double velocity) {
         double sign = velocity > 0 ? 1 : -1;
+        if (Math.abs(velocity) > 30) {
+            velocity = 30 * sign;
+        }
+
         double newVal = 2 / (1 + Math.exp(-Math.abs(velocity) / 3) ) + 3;
         return newVal * sign;
     }
