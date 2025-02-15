@@ -7,6 +7,7 @@ import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidt
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -37,7 +38,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
-    private double nextScrollTime = (double) SCROLL_THRESHOLD / 2;
+    private float untilNextScroll = 0;
     private final EaselWidthButton[] paintingWidthButtons = new EaselWidthButton[4];
     private final EaselHeightsButton[] paintingHeightButtons = new EaselHeightsButton[4];
     private final EaselPickerButton[] paintingPickers = new EaselPickerButton[2];
@@ -138,7 +139,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
                 button.active = true;
             }
             for (EaselPickerButton button : this.paintingPickers) {
-                button.active = true;
+                if (button.canBePressed(menu.getPaintingIndex())) button.active = true;
             }
         }
         else {
@@ -156,13 +157,37 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
-        this.setMenuIndex(subtractInputFromScroll(speed));
+        double potentialIndex = subtractInputFromScroll(speed);
+        float remainders = (float) potentialIndex - Mth.floor(potentialIndex);
+        this.untilNextScroll += remainders;
+
+        if (untilNextScroll > 1) {
+            untilNextScroll--;
+            potentialIndex++;
+        }
+
+        this.setMenuIndex(Mth.floor(potentialIndex));
 
         return true;
     }
 
-    protected int subtractInputFromScroll(double pInput) {
-        return Mth.clamp(menu.getPaintingIndex() -  (int) Math.round(pInput / this.menu.getPossiblePaintingsSize()),
+    protected double subtractInputFromScroll(double pInput) {
+        Double2DoubleFunction scrollFunc = dub -> {
+            int sign = dub < 0 ? -1 : 1;
+            double absDub = Math.abs(dub);
+            double thresh = 3.2d;
+
+            if (absDub < thresh)
+                return thresh * sign;
+            else
+                return (thresh + thresh + absDub) / 3 * sign;
+        };
+
+        pInput = scrollFunc.apply(pInput);
+        double multiplier = 1.1;
+        double divide =  this.menu.getPossiblePaintingsSize() * multiplier;
+
+        return Mth.clamp((double) menu.getPaintingIndex() - (pInput / divide),
                 0, menu.getPossiblePaintingsSize() - 1);
     }
 

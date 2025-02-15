@@ -86,9 +86,6 @@ dependencies {
         jarJar.ranged(it, "[0.4.1,)")
     }
 
-    implementation fg.deobf("curse.maven:gallery-1173553:${project.gallery}")
-
-
     compileOnly fg.deobf("mezz.jei:jei-${project.minecraft}-common-api:${project.jei}")
     compileOnly fg.deobf("mezz.jei:jei-${project.minecraft}-forge-api:${project.jei}")
     runtimeOnly fg.deobf("mezz.jei:jei-${project.minecraft}-forge:${project.jei}")
