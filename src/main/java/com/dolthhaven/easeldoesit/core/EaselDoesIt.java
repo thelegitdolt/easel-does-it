@@ -15,7 +15,6 @@ import com.dolthhaven.easeldoesit.data.server.tags.EaselModPaintingTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModPoiTags;
 import com.mojang.logging.LogUtils;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

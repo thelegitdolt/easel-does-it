@@ -156,28 +156,14 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
-        EaselDoesIt.log("X: %,.2f, Y: %,.2f, Speed: %,.2f".formatted(mouseX, mouseY, speed));
-
-        double increment = MathUtil.normalizeScroll(speed);
-        nextScrollTime += speed;
-
-
-        if (nextScrollTime < 0) {
-            nextScrollTime += SCROLL_THRESHOLD;
-            int newIndex = this.menu.getPaintingIndex() - 1;
-            if (this.menu.isLegalIndex(newIndex)) {
-                setMenuIndex(newIndex);
-            }
-        }
-        else if (nextScrollTime > SCROLL_THRESHOLD) {
-            nextScrollTime -= SCROLL_THRESHOLD;
-            int newIndex = this.menu.getPaintingIndex() + 1;
-            if (this.menu.isLegalIndex(newIndex)) {
-                setMenuIndex(newIndex);
-            }
-        }
+        this.setMenuIndex(subtractInputFromScroll(speed));
 
         return true;
+    }
+
+    protected int subtractInputFromScroll(double pInput) {
+        return Mth.clamp(menu.getPaintingIndex() -  (int) Math.round(pInput / this.menu.getPossiblePaintingsSize()),
+                0, menu.getPossiblePaintingsSize() - 1);
     }
 
     @Override
