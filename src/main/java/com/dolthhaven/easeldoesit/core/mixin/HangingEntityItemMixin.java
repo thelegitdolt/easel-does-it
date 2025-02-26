@@ -37,8 +37,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
 
-import static com.dolthhaven.easeldoesit.other.util.PaintingUtil.getHolder;
-import static com.dolthhaven.easeldoesit.other.util.PaintingUtil.readPresetVariant;
+import static com.dolthhaven.easeldoesit.other.util.PaintingUtil.holder;
+import static com.dolthhaven.easeldoesit.other.util.PaintingUtil.readStack;
 
 @Mixin(HangingEntityItem.class)
 public abstract class HangingEntityItemMixin {
@@ -87,8 +87,8 @@ public abstract class HangingEntityItemMixin {
             return;
 
         if (level.isClientSide) {
-            Optional<PaintingVariant> variant = readPresetVariant(hangingStack);
-            variant.ifPresent(paintingVariant -> ((Painting) hangingentity).setVariant(getHolder(paintingVariant)));
+            Optional<PaintingVariant> variant = readStack(hangingStack);
+            variant.ifPresent(paintingVariant -> ((Painting) hangingentity).setVariant(holder(paintingVariant)));
         }
     }
 

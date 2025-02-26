@@ -30,7 +30,7 @@ public class EaselModEvents {
 
     @SubscribeEvent
     public static void changeCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        Set<ItemStack> shouldRemoveFromCreativeTab = PaintingUtil.getAllPaintingsOfTag(EaselModTags.Paintings.TREASURE);
+        Set<ItemStack> shouldRemoveFromCreativeTab = PaintingUtil.withTag(EaselModTags.Paintings.TREASURE);
 
         for (ItemStack stack : shouldRemoveFromCreativeTab) {
             event.getEntries().remove(stack);

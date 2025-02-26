@@ -6,9 +6,11 @@
   "refmap": "easel_does_it.refmap.json",
   "mixins": [
     "HangingEntityItemMixin",
-    "PaintingMixin"
+    "PaintingMixin",
+    "ZombieMixin"
   ],
   "client": [
+    "client.HumanoidMobRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 0

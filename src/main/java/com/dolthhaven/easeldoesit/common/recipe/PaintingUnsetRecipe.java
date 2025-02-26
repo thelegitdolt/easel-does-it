@@ -24,7 +24,7 @@ public class PaintingUnsetRecipe extends CustomRecipe {
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
-            if (PaintingUtil.readPresetVariant(stack).isEmpty()) {
+            if (PaintingUtil.readStack(stack).isEmpty()) {
                 continue;
             }
 

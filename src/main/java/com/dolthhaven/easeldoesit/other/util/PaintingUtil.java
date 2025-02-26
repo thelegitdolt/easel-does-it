@@ -1,6 +1,5 @@
 package com.dolthhaven.easeldoesit.other.util;
 
-import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -13,15 +12,15 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
-    public static Optional<PaintingVariant> readPresetVariant(ItemStack stack) {
+    public static Optional<PaintingVariant> readStack(ItemStack stack) {
         if (!stack.is(Items.PAINTING)) return Optional.empty();
 
         CompoundTag tag = stack.getTag();
@@ -37,40 +36,40 @@ public class PaintingUtil {
         }
     }
 
-    public static ItemStack createPresetVariantPaintingStack(Supplier<PaintingVariant> variant) {
-        return createPresetVariantPaintingStack(variant.get());
+    public static ItemStack makeStack(Supplier<PaintingVariant> variant) {
+        return makeStack(variant.get());
     }
 
-    public static ItemStack createPresetVariantPaintingStack(PaintingVariant variant) {
+    public static ItemStack makeStack(PaintingVariant variant) {
         ItemStack paintingStack = new ItemStack(Items.PAINTING, 1);
 
         CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
-        Painting.storeVariant(tag, getHolder(variant));
+        Painting.storeVariant(tag, holder(variant));
 
         return paintingStack;
     }
 
-    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height) {
-        return getAllPaintingsOfDimensions(width, height, false);
+    public static List<PaintingVariant> withTag(int width, int height) {
+        return withTag(width, height, false);
     }
 
-    public static List<PaintingVariant> getAllPaintingsOfDimensions(int width, int height, boolean includeUnplaceable) {
+    public static List<PaintingVariant> withTag(int width, int height, boolean includeUnplaceable) {
         return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
                 .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
-                .filter(painting -> includeUnplaceable || getHolder(painting).is(PaintingVariantTags.PLACEABLE))
+                .filter(painting -> includeUnplaceable || holder(painting).is(PaintingVariantTags.PLACEABLE))
                 .toList();
     }
 
-    public static Set<ItemStack> getAllPaintingsOfTag(TagKey<PaintingVariant> tag) {
+    public static Set<ItemStack> withTag(TagKey<PaintingVariant> tag) {
         return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
-                .map(PaintingUtil::getHolder)
+                .map(PaintingUtil::holder)
                 .filter(h -> h.is(tag))
                 .map(Holder::value)
-                .map(PaintingUtil::createPresetVariantPaintingStack)
+                .map(PaintingUtil::makeStack)
                 .collect(Collectors.toSet());
     }
 
-    public static Holder<PaintingVariant> getHolder(PaintingVariant painting) {
+    public static Holder<PaintingVariant> holder(PaintingVariant painting) {
         return ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow();
     }
 
@@ -79,5 +78,10 @@ public class PaintingUtil {
         return ForgeRegistries.PAINTING_VARIANTS.getHolder(
                 new ResourceLocation(keys[1], keys[2])
         );
+    }
+
+    public static ResourceLocation getPaintingLocation(PaintingVariant variant) {
+        ResourceLocation loc = Objects.requireNonNull(ForgeRegistries.PAINTING_VARIANTS.getKey(variant));
+        return new ResourceLocation(loc.getNamespace(), "textures/painting/" + loc.getPath() + ".png");
     }
 }

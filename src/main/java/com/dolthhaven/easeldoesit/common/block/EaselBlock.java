@@ -191,7 +191,7 @@ public class EaselBlock extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof EaselBlockEntity easel) {
             ItemStack stack = easel.getPainting();
             if (stack.isEmpty()) return Redstone.SIGNAL_MIN;
-            Optional<PaintingVariant> maybeVariant = PaintingUtil.readPresetVariant(stack);
+            Optional<PaintingVariant> maybeVariant = PaintingUtil.readStack(stack);
 
             if (maybeVariant.isEmpty()) return Redstone.SIGNAL_MAX;
 

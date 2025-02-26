@@ -132,7 +132,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private void createResult() {
         if (this.inputSlot.getItem().is(Items.PAINTING) && isLegalIndex(getPaintingIndex())) {
             PaintingVariant variant = getCurrentPainting();
-            ItemStack stack = PaintingUtil.createPresetVariantPaintingStack(variant);
+            ItemStack stack = PaintingUtil.makeStack(variant);
             this.resultSlot.set(stack);
         }
         else {
@@ -157,7 +157,7 @@ public class EaselMenu extends AbstractContainerMenu {
      */
     public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
-        setPossiblePaintings(PaintingUtil.getAllPaintingsOfDimensions(getPaintingWidth(), getPaintingHeight()));
+        setPossiblePaintings(PaintingUtil.withTag(getPaintingWidth(), getPaintingHeight()));
 
         // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
         // if it hasn't then it should be set to 0
