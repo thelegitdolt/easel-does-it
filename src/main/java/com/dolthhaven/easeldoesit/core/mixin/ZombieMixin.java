@@ -1,5 +1,6 @@
 package com.dolthhaven.easeldoesit.core.mixin;
 
+import com.dolthhaven.easeldoesit.core.EaselModConfig;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.Util;
 import net.minecraft.util.RandomSource;
@@ -24,9 +25,11 @@ public abstract class ZombieMixin extends Monster {
 
     @Inject(method = "populateDefaultEquipmentSlots", at = @At("TAIL"))
     private void DoltModHow$SpawnPainting(RandomSource random, DifficultyInstance diff, CallbackInfo ci) {
-        PaintingVariant variant = Util.getRandom(PaintingUtil.withTag(16, 16), random);
-        ItemStack stack = PaintingUtil.makeStack(variant);
-        this.setItemSlot(EquipmentSlot.HEAD, stack);
-        this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 1f;
+        if (EaselModConfig.canSpawnPainting(random)) {
+            PaintingVariant variant = Util.getRandom(PaintingUtil.withTag(16, 16), random);
+            ItemStack stack = PaintingUtil.makeStack(variant);
+            this.setItemSlot(EquipmentSlot.HEAD, stack);
+            this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 1f;
+        }
     }
 }
