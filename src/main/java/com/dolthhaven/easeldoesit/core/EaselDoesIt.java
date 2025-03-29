@@ -32,8 +32,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 @Mod(EaselDoesIt.MOD_ID)
-public class EaselDoesIt
-{
+public class EaselDoesIt {
     public static final String MOD_ID = "easel_does_it";
     public static final String GIT_URL = "https://github.com/thelegitdolt/easel-does-it";
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);

@@ -46,8 +46,6 @@ import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public class EaselBlock extends BaseEntityBlock {
-    // https://www.youtube.com/watch?v=O2DdUAP-7yk
-    // https://www.youtube.com/watch?v=uV81DhuZ96w
     public static final Component CONTAINER_TITLE = Component.translatable("container."  + EaselDoesIt.MOD_ID + ".easel");
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty HAS_PAINTING = BooleanProperty.create("painting");

@@ -43,16 +43,26 @@ public class PaintingMaskLayer<T extends LivingEntity, M extends HumanoidModel<T
         this.getParentModel().getHead().translateAndRotate(pose);
         ModelPart.Cube cube = this.getParentModel().getHead().getRandomCube(living.getRandom());
 
-        float cubeXSize = cube.maxX - cube.minX;
+        float cubeXSize, cubeXStart, cubeYStart, cubeZStart, scaleFactor;
 
-        float cubeXStart = (cube.minX + cube.maxX) / 2 / 16;
-        float cubeYStart = (cube.maxY + cube.minY) / 2 / 16;
-        float cubeZStart = cube.minZ / 16 - 0.0325f;
+        if (this.getParentModel().young) {
+            cubeXSize = cube.maxX - cube.minX;
+            cubeXStart = (cube.minX + cube.maxX) / 2 / 16;
+            cubeYStart = (cube.maxY + cube.minY) / 2 / 16;
+            cubeZStart = cube.minZ / 16 - 0.0325f;
+            scaleFactor = (cubeXSize + 0.6f) / 16;
+            this.getParentModel();
+        }
+        else {
+            cubeXSize = cube.maxX - cube.minX;
+            cubeXStart = (cube.minX + cube.maxX) / 2 / 16;
+            cubeYStart = (cube.maxY + cube.minY) / 2 / 16;
+            cubeZStart = cube.minZ / 16 - 0.0325f;
+            scaleFactor = (cubeXSize + 0.6f) / 16;
+        }
 
-        float scaleFactor = (cubeXSize + 0.6f) / 16;
 
         Painting painting = new Painting(living.level(), living.blockPosition(), Direction.SOUTH, PaintingUtil.holder(variant));
-
 
         pose.scale(scaleFactor, scaleFactor, scaleFactor);
         this.dispatcher.render(painting, cubeXStart / scaleFactor, cubeYStart / scaleFactor, cubeZStart / scaleFactor,
