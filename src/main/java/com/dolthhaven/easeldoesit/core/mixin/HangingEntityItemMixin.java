@@ -75,7 +75,7 @@ public abstract class HangingEntityItemMixin {
 
         IDataManager painting = (IDataManager) hangingentity;
 
-        if (compoundtag.contains("EntityTag", 10)) {
+        if (Painting.loadVariant(compoundtag).isPresent()) {
             painting.setValue(EaselModTrackedData.PAINTING_SHOULD_DROP_SELF, true);
         }
     }

@@ -20,7 +20,6 @@ public class EaselModTrackedData {
         TrackedDataManager.INSTANCE.registerData(EaselDoesIt.rl("painting_should_drop_self"), PAINTING_SHOULD_DROP_SELF);
     }
 
-    @Contract(value = "_ -> new", pure = true)
     public static int @NotNull [] decodePainting(short painting) {
         return new int[]{
                 (((painting & 0xC000) >>> 14) + 1) * 16,
