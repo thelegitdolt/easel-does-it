@@ -14,8 +14,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.HangingEntity;
@@ -75,7 +78,9 @@ public abstract class HangingEntityItemMixin {
 
         IDataManager painting = (IDataManager) hangingentity;
 
-        if (Painting.loadVariant(compoundtag).isPresent()) {
+        Tag variantTag = compoundtag.getCompound("EntityTag").get("variant");
+
+        if (variantTag != null && PaintingUtil.getPainting(ResourceLocation.tryParse(variantTag.getAsString())) != null) {
             painting.setValue(EaselModTrackedData.PAINTING_SHOULD_DROP_SELF, true);
         }
     }

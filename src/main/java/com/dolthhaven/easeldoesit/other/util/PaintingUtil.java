@@ -80,8 +80,7 @@ public class PaintingUtil {
         );
     }
 
-    public static ResourceLocation getPaintingLocation(PaintingVariant variant) {
-        ResourceLocation loc = Objects.requireNonNull(ForgeRegistries.PAINTING_VARIANTS.getKey(variant));
-        return new ResourceLocation(loc.getNamespace(), "textures/painting/" + loc.getPath() + ".png");
+    public static PaintingVariant getPainting(ResourceLocation location) {
+        return ForgeRegistries.PAINTING_VARIANTS.getValue(location);
     }
 }
