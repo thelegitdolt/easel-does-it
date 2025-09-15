@@ -2,15 +2,10 @@ package com.dolthhaven.easeldoesit.data.server.tags;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.PoiTypeTagsProvider;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 
 public class EaselModPoiTags extends PoiTypeTagsProvider {
     public EaselModPoiTags(GatherDataEvent e) {

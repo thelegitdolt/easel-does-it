@@ -3,19 +3,26 @@ package com.dolthhaven.easeldoesit.core.registry;
 import com.dolthhaven.easeldoesit.common.inventory.EaselMenu;
 import com.dolthhaven.easeldoesit.common.inventory.EaselScreen;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Supplier;
+
+@EventBusSubscriber(value = Dist.CLIENT, modid = EaselDoesIt.MOD_ID)
 public class EaselModMenuTypes {
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, EaselDoesIt.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, EaselDoesIt.MOD_ID);
 
-    public static final RegistryObject<MenuType<EaselMenu>> EASEL_MENU = MENUS.register("easel_menu", () -> new MenuType<>(EaselMenu::new, FeatureFlags.VANILLA_SET));
+    public static final Supplier<MenuType<EaselMenu>> EASEL_MENU = MENUS
+            .register("easel_menu", () -> new MenuType<>(EaselMenu::new, FeatureFlags.VANILLA_SET));
 
-    public static void registerScreens() {
-        MenuScreens.register(EASEL_MENU.get(), EaselScreen::new);
+    @SubscribeEvent // on the mod event bus only on the physical client
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(EASEL_MENU.get(), EaselScreen::new);
     }
 }

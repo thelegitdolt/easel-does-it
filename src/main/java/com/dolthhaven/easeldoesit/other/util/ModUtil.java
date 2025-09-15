@@ -1,22 +1,23 @@
 package com.dolthhaven.easeldoesit.other.util;
 
 import com.dolthhaven.easeldoesit.core.other.EaselModConstants;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.function.Function;
 
 public class ModUtil {
     public static List<Item> getAllMembersOfTag(TagKey<Item> tag) {
-        return ForgeRegistries.ITEMS.getValues().stream().filter(item -> item.builtInRegistryHolder().is(tag)).toList();
+        return BuiltInRegistries.ITEM.entrySet().stream().map(Map.Entry::getValue).filter(item ->
+                item.builtInRegistryHolder().is(tag)).toList();
     }
 
     public static List<Item> getAllDyedItems(Function<String, ResourceLocation> thing) {

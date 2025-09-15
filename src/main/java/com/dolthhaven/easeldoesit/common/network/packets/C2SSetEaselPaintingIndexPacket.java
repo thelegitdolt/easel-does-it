@@ -1,39 +1,23 @@
 package com.dolthhaven.easeldoesit.common.network.packets;
 
-import com.dolthhaven.easeldoesit.common.inventory.EaselMenu;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.network.NetworkEvent;
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import java.util.function.Supplier;
+public record C2SSetEaselPaintingIndexPacket(short index) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SSetEaselPaintingIndexPacket> TYPE = new CustomPacketPayload.Type<>(EaselDoesIt.rl("change_easel_painting_index"));
+    public static final StreamCodec<ByteBuf, C2SSetEaselPaintingIndexPacket> CODEC = StreamCodec.composite(
+            ByteBufCodecs.SHORT, C2SSetEaselPaintingIndexPacket::index, C2SSetEaselPaintingIndexPacket::new
+    );
 
-public class C2SSetEaselPaintingIndexPacket {
-    private final short newIndex;
-
-    public C2SSetEaselPaintingIndexPacket(short newIndex) {
-        this.newIndex = newIndex;
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public C2SSetEaselPaintingIndexPacket(FriendlyByteBuf buffer) {
-        this(buffer.readShort());
-    }
-
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeShort(newIndex);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> contextGetter) {
-        NetworkEvent.Context context = contextGetter.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            if (player == null) return;
-
-            AbstractContainerMenu menu = player.containerMenu;
-            if (menu instanceof EaselMenu easelMenu) {
-                easelMenu.setPaintingIndex(this.newIndex);
-                easelMenu.indexChanged();
-            }
-        });
+    public C2SSetEaselDimensionsPacket(int index) {
+        this((short) index);
     }
 }

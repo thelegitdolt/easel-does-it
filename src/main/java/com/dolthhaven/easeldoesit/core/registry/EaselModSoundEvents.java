@@ -3,14 +3,14 @@ package com.dolthhaven.easeldoesit.core.registry;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.teamabnormals.blueprint.core.util.registry.SoundSubRegistryHelper;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-@Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class EaselModSoundEvents {
     private static final SoundSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getSoundSubHelper();
 
-    public static final RegistryObject<SoundEvent> UI_EASEL_TAKE_RESULT = HELPER.createSoundEvent("ui.easel.take_result");
-    public static final RegistryObject<SoundEvent> VILLAGER_WORK_ARTIST = HELPER.createSoundEvent("entity.villager.work_artist");
+    public static final DeferredHolder<SoundEvent, SoundEvent> UI_EASEL_TAKE_RESULT = HELPER.createSoundEvent("ui.easel.take_result");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VILLAGER_WORK_ARTIST = HELPER.createSoundEvent("entity.villager.work_artist");
 
 }

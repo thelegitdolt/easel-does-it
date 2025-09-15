@@ -18,7 +18,6 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -194,7 +193,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public void setPossiblePaintings(List<PaintingVariant> paintings) {
-        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(ForgeRegistries.PAINTING_VARIANTS::getKey)).toList();
+        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(PAINTING_VARIANTS::getKey)).toList();
     }
 
     /**

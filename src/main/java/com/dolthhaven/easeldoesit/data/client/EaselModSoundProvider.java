@@ -3,14 +3,12 @@ package com.dolthhaven.easeldoesit.data.client;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
-import net.minecraft.data.PackOutput;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SoundDefinition;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.data.SoundDefinition;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -36,7 +34,7 @@ public class EaselModSoundProvider extends SoundDefinitionsProvider {
         this.add(EaselModSoundEvents.UI_EASEL_TAKE_RESULT.get(), definition().with(sound).subtitle(subtitle));
     }
 
-    public static String getUISubtitle(RegistryObject<Block> block, String action) {
-        return "subtitle.ui." + Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block.get())).toString().replace(':', '.') + "." + action;
+    public static String getUISubtitle(DeferredBlock<? extends Block> block, String action) {
+        return "subtitle.ui." + Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block.get())).toString().replace(':', '.') + "." + action;
     }
 }

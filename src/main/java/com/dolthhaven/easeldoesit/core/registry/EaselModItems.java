@@ -8,9 +8,9 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class EaselModItems {
     public static final ItemSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getItemSubHelper();
 

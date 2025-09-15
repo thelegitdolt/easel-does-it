@@ -4,7 +4,7 @@ import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.tags.PaintingVariantTagsProvider;
 import net.minecraft.tags.PaintingVariantTags;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
 
 import static com.dolthhaven.easeldoesit.core.registry.EaselModPaintings.*;

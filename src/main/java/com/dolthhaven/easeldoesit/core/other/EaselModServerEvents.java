@@ -1,5 +1,8 @@
 package com.dolthhaven.easeldoesit.core.other;
 
+import com.dolthhaven.easeldoesit.common.network.ServerEventHandler;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselDimensionsPacket;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModPaintings;
 import com.dolthhaven.easeldoesit.core.registry.EaselModVillagers;
@@ -10,22 +13,25 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.util.List;
 import java.util.Set;
 
 import static com.dolthhaven.easeldoesit.common.villagers.EaselModItemListings.*;
 
-@Mod.EventBusSubscriber(modid = EaselDoesIt.MOD_ID)
-public class EaselModEvents {
+@EventBusSubscriber(modid = EaselDoesIt.MOD_ID)
+public class EaselModServerEvents {
     private static final UniformInt ONE = UniformInt.of(1, 1);
 
     @SubscribeEvent
@@ -33,8 +39,15 @@ public class EaselModEvents {
         Set<ItemStack> shouldRemoveFromCreativeTab = PaintingUtil.withTag(EaselModTags.Paintings.TREASURE);
 
         for (ItemStack stack : shouldRemoveFromCreativeTab) {
-            event.getEntries().remove(stack);
+            event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
+    }
+
+    @SubscribeEvent
+    public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar reg = event.registrar("1");
+        reg.playToServer(C2SSetEaselDimensionsPacket.TYPE, C2SSetEaselDimensionsPacket.STREAM_CODEC, ServerEventHandler::handleEaselDimensionPacket);
+        reg.playToServer(C2SSetEaselPaintingIndexPacket.TYPE, C2SSetEaselPaintingIndexPacket.CODEC, ServerEventHandler::handleEaselReindexPacket);
     }
 
     @SubscribeEvent
@@ -42,7 +55,7 @@ public class EaselModEvents {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {
             Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
 
-            List<Item> dyes = ModUtil.getAllDyedItems(str -> new ResourceLocation(str + "_dye"));
+            List<Item> dyes = ModUtil.getAllDyedItems(str -> ResourceLocation.withDefaultNamespace(str + "_dye"));
             List<Item> rare_dyes = ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES);
 
 
@@ -75,7 +88,7 @@ public class EaselModEvents {
                     UniformInt.of(3, 3), 16, 10, 0.01f));
             trades.get(2).add(new RandomItemsSellingTrade(
                     UniformInt.of(1, 1),
-                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye + "_wool")),
+                    ModUtil.getAllDyedItems(dye -> ResourceLocation.withDefaultNamespace(dye + "_wool")),
                     UniformInt.of(2, 2), 12, 10, 0.01f));
             trades.get(2).add(new ItemBuyingTrade(
                     Items.INK_SAC,
@@ -96,12 +109,12 @@ public class EaselModEvents {
                     ONE, 16, 10, 0.01f));
             trades.get(3).add(new RandomItemsSellingTrade(
                     UniformInt.of(2, 2),
-                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_terracotta")),
+                    ModUtil.getAllDyedItems(dye -> ResourceLocation.fromNamespaceAndPath(dye +  "_terracotta")),
                     UniformInt.of(4, 4), 12, 10, 0.01f
             ));
             trades.get(3).add(new RandomItemsSellingTrade(
                     UniformInt.of(2, 2),
-                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_glazed_terracotta")),
+                    ModUtil.getAllDyedItems(dye -> ResourceLocation.fromNamespaceAndPath(dye +  "_glazed_terracotta")),
                     UniformInt.of(4, 4), 12, 10, 0.01f
             ));
 
@@ -143,7 +156,6 @@ public class EaselModEvents {
             trades.get(5).add(new SellPaintingVariantTrade(
                     EaselModPaintings.CULTURE.get(), UniformInt.of(5, 5), 12
             ));
-
         }
     }
 }

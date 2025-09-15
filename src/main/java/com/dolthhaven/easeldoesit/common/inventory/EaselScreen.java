@@ -1,11 +1,8 @@
 package com.dolthhaven.easeldoesit.common.inventory;
 
-import com.dolthhaven.easeldoesit.common.network.EaselModPacketListener;
-import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingHeightPacket;
+import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselDimensionsPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
-import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingWidthPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
-import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.client.Minecraft;
@@ -22,19 +19,19 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("unused")
+@OnlyIn(Dist.CLIENT)
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
-    private static final byte SCROLL_THRESHOLD = 30;
 
     private final int imageWidth, imageHeight; // sides of the gui
     private int leftPos, topPos; // leftmost position of gui
@@ -156,8 +153,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
-        double potentialIndex = subtractInputFromScroll(speed);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        double potentialIndex = subtractInputFromScroll(scrollY);
         float remainders = (float) potentialIndex - Mth.floor(potentialIndex);
         this.untilNextScroll += remainders;
 
@@ -200,7 +197,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        renderBackground(graphics); // render black shading behind background, mowzies mobs
+        renderBackground(graphics, mouseX, mouseY, partialTick); // render black shading behind background, mowzies mobs
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -285,7 +282,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
 
         graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
-                0, currentPainting.getWidth(), currentPainting.getHeight(), paintingSprite); // draw the current painting
+                0, currentPainting.width(), currentPainting.height(), paintingSprite); // draw the current painting
     }
 
     private boolean isEaselActive() {
@@ -295,20 +292,20 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private void setMenuPaintingWidth(int newWidth) {
         this.menu.setPaintingWidth(newWidth);
 
-        EaselModPacketListener.sendToServer(new C2SSetEaselPaintingWidthPacket((byte) newWidth));
+        PacketDistributor.sendToServer(new C2SSetEaselDimensionsPacket(newWidth, menu.getPaintingHeight()));
         updatePickers(this.menu.getPaintingIndex());
     }
 
     private void setMenuPaintingHeight(int newHeight) {
         this.menu.setPaintingHeight(newHeight);
 
-        EaselModPacketListener.sendToServer(new C2SSetEaselPaintingHeightPacket((byte) newHeight));
+        PacketDistributor.sendToServer(new C2SSetEaselDimensionsPacket(menu.getPaintingWidth(), newHeight));
         updatePickers(this.menu.getPaintingIndex());
     }
 
     private void setMenuIndex(int newIndex) {
         this.menu.setPaintingIndex(newIndex);
-        EaselModPacketListener.sendToServer(new C2SSetEaselPaintingIndexPacket((short) newIndex));
+        PacketDistributor.sendToServer(new C2SSetEaselPaintingIndexPacket(newIndex));
         updatePickers(newIndex);
     }
 

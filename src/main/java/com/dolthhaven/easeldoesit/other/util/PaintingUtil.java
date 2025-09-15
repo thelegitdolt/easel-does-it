@@ -1,8 +1,13 @@
 package com.dolthhaven.easeldoesit.other.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.Painting;
@@ -54,7 +59,7 @@ public class PaintingUtil {
     }
 
     public static List<PaintingVariant> withTag(int width, int height, boolean includeUnplaceable) {
-        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
+        return ServerLevel.instance.stream()
                 .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
                 .filter(painting -> includeUnplaceable || holder(painting).is(PaintingVariantTags.PLACEABLE))
                 .toList();

@@ -51,7 +51,7 @@ public abstract class HangingEntityItemMixin {
             Optional<Holder<PaintingVariant>> variantMaybe = PaintingUtil.fromLanguageKey(contents.getKey());
 
             if (variantMaybe.isEmpty()) {
-                EaselDoesIt.log("FAIL TO CONVERT MAKE A PAINTING in #easel_does_it:treasure TAG WITH LANGUAGE KEY "
+                EaselDoesIt.warnLog("FAIL TO CONVERT MAKE A PAINTING in #easel_does_it:treasure TAG WITH LANGUAGE KEY "
                         + contents.getKey() + " THIS IS BAD, REPORT TO " + EaselDoesIt.GIT_URL);
                 return original.call(instance, formatting);
             }
