@@ -2,12 +2,12 @@ package com.dolthhaven.easeldoesit.common.villagers;
 
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,21 +34,21 @@ public class EaselModItemListings {
             this.priceMultiplier = priceMultiplier;
         }
 
-        public abstract Item getSecondItem(RandomSource random);
+        public abstract Item getSecondItem(RandomSource random, Entity entity);
 
-        public ItemStack getSecond(RandomSource random) {
-                return new ItemStack(getFirstItem(random), emeraldCount.sample(random));
+        public ItemStack getSecond(RandomSource random, Entity entity) {
+                return new ItemStack(getFirstItem(random, entity), emeraldCount.sample(random));
         }
 
-        public abstract Item getFirstItem(RandomSource random);
+        public abstract Item getFirstItem(RandomSource random, Entity entity);
 
-        public ItemCost getFirst(RandomSource random) {
-            return new ItemCost(getSecondItem(random), costCount.sample(random));
+        public ItemCost getFirst(RandomSource random, Entity entity) {
+            return new ItemCost(getSecondItem(random, entity), costCount.sample(random));
         }
 
         @Override
         public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
-            return new MerchantOffer(getFirst(random), getSecond(random), this.maxUses, this.villagerXp, this.priceMultiplier);
+            return new MerchantOffer(getFirst(random, entity), getSecond(random, entity), this.maxUses, this.villagerXp, this.priceMultiplier);
         }
     }
 
@@ -64,12 +64,12 @@ public class EaselModItemListings {
         }
 
         @Override
-        public Item getFirstItem(RandomSource random) {
+        public Item getFirstItem(RandomSource random, Entity entity) {
             return Items.EMERALD;
         }
 
         @Override
-        public Item getSecondItem(RandomSource random) {
+        public Item getSecondItem(RandomSource random, Entity entity) {
             return item;
         }
     }
@@ -82,12 +82,12 @@ public class EaselModItemListings {
         }
 
         @Override
-        public Item getFirstItem(RandomSource random) {
+        public Item getFirstItem(RandomSource random, Entity entity) {
             return Items.EMERALD;
         }
 
         @Override
-        public Item getSecondItem(RandomSource random) {
+        public Item getSecondItem(RandomSource random, Entity entity) {
             return item;
         }
     }
@@ -105,12 +105,12 @@ public class EaselModItemListings {
         }
 
         @Override
-        public Item getSecondItem(RandomSource random) {
+        public Item getSecondItem(RandomSource random, Entity entity) {
             return Items.EMERALD;
         }
 
         @Override
-        public Item getFirstItem(RandomSource random) {
+        public Item getFirstItem(RandomSource random, Entity entity) {
             return Util.getRandom(items, random);
         }
     }
@@ -128,27 +128,27 @@ public class EaselModItemListings {
         }
 
         @Override
-        public Item getSecondItem(RandomSource random) {
+        public Item getSecondItem(RandomSource random, Entity entity) {
             return Util.getRandom(allowedItems, random);
         }
 
         @Override
-        public Item getFirstItem(RandomSource random) {
+        public Item getFirstItem(RandomSource random, Entity entity) {
             return Items.EMERALD;
         }
     }
 
     public static class EmeraldToPainting extends EmeraldToItem implements VillagerTrades.ItemListing {
-        private final PaintingVariant variant;
+        private final ResourceLocation variant;
 
-        public EmeraldToPainting(PaintingVariant variant, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
-            super(Items.PAINTING, UniformInt.of(1, 1), emeraldCount, maxUses, villagerXp, priceMultiplier);
+        public EmeraldToPainting(ResourceLocation variant, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
+            super(UniformInt.of(1, 1), Items.PAINTING, emeraldCount, maxUses, villagerXp, priceMultiplier);
             this.variant = variant;
         }
 
         @Override
-        public ItemStack getSecond(RandomSource random) {
-            return PaintingUtil.makeStack(variant);
+        public ItemStack getSecond(RandomSource random, Entity entity) {
+            return PaintingUtil.makeStack(variant, entity.registryAccess());
         }
     }
 }

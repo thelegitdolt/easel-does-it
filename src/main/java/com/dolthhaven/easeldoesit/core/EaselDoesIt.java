@@ -6,6 +6,8 @@ import com.dolthhaven.easeldoesit.core.registry.*;
 import com.dolthhaven.easeldoesit.core.registry.other.EaselModRecipeSerializers;
 import com.dolthhaven.easeldoesit.data.client.EaselModBlockStates;
 import com.dolthhaven.easeldoesit.data.client.EaselModSoundProvider;
+import com.dolthhaven.easeldoesit.data.server.EaselModDataMaps;
+import com.dolthhaven.easeldoesit.data.server.EaselModDataRegistries;
 import com.dolthhaven.easeldoesit.data.server.EaselModLootTables;
 import com.dolthhaven.easeldoesit.data.server.EaselModRecipes;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModBlockTags;
@@ -26,9 +28,12 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.slf4j.Logger;
 
 /*
-1. REGISTER THE PAINTINGS.
 2. Fix the registies.
-3. Make easels smelt 300 ticks.
+3. figure out how new components work
+4. Fix easel interaction results
+5. Put culture in the creative tab in the right place
+6. Make treasure painting tooltips blue
+7. Make the easel a container
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {
@@ -38,14 +43,9 @@ public class EaselDoesIt {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public EaselDoesIt(IEventBus bus, ModContainer container) {
-        ModLoadingContext context = ModLoadingContext.get();
-
-        // Register the commonSetup method for modloading
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
-        // do the data set up
         bus.addListener(this::dataSetup);
-
 
         REGISTRY_HELPER.register(bus);
 
@@ -62,10 +62,6 @@ public class EaselDoesIt {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            EaselModCompat.doCompat();
-            EaselModPacketListener.register();
-        });
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -84,8 +80,10 @@ public class EaselDoesIt {
         dataGen.addProvider(server, new EaselModItemTags(event, easelModBlockTags.contentsGetter()));
         dataGen.addProvider(server, new EaselModPoiTags(event));
         dataGen.addProvider(server, new EaselModPaintingTags(event));
+        dataGen.addProvider(server, new EaselModDataRegistries(event));
         dataGen.addProvider(server, new EaselModLootTables(event));
         dataGen.addProvider(server, new EaselModRecipes(event));
+        dataGen.addProvider(server, new EaselModDataMaps(event));
 
         boolean client = event.includeClient();
         dataGen.addProvider(client, new EaselModBlockStates(event));

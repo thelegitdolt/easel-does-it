@@ -28,9 +28,9 @@ public class EaselModItems {
 
 
     public static void setUpTabEditors() {
-        CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
-                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makeStack(EaselModPaintings.CULTURE));
+//        CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
+//                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+//                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makeStack(EaselModPaintings.CULTURE));
     }
 
     public static class Properties {

@@ -42,13 +42,13 @@ public class EaselModServerEvents {
 
     @SubscribeEvent
     public static void changeCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        Set<ItemStack> shouldRemoveFromCreativeTab = event.getParameters().holders().asGetterLookup()
-                .lookupOrThrow(Registries.PAINTING_VARIANT).getOrThrow(EaselModTags.Paintings.TREASURE).stream()
-                .map(holder -> PaintingUtil.makeStack(holder.value())).collect(Collectors.toSet());
-
-        for (ItemStack stack : shouldRemoveFromCreativeTab) {
-            event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        }
+//        Set<ItemStack> shouldRemoveFromCreativeTab = event.getParameters().holders().asGetterLookup()
+//                .lookupOrThrow(Registries.PAINTING_VARIANT).getOrThrow(EaselModTags.Paintings.TREASURE).stream()
+//                .map(holder -> PaintingUtil.makeStack(holder.value())).collect(Collectors.toSet());
+//
+//        for (ItemStack stack : shouldRemoveFromCreativeTab) {
+//            event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+//        }
     }
 
     @SubscribeEvent
@@ -152,8 +152,7 @@ public class EaselModServerEvents {
             }
 
 
-            trades.get(5).add(new EmeraldToPainting(EaselModPaintings.CULTURE.get(),
-                    UniformInt.of(5, 5), 12, 25, 0.1f));
+            trades.get(5).add(new EmeraldToPainting(EaselModPaintings.CULTURE.location(), constant(12), 12, 25, 0.1f));
         }
     }
 }

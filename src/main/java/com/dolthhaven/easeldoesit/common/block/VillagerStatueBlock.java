@@ -127,7 +127,7 @@ public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
     }
 
     @Override
-    public void playerWillDestroy(Level p_52878_, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+    public BlockState playerWillDestroy(Level p_52878_, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         if (!p_52878_.isClientSide) {
             if (player.isCreative()) {
                 preventCreativeDropFromBottomPart(p_52878_, pos, state, player);
@@ -136,7 +136,7 @@ public class VillagerStatueBlock extends Block /* extends BaseEntityBlock */ {
             }
         }
 
-        super.playerWillDestroy(p_52878_, pos, state, player);
+        return super.playerWillDestroy(p_52878_, pos, state, player);
     }
 
     public void playerDestroy(@NotNull Level p_52865_, @NotNull Player p_52866_, @NotNull BlockPos p_52867_, @NotNull BlockState p_52868_, @javax.annotation.Nullable BlockEntity p_52869_, @NotNull ItemStack p_52870_) {

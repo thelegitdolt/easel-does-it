@@ -1,23 +1,36 @@
 package com.dolthhaven.easeldoesit.core.registry;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public class EaselModPaintings {
-    public static final DeferredRegister<PaintingVariant> PAINTING_VARIANTS = DeferredRegister.create(ForgeRegistries.PAINTING_VARIANTS, EaselDoesIt.MOD_ID);
+    public static final ResourceKey<PaintingVariant> CULTURE = create("culture");
+    public static final ResourceKey<PaintingVariant> HOLE = create("hole");
+    public static final ResourceKey<PaintingVariant> LAYERS = create("layers");
+    public static final ResourceKey<PaintingVariant> MONOCHROME = create("monochrome");
+    public static final ResourceKey<PaintingVariant> PORTAL = create("portal");
+    public static final ResourceKey<PaintingVariant> VINTAGE = create("vintage");
 
-    public static final RegistryObject<PaintingVariant> CULTURE = register("culture", 16, 48);
-    public static final RegistryObject<PaintingVariant> HOLE = register("hole", 32, 16);
-    public static final RegistryObject<PaintingVariant> LAYERS = register("layers", 32, 48);
-    public static final RegistryObject<PaintingVariant> MONOCHROME = register("monochrome", 32, 64);
-    public static final RegistryObject<PaintingVariant> PORTAL = register("portal", 48, 32);
-    public static final RegistryObject<PaintingVariant> VINTAGE = register("vintage", 16, 16);
-
-    private static RegistryObject<PaintingVariant> register(String name, int width, int height) {
-        return PAINTING_VARIANTS.register(name, () -> new PaintingVariant(width, height));
+    private static ResourceKey<PaintingVariant> create(String name) {
+        return ResourceKey.create(Registries.PAINTING_VARIANT, EaselDoesIt.rl(name));
     }
+
+    private static void register(BootstrapContext<PaintingVariant> context, ResourceKey<PaintingVariant> painting, int width, int height) {
+        context.register(painting, new PaintingVariant(width, height, painting.location()));
+    }
+
+    public static void bootstrap(BootstrapContext<PaintingVariant> context) {
+        register(context, CULTURE, 16, 48);
+        register(context, HOLE, 32, 16);
+        register(context, LAYERS, 32, 48);
+        register(context, MONOCHROME, 32, 64);
+        register(context, PORTAL, 48, 32);
+        register(context, VINTAGE, 16, 16);
+    }
+
+
 
 }
