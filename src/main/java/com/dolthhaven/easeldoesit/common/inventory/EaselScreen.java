@@ -210,10 +210,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         renderPageManager(graphics);
     }
 
-    private void renderDebugString(GuiGraphics graphics) {
-        graphics.drawString(this.font, menu.getPaintingWidth() + ", " + menu.getPaintingHeight() + " Painting index: " + menu.getPaintingIndex(), 0, 0, 0xffffff);
-    }
-
     private void renderPaintingGrid(GuiGraphics graphics) {
         if (isEaselActive()) {
             graphics.blit(BG_LOCATION,
@@ -321,11 +317,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             // !!!!!!!!!!!!!!!!
             int newWidth = index * 16;
             EaselScreen.this.setMenuPaintingWidth(newWidth);
-
-//            for (int i = 1; i <= 4; i += 1) {
-//                getHeightButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(newWidth, i * 16).isEmpty();
-//            }
-
             EaselScreen.this.getMenu().dimensionChangedPost();
         }
 

@@ -17,7 +17,7 @@ public record C2SSetEaselPaintingIndexPacket(short index) implements CustomPacke
         return TYPE;
     }
 
-    public C2SSetEaselDimensionsPacket(int index) {
+    public C2SSetEaselPaintingIndexPacket(int index) {
         this((short) index);
     }
 }

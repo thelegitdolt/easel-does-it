@@ -11,7 +11,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,7 +130,7 @@ public class EaselModItemListings {
 
         @Nullable
         @Override
-        public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource source) {
+        public MerchantOffer getOffer(Entity entity, RandomSource source) {
             Item item = allowedItems.get(source.nextInt(allowedItems.size()));
 
             int cost = costCount.sample(source);
@@ -153,7 +152,7 @@ public class EaselModItemListings {
 
         @Nullable
         @Override
-        public MerchantOffer getOffer(@NotNull Entity p_219693_, @NotNull RandomSource p_219694_) {
+        public MerchantOffer getOffer(Entity p_219693_, RandomSource p_219694_) {
             ItemStack paintingStack = PaintingUtil.makeStack(this.variant);
             ItemStack emeraldStack = new ItemStack(Items.EMERALD, emeraldCost.sample(p_219694_));
 
@@ -173,7 +172,7 @@ public class EaselModItemListings {
 
         @Nullable
         @Override
-        public MerchantOffer getOffer(@NotNull Entity entity, @NotNull RandomSource random) {
+        public MerchantOffer getOffer(Entity entity, RandomSource random) {
             return random.nextBoolean() ? tradeOne.getOffer(entity, random) : tradeTwo.getOffer(entity, random);
         }
     }

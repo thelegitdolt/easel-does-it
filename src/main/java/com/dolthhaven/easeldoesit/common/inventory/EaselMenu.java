@@ -4,10 +4,12 @@ import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
+import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -15,11 +17,11 @@ import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +32,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private static final int MAX_DIMENSION = 64;
 
     private final ContainerLevelAccess access;
+
     long lastSoundTime;
 
     // slots
@@ -156,7 +159,7 @@ public class EaselMenu extends AbstractContainerMenu {
      */
     public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
-        setPossiblePaintings(PaintingUtil.withTag(getPaintingWidth(), getPaintingHeight()));
+        updatePaintings();
 
         // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
         // if it hasn't then it should be set to 0
@@ -166,6 +169,13 @@ public class EaselMenu extends AbstractContainerMenu {
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
+    }
+
+    private void updatePaintings() {
+        this.possiblePaintings = access.evaluate((level, pos) ->
+                PaintingUtil.onlyIfTagged(PaintingVariantTags.PLACEABLE, level, painting ->
+                        painting.width() == paintingWidth.get() && painting.height() == paintingHeight.get())).orElseThrow()
+                .stream().sorted(Comparator.comparing(paint -> paint.assetId().getPath())).toList();
     }
 
     /**
@@ -192,9 +202,6 @@ public class EaselMenu extends AbstractContainerMenu {
         return this.possiblePaintings;
     }
 
-    public void setPossiblePaintings(List<PaintingVariant> paintings) {
-        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(PAINTING_VARIANTS::getKey)).toList();
-    }
 
     /**
      * Okay so the bases are 0, 1, 2, 3, 4 and the painting heights (as coded) are 0, 16, 32, 64, so yeah.
@@ -248,13 +255,9 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public PaintingVariant getCurrentPainting() {
-        try {
-            return getPossiblePaintings().get(getPaintingIndex());
-        }
-        catch (IndexOutOfBoundsException e) {
-            return ForgeRegistries.PAINTING_VARIANTS.getValue(PaintingVariants.KEBAB.location());
-        }
+        return getPossiblePaintings().get(getPaintingIndex());
     }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         Slot slot = this.slots.get(index);

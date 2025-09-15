@@ -1,25 +1,23 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+import com.google.common.base.Predicates;
+import com.jcraft.jorbis.Block;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.Level;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -54,28 +52,22 @@ public class PaintingUtil {
         return paintingStack;
     }
 
-    public static List<PaintingVariant> withTag(int width, int height) {
-        return withTag(width, height, false);
+    public static Set<PaintingVariant> onlyIfTagged(TagKey<PaintingVariant> tag, Level level, Predicate<PaintingVariant> predicate) {
+        return predicate(painting -> holder(painting, level).is(tag) && predicate.test(painting), level);
     }
 
-    public static List<PaintingVariant> withTag(int width, int height, boolean includeUnplaceable) {
-        return ServerLevel.instance.stream()
-                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
-                .filter(painting -> includeUnplaceable || holder(painting).is(PaintingVariantTags.PLACEABLE))
-                .toList();
+    public static Set<PaintingVariant> predicate(Predicate<PaintingVariant> variantPredicate, Level level) {
+        Optional<Registry<PaintingVariant>> paintings = level.registryAccess().registry(Registries.PAINTING_VARIANT);
+        return paintings
+                .map(list -> list
+                    .stream().filter(variantPredicate)
+                    .collect(Collectors.toSet()))
+                .orElseGet(Set::of);
     }
 
-    public static Set<ItemStack> withTag(TagKey<PaintingVariant> tag) {
-        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
-                .map(PaintingUtil::holder)
-                .filter(h -> h.is(tag))
-                .map(Holder::value)
-                .map(PaintingUtil::makeStack)
-                .collect(Collectors.toSet());
-    }
-
-    public static Holder<PaintingVariant> holder(PaintingVariant painting) {
-        return ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow();
+    public static Holder<PaintingVariant> holder(PaintingVariant painting, Level level) {
+        Optional<Registry<PaintingVariant>> paintings = level.registryAccess().registry(Registries.PAINTING_VARIANT);
+        return paintings.map(registry -> registry.getHolder(registry.getKey(painting))).orElseThrow().orElseThrow();
     }
 
     public static Optional<Holder<PaintingVariant>> fromLanguageKey(String key) {
