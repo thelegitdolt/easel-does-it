@@ -4,7 +4,6 @@ import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlocks;
 import com.dolthhaven.easeldoesit.core.registry.EaselModMenuTypes;
 import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
-import com.dolthhaven.easeldoesit.data.server.tags.EaselModTags;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
@@ -13,15 +12,12 @@ import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -173,7 +169,7 @@ public class EaselMenu extends AbstractContainerMenu {
 
     private void updatePaintings() {
         this.possiblePaintings = access.evaluate((level, pos) ->
-                PaintingUtil.onlyIfTagged(PaintingVariantTags.PLACEABLE, level, painting ->
+                PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, level, painting ->
                         painting.width() == paintingWidth.get() && painting.height() == paintingHeight.get())).orElseThrow()
                 .stream().sorted(Comparator.comparing(paint -> paint.assetId().getPath())).toList();
     }

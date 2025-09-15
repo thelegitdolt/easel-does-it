@@ -24,13 +24,13 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2i;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
-    // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/client/gui/screens/inventory/SawmillScreen.java
     private static final ResourceLocation BG_LOCATION = EaselDoesIt.rl("textures/gui/container/easel.png");
 
     private final int imageWidth, imageHeight; // sides of the gui
@@ -227,9 +227,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
 
-        for (int[] yPosAndIndex : getPageButtonYPositionsAndRepresentedIndex(currentPage, numPaintingsInThisPage)) {
-            int yPos = yPosAndIndex[0];
-            int currentIndex = yPosAndIndex[1];
+        for (Vector2i yPosAndIndex : getPageButtonYPositionsAndRepresentedIndex(currentPage, numPaintingsInThisPage)) {
+            int yPos = yPosAndIndex.x;
+            int currentIndex = yPosAndIndex.y;
 
             int dotXLoc, dotYLoc;
             if (currentIndex == menuPaintingIndex)  {
@@ -249,12 +249,12 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
-    private List<int[]> getPageButtonYPositionsAndRepresentedIndex(int currentPage, int numPaintingsInThisPage) {
-        List<int[]> list = Lists.newArrayList();
+    private List<Vector2i> getPageButtonYPositionsAndRepresentedIndex(int currentPage, int numPaintingsInThisPage) {
+        List<Vector2i> list = Lists.newArrayList();
         int yPos = (AVAILABLE_PIXELS_PER_PAGE - totalReqPixelsFor(numPaintingsInThisPage)) / 2;
         yPos += 2;
         for (int i = 0; i < numPaintingsInThisPage; i++) {
-            list.add(new int[]{yPos + PAGE_BUTTONS_START, (currentPage - 1) * MAX_PAINTINGS_PER_PAGE + i});
+            list.add(new Vector2i(yPos + PAGE_BUTTONS_START, (currentPage - 1) * MAX_PAINTINGS_PER_PAGE + i));
             yPos += 6;
         }
 
@@ -314,7 +314,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         @Override
         public void onPress() {
             EaselScreen.this.getMenu().dimensionChangedPre();
-            // !!!!!!!!!!!!!!!!
             int newWidth = index * 16;
             EaselScreen.this.setMenuPaintingWidth(newWidth);
             EaselScreen.this.getMenu().dimensionChangedPost();
@@ -373,15 +372,10 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         public final EaselScreen screen;
 
         /**
-         * The position of the button textures on the easel gui atlas sprite.
          * @return int[] of (clicked_x, clicked_y, not clicked_x, not clicked_y, hovered_x, hovered_y)
          */
         protected abstract int[] getAtlasPositionsForButtons();
 
-        /**
-         * @return the value of the relevant dimension
-         * If height it should return the size of the height
-         */
         protected abstract int getRelevantDimension();
 
         /**

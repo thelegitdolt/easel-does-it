@@ -1,7 +1,5 @@
 package com.dolthhaven.easeldoesit.other.util;
 
-import com.google.common.base.Predicates;
-import com.jcraft.jorbis.Block;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -52,7 +50,7 @@ public class PaintingUtil {
         return paintingStack;
     }
 
-    public static Set<PaintingVariant> onlyIfTagged(TagKey<PaintingVariant> tag, Level level, Predicate<PaintingVariant> predicate) {
+    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, Level level, Predicate<PaintingVariant> predicate) {
         return predicate(painting -> holder(painting, level).is(tag) && predicate.test(painting), level);
     }
 
