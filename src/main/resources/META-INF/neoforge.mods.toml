@@ -8,21 +8,21 @@ license="${mod_license}"
 issueTrackerURL="https://github.com/thelegitdolt/easel-does-it/issues" #optional
 
 [[mods]] #mandatory
-    modId="${mod_id}"
-    version="${mod_version}"
-    displayName="${mod_name}"
+    modId="easel_does_it"
+    version="2.0.0"
+    displayName="Easel Does It"
     authors="${mod_authors}" #optional
-    description='''${mod_description}'''
+    description='''Doltguymack'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]
-    config="${mod_id}.mixins.json"
+    config="easel_does_it.mixins.json"
 
 [[accessTransformers]]
     file="META-INF/accesstransformer.cfg"
 
 
-[[dependencies.${mod_id}]]
+[[dependencies.easel_does_it]]
     modId="neoforge"
     type="required"
     versionRange="[${neo_version},)"
@@ -30,14 +30,14 @@ issueTrackerURL="https://github.com/thelegitdolt/easel-does-it/issues" #optional
     side="BOTH"
 
 # Here's another dependency
-[[dependencies.${mod_id}]]
+[[dependencies.easel_does_it]]
     modId="minecraft"
     type="required"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies."${mod_id}"]]
     modId = "blueprint"
     type = "required"
     versionRange = "${blueprint_version_range}"

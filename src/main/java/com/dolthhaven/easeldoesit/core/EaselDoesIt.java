@@ -1,6 +1,5 @@
 package com.dolthhaven.easeldoesit.core;
 
-import com.dolthhaven.easeldoesit.core.other.EaselModCompat;
 import com.dolthhaven.easeldoesit.core.other.EaselModTrackedData;
 import com.dolthhaven.easeldoesit.core.registry.*;
 import com.dolthhaven.easeldoesit.core.registry.other.EaselModRecipeSerializers;
@@ -20,7 +19,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -47,8 +45,10 @@ public class EaselDoesIt {
         bus.addListener(this::clientSetup);
         bus.addListener(this::dataSetup);
 
-        REGISTRY_HELPER.register(bus);
-
+        EaselModItems.ITEMS.register(bus);
+        EaselModBlocks.BLOCKS.register(bus);
+        EaselModBlockEntities.BLOCK_ENTITIES.register(bus);
+        EaselModSoundEvents.SOUND_EVENTS.register(bus);
         EaselModMenuTypes.MENUS.register(bus);
         EaselModVillagers.POI_TYPES.register(bus);
         EaselModRecipeSerializers.RECIPE_SERIALIZERS.register(bus);

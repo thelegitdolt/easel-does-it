@@ -20,6 +20,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -149,7 +150,7 @@ public class EaselBlock extends BaseEntityBlock {
     }
 
     public static boolean tryPlacePainting(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        if (!state.getValue(HAS_PAINTING)) {
+        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING)) {
             if (!level.isClientSide) {
                 placePainting(entity, level, pos, state, stack);
             }
