@@ -46,9 +46,9 @@ public class EaselModServerEvents {
 
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar reg = event.registrar("1");
-        reg.playToServer(C2SSetEaselDimensionsPacket.TYPE, C2SSetEaselDimensionsPacket.STREAM_CODEC, C2SSetEaselDimensionsPacket::handleEaselDimensionPacket);
-        reg.playToServer(C2SSetEaselPaintingIndexPacket.TYPE, C2SSetEaselPaintingIndexPacket.CODEC, C2SSetEaselPaintingIndexPacket::handleEaselReindexPacket);
+        final PayloadRegistrar register = event.registrar("1");
+        register.playToServer(C2SSetEaselDimensionsPacket.TYPE, C2SSetEaselDimensionsPacket.STREAM_CODEC, C2SSetEaselDimensionsPacket::handleEaselDimensionPacket);
+        register.playToServer(C2SSetEaselPaintingIndexPacket.TYPE, C2SSetEaselPaintingIndexPacket.CODEC, C2SSetEaselPaintingIndexPacket::handleEaselReindexPacket);
     }
 
     @SubscribeEvent
