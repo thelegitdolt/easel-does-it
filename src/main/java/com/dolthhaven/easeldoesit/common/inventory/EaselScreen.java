@@ -12,12 +12,10 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -40,7 +38,6 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private final EaselWidthButton[] paintingWidthButtons = new EaselWidthButton[4];
     private final EaselHeightsButton[] paintingHeightButtons = new EaselHeightsButton[4];
     private final EaselPickerButton[] paintingPickers = new EaselPickerButton[2];
-
 
     public EaselScreen(EaselMenu menu, Inventory inv, Component component) {
         super(menu, inv, component);
