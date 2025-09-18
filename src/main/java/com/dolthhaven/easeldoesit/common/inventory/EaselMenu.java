@@ -133,7 +133,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private void createResult() {
         if (this.inputSlot.getItem().is(Items.PAINTING) && isLegalDimensions()) {
             this.getCurrentPainting().ifPresent(variant -> {
-                ItemStack stack = access.evaluate((level, pos) -> PaintingUtil.makeStack(variant, level.registryAccess())).orElseThrow();
+                ItemStack stack = PaintingUtil.makeStack(variant, level.registryAccess());
                 this.resultSlot.set(stack);
             });
         } else {
@@ -148,18 +148,14 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
-
-        // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
-        // if it hasn't then it should be set to 0
-        int newIndex = getIndexFromPaintingCoords();
-        setPaintingIndex(newIndex);
+        setPaintingIndex(savedIndex());
 
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
     }
 
-    private int getIndexFromPaintingCoords() {
+    private int savedIndex() {
         if (!isLegalDimensions()) {
             return -1;
         }
@@ -230,7 +226,6 @@ public class EaselMenu extends AbstractContainerMenu {
     public boolean isLegalDimensions() {
         if (getPaintingHeight() < MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
         if (getPaintingWidth() < MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
-
         return true;
     }
 

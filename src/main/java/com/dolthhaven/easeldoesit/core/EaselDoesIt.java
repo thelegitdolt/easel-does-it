@@ -26,16 +26,15 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.slf4j.Logger;
 
-import java.security.Provider;
 import java.util.concurrent.CompletableFuture;
 
 /*
-2. Fix the registies.
-3. figure out how new components work
 4. Fix easel interaction results
 5. Put culture in the creative tab in the right place
 6. Make treasure painting tooltips blue
 7. Make the easel a container
+8. Redo my variable names in easelscreen because they are atrocious
+9. add clickable pages
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {
