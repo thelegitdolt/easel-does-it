@@ -10,12 +10,6 @@ public class MathUtil {
         return base4From2(digit1 - 1, digit2 - 1);
     }
 
-    public static int[] decodeBase4(int base4) {
-        int first = base4 % 4;
-        int second = base4 / 4;
-        return new int[]{second, first};
-    }
-
     public static double normalizeScroll(double velocity) {
         double sign = velocity > 0 ? 1 : -1;
         if (Math.abs(velocity) > 30) {

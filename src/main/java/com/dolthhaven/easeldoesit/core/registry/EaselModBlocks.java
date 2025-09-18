@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
-e
+
 public class EaselModBlocks {
     public static final BlockSubRegistryHelper BLOCKS = EaselDoesIt.REGISTRY_HELPER.getBlockSubHelper();
 

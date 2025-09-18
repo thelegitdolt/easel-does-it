@@ -8,6 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -17,10 +18,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
@@ -47,17 +48,16 @@ public class PaintingUtil {
     }
 
 
-    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, Level level, Predicate<PaintingVariant> predicate) {
-        return predicate(painting -> holder(painting, level).is(tag) && predicate.test(painting), level);
-    }
-
-    public static Set<PaintingVariant> predicate(Predicate<PaintingVariant> variantPredicate, Level level) {
-        Optional<Registry<PaintingVariant>> paintings = level.registryAccess().registry(Registries.PAINTING_VARIANT);
-        return paintings
-                .map(list -> list
-                    .stream().filter(variantPredicate)
-                    .collect(Collectors.toSet()))
-                .orElseGet(Set::of);
+    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, RegistryAccess access, Predicate<PaintingVariant> predicate) {
+        Set<PaintingVariant> variants = new HashSet<>();
+        access.lookup(Registries.PAINTING_VARIANT).orElseThrow().get(PaintingVariantTags.PLACEABLE)
+                .ifPresent(paintings -> paintings.forEach(painting -> {
+                    PaintingVariant variant = painting.value();
+                    if (predicate.test(variant)) {
+                        variants.add(painting.value());
+                    }
+                }));
+        return variants;
     }
 
     public static Holder<PaintingVariant> holder(PaintingVariant painting, Level level) {
