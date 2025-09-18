@@ -23,8 +23,8 @@ public class EaselModTrackedData {
 
     public static Vec3i decodePainting(short painting) {
         return new Vec3i(
-                (((painting & 0xC000) >>> 14) + 1) * 16,
-                (((painting & 0x3000) >>> 12) + 1) * 16,
+                (((painting & 0xC000) >>> 14) + 1),
+                (((painting & 0x3000) >>> 12) + 1),
                 painting & 0x0FFF
         );
     }

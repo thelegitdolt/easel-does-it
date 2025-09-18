@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:painting"
-            ]
+            "items": "minecraft:painting"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_painting",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_painting"
     ]
   ],
   "rewards": {
     "recipes": [
       "easel_does_it:easel"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

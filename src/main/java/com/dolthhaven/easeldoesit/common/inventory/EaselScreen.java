@@ -269,15 +269,13 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
      */
     private void renderPainting(GuiGraphics graphics) {
         // draw nothing if one width or height is 0
-        if (!isEaselActive()) return;
+        if (!isEaselActive() || !menu.isLegalIndex() || !menu.isLegalDimensions()) return;
 
-        if (this.menu.getPossiblePaintingsSize() == 0) return;
-
-        PaintingVariant currentPainting = this.menu.getCurrentPainting();
-        TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(currentPainting);
-
-        graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
-                0, currentPainting.width(), currentPainting.height(), paintingSprite); // draw the current painting
+        this.menu.getCurrentPainting().ifPresent(painting -> {
+            TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(painting);
+            graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
+                    0, painting.width(), painting.height(), paintingSprite);
+        });
     }
 
     private boolean isEaselActive() {
@@ -312,10 +310,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         @Override
         public void onPress() {
-            EaselScreen.this.getMenu().dimensionChangedPre();
-            int newWidth = index * 16;
-            EaselScreen.this.setMenuPaintingWidth(newWidth);
-            EaselScreen.this.getMenu().dimensionChangedPost();
+            EaselScreen.this.setMenuPaintingWidth(index);
         }
 
         @Override
@@ -344,8 +339,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         @Override
         public void onPress() {
             EaselScreen.this.getMenu().dimensionChangedPre();
-            int newHeights = index * 16;
-            EaselScreen.this.setMenuPaintingHeight(newHeights);
+            EaselScreen.this.setMenuPaintingHeight(index);
 
 //            for (int i = 1; i <= 4; i += 1) {
 //                getWidthButtonOfIndex(i).active = !PaintingUtil.getAllPaintingsOfDimensions(i * 16, newHeights).isEmpty();

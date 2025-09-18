@@ -15,6 +15,7 @@ import com.dolthhaven.easeldoesit.data.server.tags.EaselModPaintingTags;
 import com.dolthhaven.easeldoesit.data.server.tags.EaselModPoiTags;
 import com.mojang.logging.LogUtils;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,9 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.slf4j.Logger;
+
+import java.security.Provider;
+import java.util.concurrent.CompletableFuture;
 
 /*
 2. Fix the registies.
@@ -75,12 +79,15 @@ public class EaselDoesIt {
         DataGenerator dataGen = event.getGenerator();
 
         boolean server = event.includeServer();
+        EaselModDataRegistries dataRegistries = new EaselModDataRegistries(event);
+        dataGen.addProvider(server, dataRegistries);
+        CompletableFuture<HolderLookup.Provider> provider = dataRegistries.getRegistryProvider();
+
         EaselModBlockTags easelModBlockTags = new EaselModBlockTags(event);
         dataGen.addProvider(server, easelModBlockTags);
         dataGen.addProvider(server, new EaselModItemTags(event, easelModBlockTags.contentsGetter()));
         dataGen.addProvider(server, new EaselModPoiTags(event));
-        dataGen.addProvider(server, new EaselModPaintingTags(event));
-        dataGen.addProvider(server, new EaselModDataRegistries(event));
+        dataGen.addProvider(server, new EaselModPaintingTags(event, provider));
         dataGen.addProvider(server, new EaselModLootTables(event));
         dataGen.addProvider(server, new EaselModRecipes(event));
         dataGen.addProvider(server, new EaselModDataMaps(event));

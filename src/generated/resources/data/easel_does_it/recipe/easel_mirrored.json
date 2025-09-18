@@ -7,12 +7,12 @@
     }
   },
   "pattern": [
-    " 0",
     "0 ",
+    " 0",
     "00"
   ],
   "result": {
-    "item": "easel_does_it:easel"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "easel_does_it:easel"
+  }
 }

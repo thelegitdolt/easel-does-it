@@ -23,14 +23,11 @@ public class EaselModPaintings {
     }
 
     public static void bootstrap(BootstrapContext<PaintingVariant> context) {
-        register(context, CULTURE, 16, 48);
-        register(context, HOLE, 32, 16);
-        register(context, LAYERS, 32, 48);
-        register(context, MONOCHROME, 32, 64);
-        register(context, PORTAL, 48, 32);
-        register(context, VINTAGE, 16, 16);
+        register(context, CULTURE, 2, 3);
+        register(context, HOLE, 2, 1);
+        register(context, LAYERS, 2, 3);
+        register(context, MONOCHROME, 2, 4);
+        register(context, PORTAL, 3, 2);
+        register(context, VINTAGE, 1, 1);
     }
-
-
-
 }
