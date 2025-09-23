@@ -24,13 +24,12 @@ public record C2SSetEaselDimensionsPacket(byte dimensions) implements CustomPack
 
 
     public static byte encode(int width, int height) {
-        return (byte) MathUtil.base4From2(width, height);
+        return (byte) MathUtil.base5From2(width, height);
     }
 
     public static Vector2i decode(byte b) {
-        return new Vector2i(b / 4, b % 4);
+        return new Vector2i(b / 5, b % 5);
     }
-
     public C2SSetEaselDimensionsPacket(int width, int height) {
         this(encode(width, height));
     }

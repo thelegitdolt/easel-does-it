@@ -3,8 +3,8 @@ package com.dolthhaven.easeldoesit.common.inventory;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselDimensionsPacket;
 import com.dolthhaven.easeldoesit.common.network.packets.C2SSetEaselPaintingIndexPacket;
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
+import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -68,8 +68,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private void addWidthButtons() {
         for (int i = 1; i <= 4; i++) {
             EaselWidthButton button = new EaselWidthButton(
-                    this.leftPos + WIDTH_BUTTONS_START_X + BUTTONS_DIMENSIONS_LONG * (i - 1),
-                    this.topPos + WIDTH_BUTTONS_START_Y,
+                    this.leftPos + WIDTH_BUTTONS_START_GUI.x() + BUTTONS_DIMENSIONS_LONG * (i - 1),
+                    this.topPos + WIDTH_BUTTONS_START_GUI.y(),
                     i);
 
             button.active = false;
@@ -99,8 +99,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             }
 
             @Override
-            int[] getTextureAtlasCords() {
-                return new int[]{PICKER_TOP_ATLAS_X, PICKER_ATLAS_Y, PICKER_TOP_HOVERED_ATLAS_X, PICKER_ATLAS_Y, PICKER_TOP_INACTIVE_ATLAS_X, PICKER_ATLAS_Y};
+            List<Vector2i> atlasCords() {
+                return List.of(PICKER_TOP_INACTIVE_UV, PICKER_TOP_HOVERED_UV, PICKER_TOP_UV);
             }
         };
 
@@ -111,8 +111,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             }
 
             @Override
-            int[] getTextureAtlasCords() {
-                return new int[]{PICKER_BOTTOM_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_HOVERED_ATLAS_X, PICKER_ATLAS_Y, PICKER_BOTTOM_INACTIVE_ATLAS_X, PICKER_ATLAS_Y};
+            List<Vector2i> atlasCords() {
+                return List.of(PICKER_BOTTOM_INACTIVE_UV, PICKER_BOTTOM_HOVERED_UV, PICKER_BOTTOM_UV);
             }
         };
 
@@ -210,8 +210,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private void renderPaintingGrid(GuiGraphics graphics) {
         if (isEaselActive()) {
             graphics.blit(BG_LOCATION,
-                    this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
-                    PREVIEW_BOX_ATLAS_X, PREVIEW_BOX_ATLAS_Y, PREVIEW_BOX_DIMENSIONS, PREVIEW_BOX_DIMENSIONS);
+                    this.leftPos + PREVIEW_BOX_GUI.x(), this.topPos + PREVIEW_BOX_GUI.y(),
+                    PREVIEW_BOX_UV.x(), PREVIEW_BOX_UV.y(), PREVIEW_BOX_SIZE, PREVIEW_BOX_SIZE);
         }
     }
 
@@ -220,31 +220,30 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             return;
 
         int menuPaintingIndex = getMenu().getPaintingIndex();
-        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
+        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / PAINTINGS_PER_PAGE);
 
-        int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
+        int numPaintingsInThisPage = Math.min(PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - PAINTINGS_PER_PAGE * (currentPage - 1));
 
         for (Vector2i coord : getPageInfo(currentPage, numPaintingsInThisPage)) {
             int currentIndex = coord.x;
             int yPos = coord.y;
 
             boolean selected = currentIndex == menuPaintingIndex;
-            int dotXLoc = selected ? PAGE_BUTTON_SELECTED_X : PAGE_BUTTON_X;
-            int dotYLoc = selected ? PAGE_BUTTON_SELECTED_Y : PAGE_BUTTON_Y;
+            Vector2i buttonUV = selected ? PAGE_BUTTON_SELECTED : PAGE_BUTTON;
 
             graphics.blit(BG_LOCATION,
                     this.leftPos + PAGES_START_X, this.topPos + yPos,
-                    dotXLoc, dotYLoc,
+                    buttonUV.x(), buttonUV.y(),
                     PAGE_BUTTON_DIMENSIONS, PAGE_BUTTON_DIMENSIONS);
         }
     }
 
     private List<Vector2i> getPageInfo(int currentPage, int numPaintings) {
         List<Vector2i> list = Lists.newArrayList();
-        int yPos = (AVAILABLE_PIXELS_PER_PAGE - totalReqPixelsFor(numPaintings)) / 2;
+        int yPos = (PIXELS_PER_PAGE - totalReqPixelsFor(numPaintings)) / 2;
         yPos += 2;
         for (int i = 0; i < numPaintings; i++) {
-            list.add(new Vector2i((currentPage - 1) * MAX_PAINTINGS_PER_PAGE + i, yPos + PAGE_BUTTONS_START));
+            list.add(new Vector2i((currentPage - 1) * PAINTINGS_PER_PAGE + i, yPos + PAGE_BUTTONS_START));
             yPos += 6;
         }
 
@@ -264,7 +263,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         this.menu.getCurrentPainting().ifPresent(painting -> {
             TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(painting);
-            graphics.blit(this.leftPos + PREVIEW_BOX_X, this.topPos + PREVIEW_BOX_Y,
+            graphics.blit(this.leftPos + PREVIEW_BOX_GUI.x(), this.topPos + PREVIEW_BOX_GUI.y(),
                     0, painting.width() * 16, painting.height() * 16, paintingSprite);
         });
     }
@@ -311,8 +310,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         @Override
-        protected int[] atlasCords() {
-            return new int[]{WIDTH_BUTTON_CLICKED_X, WIDTH_BUTTON_CLICKED_Y, WIDTH_BUTTON_NOT_CLICKED_X, WIDTH_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y, WIDTH_BUTTON_HOVERED_X, WIDTH_BUTTON_HOVERED_Y};
+        protected List<Vector2i> atlasCords() {
+            return List.of(WIDTH_BUTTON_CLICKED, WIDTH_BUTTON_NOT_CLICKED, WIDTH_BUTTON_HOVERED);
         }
 
         @Override
@@ -340,8 +339,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         @Override
-        protected int[] atlasCords() {
-            return new int[]{HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X, HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y, HEIGHT_BUTTON_HOVERED_X, HEIGHT_BUTTON_HOVERED_Y};
+        protected List<Vector2i> atlasCords() {
+            return List.of(HEIGHT_BUTTON_CLICKED, HEIGHT_BUTTON_NOT_CLICKED, HEIGHT_BUTTON_HOVERED);
         }
 
         @Override
@@ -355,17 +354,10 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         public final int index;
         public final EaselScreen screen;
 
-        /**
-         * @return int[] of (clicked_x, clicked_y, not clicked_x, not clicked_y, hovered_x, hovered_y)
-         */
         protected abstract List<Vector2i> atlasCords();
 
         protected abstract int getRelevantDimension();
 
-        /**
-         * INDEX IS A NUMBER FROM 1 to 4, not the pixel size of teh painting. IF YOU USE THE PIXEL SIZE OF THE PAINTING
-         * YOU WILL BE LOGGED, IT WILL PROBABLY CRASH THE GAME
-         */
         public EaselDimensionsButton(int startX, int startY, int width, int height, int index, EaselScreen screen) {
             super(startX, startY, width, height, Component.empty());
 
@@ -380,10 +372,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
             }
 
             int paintingDimension = getRelevantDimension();
-            int xPos = decisionTree(atlasCords(), Vector2i::x, paintingDimension >= this.index, !this.isHovered());
-            int yPos = decisionTree(atlasCords(), Vector2i::y, paintingDimension >= this.index, !this.isHovered());
+            Vector2i uv = MathUtil.decisionTree(atlasCords(),paintingDimension >= this.index, !this.isHovered());
 
-            graphics.blit(BG_LOCATION, getX(), getY(), xPos, yPos, this.width, this.height);
+            graphics.blit(BG_LOCATION, getX(), getY(), uv.x, uv.y, this.width, this.height);
         }
 
         @Override
@@ -409,7 +400,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         abstract int affectIndex(int oldIndex);
 
-        abstract int[] getTextureAtlasCords();
+        ///  inactive, hovered, normal
+        abstract List<Vector2i> atlasCords();
 
         @Override
         public void onPress() {
@@ -427,51 +419,29 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         @Override
         protected void renderWidget(@NotNull GuiGraphics graphics, int p_282682_, int p_281714_, float p_282542_) {
-            if (!screen.isEaselActive())
+            if (!screen.isEaselActive() || screen.getMenu().getPossiblePaintingsSize() == 0)
                 return;
 
-            if (screen.getMenu().getPossiblePaintingsSize() == 0)
-                return;
-
-            int atlasXCord, atlasYCord;
-
-            if (!this.isActive()) {
-                atlasXCord = getTextureAtlasCords()[4];
-                atlasYCord = getTextureAtlasCords()[5];
-            }
-            else if (this.isHovered()) {
-                atlasXCord = getTextureAtlasCords()[2];
-                atlasYCord = getTextureAtlasCords()[3];
-            }
-            else {
-                atlasXCord = getTextureAtlasCords()[0];
-                atlasYCord = getTextureAtlasCords()[1];
-            }
+            Vector2i uv = MathUtil.decisionTree(atlasCords(), !this.isActive(), this.isHovered());
 
             graphics.blit(BG_LOCATION,
-                    getX(), getY(),
-                    atlasXCord, atlasYCord,
+                    this.getX(), this.getY(),
+                    uv.x, uv.y,
                     this.width, this.height
             );
         }
     }
 
-    private static int decisionTree(List<Vector2i> choices, Function<Vector2i, Integer> operation, boolean... branches) {
-        int index = -1;
-        for (boolean branch : branches) {
-            index++;
-            if (branch) break;
-        }
-        return operation.apply(choices.get(index));
-    }
 
-    private static final int MAX_PAINTINGS_PER_PAGE = 8;
-    private static final int AVAILABLE_PIXELS_PER_PAGE = 51;
+
+    private static final int PAINTINGS_PER_PAGE = 8;
+    private static final int PIXELS_PER_PAGE = 51;
+    private static final int PREVIEW_BOX_SIZE = 64;
     private static final int PAGES_START_X = 126;
     private static final int PAGE_BUTTON_X = 181;
     private static final int PAGE_BUTTON_Y = 23;
-    private static final int PAGE_BUTTON_SELECTED_X = 176;
-    private static final int PAGE_BUTTON_SELECTED_Y = 23;
+    private static final Vector2i PAGE_BUTTON = new Vector2i(181, 23);
+    private static final Vector2i PAGE_BUTTON_SELECTED = new Vector2i(176, 23);
     private static final int PAGE_BUTTON_DIMENSIONS = 5;
     private static final int PAGE_BUTTONS_START = 21;
 
@@ -480,8 +450,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int HEIGHT_BUTTONS_START_X = 48;
     private static final int HEIGHT_BUTTONS_START_Y = 14;
 
-    private static final int WIDTH_BUTTONS_START_X = 56;
-    private static final int WIDTH_BUTTONS_START_Y = 6;
+    private static final Vector2i WIDTH_BUTTONS_START_GUI = new Vector2i(56, 6);
 
     private static final int PICKER_X = 123;
     private static final int PICKER_TOP_Y = 14;
@@ -489,26 +458,20 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int PICKER_X_DIMENSION = 11;
     private static final int PICKER_Y_DIMENSION = 7;
     private static final int PICKER_ATLAS_Y = 28;
-    private static final int PICKER_BOTTOM_ATLAS_X = 176;
-    private static final int PICKER_TOP_ATLAS_X = 187;
-    private static final int PICKER_BOTTOM_HOVERED_ATLAS_X = 198;
-    private static final int PICKER_TOP_HOVERED_ATLAS_X = 209;
-    private static final int PICKER_BOTTOM_INACTIVE_ATLAS_X = 220;
-    private static final int PICKER_TOP_INACTIVE_ATLAS_X = 231;
+    private static final Vector2i PICKER_TOP_UV = new Vector2i(187, 28);
+    private static final Vector2i PICKER_TOP_HOVERED_UV = new Vector2i(209, 28);
+    private static final Vector2i PICKER_TOP_INACTIVE_UV = new Vector2i(231, 28);
+    private static final Vector2i PICKER_BOTTOM_UV = new Vector2i(176, 28);
+    private static final Vector2i PICKER_BOTTOM_HOVERED_UV = new Vector2i(198, 28);
+    private static final Vector2i PICKER_BOTTOM_INACTIVE_UV = new Vector2i(220, 28);
 
-    private static final int PREVIEW_BOX_X = 56;
-    private static final int PREVIEW_BOX_Y = 14;
-    private static final int PREVIEW_BOX_ATLAS_X = 176;
-    private static final int PREVIEW_BOX_ATLAS_Y = 35;
-    private static final int PREVIEW_BOX_DIMENSIONS = 64;
+    private static final Vector2i PREVIEW_BOX_GUI = new Vector2i(56, 14);
+    private static final Vector2i PREVIEW_BOX_UV = new Vector2i(176, 35);
 
     private static final Vector2i WIDTH_BUTTON_NOT_CLICKED = new Vector2i(183, 0);
-    private static final int HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_X = 192;
-    private static final int HEIGHT_BUTTON_NOT_CLICKED_ATLAS_CORDS_Y = 7;
     private static final Vector2i WIDTH_BUTTON_CLICKED = new Vector2i(176, 16);
-    private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_X = 176;
-    private static final int HEIGHT_BUTTON_CLICKED_ATLAS_CORDS_Y = 0;
     private static final Vector2i WIDTH_BUTTON_HOVERED = new Vector2i(206, 0);
-    private static final int HEIGHT_BUTTON_HOVERED_X = 199;
-    private static final int HEIGHT_BUTTON_HOVERED_Y = 0;
+    private static final Vector2i HEIGHT_BUTTON_NOT_CLICKED = new Vector2i(192, 7);
+    private static final Vector2i HEIGHT_BUTTON_CLICKED = new Vector2i(176, 0);
+    private static final Vector2i HEIGHT_BUTTON_HOVERED = new Vector2i(199, 0);
 }

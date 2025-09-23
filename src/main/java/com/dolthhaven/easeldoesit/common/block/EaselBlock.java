@@ -214,8 +214,8 @@ public class EaselBlock extends BaseEntityBlock {
             else {
                 PaintingVariant variant = maybeVariant.get();
                 return Math.min(Redstone.SIGNAL_MAX, MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
-                    variant.width() / 16,
-                    variant.height() / 16
+                    variant.width(),
+                    variant.height()
                 ));
             }
         }

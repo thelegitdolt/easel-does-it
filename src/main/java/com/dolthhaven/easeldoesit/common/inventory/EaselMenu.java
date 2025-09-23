@@ -173,10 +173,6 @@ public class EaselMenu extends AbstractContainerMenu {
         return i == -1 ? List.of() : this.possiblePaintings.get(i);
     }
 
-
-    /**
-     * Okay so the bases are 0, 1, 2, 3, 4 and the painting heights (as coded) are 0, 16, 32, 64, so yeah.
-     */
     private void savePaintingForCurrentDimension() {
         if (!isLegalDimensions()) return;
         this.savedIndexInEachDimension[encodeCords()].set(getPaintingIndex());
