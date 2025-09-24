@@ -171,18 +171,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (Vector2i buttons : pageManagerInfo()) {
-            int start = buttons.y();
-            boolean inXRange = MathUtil.isBetween((int) mouseX, leftPos + PAGES_START_X, leftPos + PAGES_START_X + PAGE_BUTTON_SIZE);
-            boolean inYRange = MathUtil.isBetween((int) mouseY, topPos + buttons.y(), topPos + buttons.y() + PAGE_BUTTON_SIZE);
-            boolean notIdentityTransformation = buttons.x() != getMenu().getPaintingIndex();
-            if (inXRange && inYRange && notIdentityTransformation) {
-                setMenuIndex(buttons.x());
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                return true;
-            }
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
+        if (clickPageManager(mouseX, mouseY)) {
+            return true;
+        } return super.mouseClicked(mouseX, mouseY, button);
     }
 
     protected double subtractInputFromScroll(double pInput) {
@@ -268,6 +259,20 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
 
         return list;
+    }
+
+    private boolean clickPageManager(double mouseX, double mouseY) {
+        for (Vector2i buttons : pageManagerInfo()) {
+            int start = buttons.y();
+            boolean inXRange = MathUtil.isBetween((int) mouseX, leftPos + PAGES_START_X, leftPos + PAGES_START_X + PAGE_BUTTON_SIZE);
+            boolean inYRange = MathUtil.isBetween((int) mouseY, topPos + buttons.y(), topPos + buttons.y() + PAGE_BUTTON_SIZE);
+            boolean notIdentityTransformation = buttons.x() != getMenu().getPaintingIndex();
+            if (inXRange && inYRange && notIdentityTransformation) {
+                setMenuIndex(buttons.x());
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+        } return false;
     }
 
     private int totalReqPixelsFor(int numPaintingsInPage) {
