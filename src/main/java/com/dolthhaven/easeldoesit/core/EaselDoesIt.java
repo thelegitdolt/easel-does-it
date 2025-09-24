@@ -31,8 +31,7 @@ import java.util.concurrent.CompletableFuture;
 /*
 3. Fix villager trades
 4. Fix easel interaction results
-5. Put culture in the creative tab in the right place
-6. Redo my variable names in easelscreen because they are atrocious
+6. Redo my variable names in easel screen because they are atrocious
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {
