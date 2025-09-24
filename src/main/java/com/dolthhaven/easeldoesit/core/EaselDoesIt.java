@@ -29,16 +29,14 @@ import org.slf4j.Logger;
 import java.util.concurrent.CompletableFuture;
 
 /*
-3. Add gallery stuff
+3. Fix villager trades
 4. Fix easel interaction results
 5. Put culture in the creative tab in the right place
-6. Make treasure painting tooltips blue
-8. Redo my variable names in easelscreen because they are atrocious
+6. Redo my variable names in easelscreen because they are atrocious
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {
     public static final String MOD_ID = "easel_does_it";
-    public static final String GIT_URL = "https://github.com/thelegitdolt/easel-does-it";
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
     private static final Logger LOGGER = LogUtils.getLogger();
 

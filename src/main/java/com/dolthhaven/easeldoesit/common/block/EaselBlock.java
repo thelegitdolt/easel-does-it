@@ -200,7 +200,7 @@ public class EaselBlock extends BaseEntityBlock {
             ItemStack stack = easel.getPainting();
             if (stack.isEmpty()) return 0;
             return PaintingUtil.readStack(stack, level.registryAccess())
-                    .map(p ->  Math.min(15, MathUtil.base4Minus5(p.width(), p.height())))
+                    .map(p ->  Math.min(15, MathUtil.base4Minus5(p.value().width(), p.value().height())))
                     .orElse(15);
         } else return 0;
     }

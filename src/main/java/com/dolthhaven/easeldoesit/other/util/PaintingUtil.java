@@ -1,12 +1,16 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.tags.TagKey;
@@ -25,12 +29,21 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
-    public static Optional<PaintingVariant> readStack(ItemStack stack, RegistryAccess access) {
-        if (!stack.is(Items.PAINTING)) return Optional.empty();
 
-        return Optional.ofNullable(access.registry(Registries.PAINTING_VARIANT).orElseThrow().get(PaintingVariants.ALBAN));
-//        CustomData data = stack.get(DataComponents.ENTITY_DATA);
-//        data.read
+    public static Optional<Holder<PaintingVariant>> readStack(ItemStack stack, HolderLookup.Provider access) {
+        if (!stack.is(Items.PAINTING)) return Optional.empty();
+        CustomData data = stack.get(DataComponents.ENTITY_DATA);
+        if (data != null) {
+            DataResult<Holder<PaintingVariant>> paintingMaybe = stack.get(DataComponents.ENTITY_DATA).read(access.createSerializationContext(NbtOps.INSTANCE), Painting.VARIANT_MAP_CODEC);
+            if (paintingMaybe.isSuccess()) {
+                return paintingMaybe.result();
+            }
+        } return Optional.empty();
+    }
+
+    public static boolean isTagged(ResourceKey<PaintingVariant> painting, TagKey<PaintingVariant> tag, HolderLookup.Provider access) {
+        return access.lookupOrThrow(Registries.PAINTING_VARIANT).get(tag).map(holders -> holders.stream()
+                .anyMatch(loc -> loc.is(painting))).orElse(false);
     }
 
     public static ItemStack makeStack(ResourceLocation location, RegistryAccess access) {

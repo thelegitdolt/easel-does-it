@@ -22,7 +22,7 @@ public class PaintingUnsetRecipe extends CustomRecipe {
 
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
-            if (PaintingUtil.readStack(stack, level.registryAccess()).isEmpty()) {
+            if (PaintingUtil.readStack(stack, level.registryAccess()).isPresent()) {
                 continue;
             }
 
