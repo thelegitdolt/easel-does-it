@@ -32,6 +32,7 @@ public class EaselMenu extends AbstractContainerMenu {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/common/inventory/SawmillMenu.java
     private static final int MIN_DIMENSION = 1;
     private static final int MAX_DIMENSION = 4;
+    private static final List<PaintingVariant> EMPTY = List.of();
 
     private final ContainerLevelAccess access;
     private final Level level;
@@ -169,8 +170,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public List<PaintingVariant> getPaintings() {
-        int i = encodeCords();
-        return i == -1 ? List.of() : this.possiblePaintings.get(i);
+        return isLegalDimensions() ? possiblePaintings.get(encodeCords()) : EMPTY;
     }
 
     private void savePaintingForCurrentDimension() {
@@ -298,7 +298,7 @@ public class EaselMenu extends AbstractContainerMenu {
 
     private int encodeCords(int width, int height) {
         if (width == 0 || height == 0) return -1;
-        return MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(width, height);
+        return MathUtil.base4Minus5(width, height);
     }
 
     @Override

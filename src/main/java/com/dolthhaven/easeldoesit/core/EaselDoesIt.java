@@ -29,12 +29,11 @@ import org.slf4j.Logger;
 import java.util.concurrent.CompletableFuture;
 
 /*
+3. Add gallery stuff
 4. Fix easel interaction results
 5. Put culture in the creative tab in the right place
 6. Make treasure painting tooltips blue
-7. Make the easel a container
 8. Redo my variable names in easelscreen because they are atrocious
-9. add clickable pages
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {

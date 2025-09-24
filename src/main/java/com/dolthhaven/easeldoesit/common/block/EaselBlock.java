@@ -15,7 +15,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -32,7 +31,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.redstone.Redstone;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -42,8 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
-import java.util.Optional;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -97,7 +93,7 @@ public class EaselBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState superState = super.getStateForPlacement(context);
-        if (Objects.isNull(superState))
+        if (superState == null)
             return null;
 
         return superState.setValue(HAS_PAINTING, false).setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -113,8 +109,7 @@ public class EaselBlock extends BaseEntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (tryPlacePainting(player, level, pos, state, stack)) {
             return ItemInteractionResult.SUCCESS;
-        }
-        else if (tryTakePainting(player, hand, level, pos)) {
+        } else if (tryTakePainting(player, hand, level, pos)) {
             return ItemInteractionResult.SUCCESS;
         }
 
@@ -149,18 +144,15 @@ public class EaselBlock extends BaseEntityBlock {
         return false;
     }
 
-    public static boolean tryPlacePainting(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING)) {
+    public static boolean tryPlacePainting(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
+        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING) && player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                placePainting(entity, level, pos, state, stack);
-            }
-
-            return true;
-        }
-        return false;
+                placePainting(player, level, pos, state, stack);
+            } return true;
+        } return false;
     }
 
-    private static void placePainting(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void placePainting(Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof EaselBlockEntity easel) {
             easel.setPainting(stack.split(1));
@@ -177,7 +169,7 @@ public class EaselBlock extends BaseEntityBlock {
 
     @Override
     public BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
-        if (!level.isClientSide && !player.isCreative())
+        if (!level.isClientSide)
             popPainting(state, level, pos);
 
         return super.playerWillDestroy(level, pos, state, player);
@@ -206,22 +198,11 @@ public class EaselBlock extends BaseEntityBlock {
     public int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof EaselBlockEntity easel) {
             ItemStack stack = easel.getPainting();
-            if (stack.isEmpty()) return Redstone.SIGNAL_MIN;
-            Optional<PaintingVariant> maybeVariant = PaintingUtil.readStack(stack, level.registryAccess());
-
-            if (maybeVariant.isEmpty()) return Redstone.SIGNAL_MAX;
-
-            else {
-                PaintingVariant variant = maybeVariant.get();
-                return Math.min(Redstone.SIGNAL_MAX, MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(
-                    variant.width(),
-                    variant.height()
-                ));
-            }
-        }
-        else {
-            return 0;
-        }
+            if (stack.isEmpty()) return 0;
+            return PaintingUtil.readStack(stack, level.registryAccess())
+                    .map(p ->  Math.min(15, MathUtil.base4Minus5(p.width(), p.height())))
+                    .orElse(15);
+        } else return 0;
     }
 
     @Override

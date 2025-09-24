@@ -13,19 +13,21 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -167,6 +169,22 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         return true;
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for (Vector2i buttons : pageManagerInfo()) {
+            int start = buttons.y();
+            boolean inXRange = MathUtil.isBetween((int) mouseX, leftPos + PAGES_START_X, leftPos + PAGES_START_X + PAGE_BUTTON_SIZE);
+            boolean inYRange = MathUtil.isBetween((int) mouseY, topPos + buttons.y(), topPos + buttons.y() + PAGE_BUTTON_SIZE);
+            boolean notIdentityTransformation = buttons.x() != getMenu().getPaintingIndex();
+            if (inXRange && inYRange && notIdentityTransformation) {
+                setMenuIndex(buttons.x());
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
     protected double subtractInputFromScroll(double pInput) {
         Double2DoubleFunction scrollFunc = dub -> {
             int sign = dub < 0 ? -1 : 1;
@@ -219,27 +237,29 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         if (!isEaselActive() || !menu.isLegalDimensions())
             return;
 
-        int menuPaintingIndex = getMenu().getPaintingIndex();
-        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / PAINTINGS_PER_PAGE);
+        int index = getMenu().getPaintingIndex();
 
-        int numPaintingsInThisPage = Math.min(PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - PAINTINGS_PER_PAGE * (currentPage - 1));
-
-        for (Vector2i coord : getPageInfo(currentPage, numPaintingsInThisPage)) {
+        for (Vector2i coord : pageManagerInfo()) {
             int currentIndex = coord.x;
             int yPos = coord.y;
 
-            boolean selected = currentIndex == menuPaintingIndex;
-            Vector2i buttonUV = selected ? PAGE_BUTTON_SELECTED : PAGE_BUTTON;
+            boolean selected = currentIndex == index;
+            Vector2i uv = selected ? PAGE_BUTTON_SELECTED : PAGE_BUTTON;
 
             graphics.blit(BG_LOCATION,
                     this.leftPos + PAGES_START_X, this.topPos + yPos,
-                    buttonUV.x(), buttonUV.y(),
-                    PAGE_BUTTON_DIMENSIONS, PAGE_BUTTON_DIMENSIONS);
+                    uv.x(), uv.y(),
+                    PAGE_BUTTON_SIZE, PAGE_BUTTON_SIZE);
         }
     }
 
-    private List<Vector2i> getPageInfo(int currentPage, int numPaintings) {
-        List<Vector2i> list = Lists.newArrayList();
+    private List<Vector2i> pageManagerInfo() {
+        int menuPaintingIndex = getMenu().getPaintingIndex();
+        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / PAINTINGS_PER_PAGE);
+
+        int numPaintings = Math.min(PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - PAINTINGS_PER_PAGE * (currentPage - 1));
+
+        List<Vector2i> list = new ArrayList<>();
         int yPos = (PIXELS_PER_PAGE - totalReqPixelsFor(numPaintings)) / 2;
         yPos += 2;
         for (int i = 0; i < numPaintings; i++) {
@@ -438,11 +458,9 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     private static final int PIXELS_PER_PAGE = 51;
     private static final int PREVIEW_BOX_SIZE = 64;
     private static final int PAGES_START_X = 126;
-    private static final int PAGE_BUTTON_X = 181;
-    private static final int PAGE_BUTTON_Y = 23;
     private static final Vector2i PAGE_BUTTON = new Vector2i(181, 23);
     private static final Vector2i PAGE_BUTTON_SELECTED = new Vector2i(176, 23);
-    private static final int PAGE_BUTTON_DIMENSIONS = 5;
+    private static final int PAGE_BUTTON_SIZE = 5;
     private static final int PAGE_BUTTONS_START = 21;
 
     private static final int BUTTONS_DIMENSIONS_LONG = 16;

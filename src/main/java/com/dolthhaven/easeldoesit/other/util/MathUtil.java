@@ -1,7 +1,5 @@
 package com.dolthhaven.easeldoesit.other.util;
 
-import it.unimi.dsi.fastutil.Function;
-
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -10,7 +8,7 @@ public class MathUtil {
         return digit1 * 4 + digit2;
     }
 
-    public static int base4ExceptTheNumbersAre1234InsteadOf0123(int digit1, int digit2) {
+    public static int base4Minus5(int digit1, int digit2) {
         return base4From2(digit1 - 1, digit2 - 1);
     }
 
@@ -35,5 +33,9 @@ public class MathUtil {
             index++;
         }
         return choices.get(index);
+    }
+
+    public static boolean isBetween(int num, int start, int end) {
+        return num >= start && num <= end;
     }
 }
