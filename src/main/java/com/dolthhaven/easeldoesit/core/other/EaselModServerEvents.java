@@ -60,9 +60,8 @@ public class EaselModServerEvents {
             List<Item> rare_dyes = ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES);
 
 
-            trades.get(1).add(new EmeraldToRandomItem(
-                    rare_dyes, constant(3),
-                                ONE));
+            trades.get(1).add(new EmeraldToRandomItem(rare_dyes, ONE,
+                    constant(3)));
 
             trades.get(1).add(new RandomItemToEmerald(
                     dyes, UniformInt.of(14, 19),
@@ -83,7 +82,7 @@ public class EaselModServerEvents {
             // villager sell dye
             trades.get(2).add(new EmeraldToRandomItem(
                                 ONE,
-                    rare_dyes, UniformInt.of(3, 3), 16, 10, 0.01f));
+                    rare_dyes, constant(3), 16, 10, 0.01f));
             trades.get(2).add(new EmeraldToRandomItem(
                                                                                                                         ONE,
                     ModUtil.getAllDyedItems(dye -> ResourceLocation.withDefaultNamespace(dye + "_wool")), UniformInt.of(2, 2),

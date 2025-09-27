@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 
 /*
 3. Fix villager trades
-4. Fix easel interaction results
 6. Redo my variable names in easel screen because they are atrocious
  */
 @Mod(EaselDoesIt.MOD_ID)

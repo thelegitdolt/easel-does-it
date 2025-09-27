@@ -145,7 +145,7 @@ public class EaselBlock extends BaseEntityBlock {
     }
 
     public static boolean tryPlacePainting(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING) && player.isShiftKeyDown()) {
+        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING)) {
             if (!level.isClientSide) {
                 placePainting(player, level, pos, state, stack);
             } return true;

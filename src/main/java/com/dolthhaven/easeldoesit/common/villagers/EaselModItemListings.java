@@ -2,7 +2,6 @@ package com.dolthhaven.easeldoesit.common.villagers;
 
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import net.minecraft.Util;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -20,30 +19,34 @@ import java.util.List;
 
 public class EaselModItemListings {
     public abstract static class EaselModTrade implements VillagerTrades.ItemListing {
-        private final UniformInt costCount;
-        private final UniformInt emeraldCount;
+        private final UniformInt firstCount;
+        private final UniformInt secondCount;
         private final int maxUses;
         private final int villagerXp;
         private final float priceMultiplier;
 
-        public EaselModTrade(UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
-            this.costCount = costCount;
-            this.emeraldCount = emeraldCount;
+        public EaselModTrade(UniformInt firstCount, UniformInt secondCount, int maxUses, int villagerXp, float priceMultiplier) {
+            this.firstCount = firstCount;
+            this.secondCount = secondCount;
             this.maxUses = maxUses;
             this.villagerXp = villagerXp;
             this.priceMultiplier = priceMultiplier;
         }
 
-        public abstract Item getSecondItem(RandomSource random, Entity entity);
-
-        public ItemStack getSecond(RandomSource random, Entity entity) {
-                return new ItemStack(getFirstItem(random, entity), emeraldCount.sample(random));
-        }
-
         public abstract Item getFirstItem(RandomSource random, Entity entity);
 
+        public abstract Item getSecondItem(RandomSource random, Entity entity);
+
         public ItemCost getFirst(RandomSource random, Entity entity) {
-            return new ItemCost(getSecondItem(random, entity), costCount.sample(random));
+            return new ItemCost(getFirstItem(random, entity), firstCount.sample(random));
+        }
+
+        public UniformInt getFirstCount() {
+            return firstCount;
+        }
+
+        public ItemStack getSecond(RandomSource random, Entity entity) {
+            return new ItemStack(getSecondItem(random, entity), secondCount.sample(random));
         }
 
         @Override
@@ -54,9 +57,9 @@ public class EaselModItemListings {
 
     public static class ItemToEmerald extends EaselModTrade {
         private final Item item;
-        public ItemToEmerald(Item item, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
-            super(costCount, emeraldCount, maxUses, villagerXp, priceMultiplier);
-            this.item = item;
+        public ItemToEmerald(Item first, UniformInt firstCount, UniformInt secondCount, int maxUses, int villagerXp, float priceMultiplier) {
+            super(firstCount, secondCount, maxUses, villagerXp, priceMultiplier);
+            this.item = first;
         }
 
         public ItemToEmerald(ResourceLocation loc, UniformInt costCount, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
@@ -65,19 +68,19 @@ public class EaselModItemListings {
 
         @Override
         public Item getFirstItem(RandomSource random, Entity entity) {
-            return Items.EMERALD;
+            return item;
         }
 
         @Override
         public Item getSecondItem(RandomSource random, Entity entity) {
-            return item;
+            return Items.EMERALD;
         }
     }
 
     public static class EmeraldToItem extends EaselModTrade implements VillagerTrades.ItemListing {
         private final Item item;
-        public EmeraldToItem(UniformInt emeraldCount, Item item, UniformInt costCount, int maxUses, int villagerXp, float priceMultiplier) {
-            super(costCount, emeraldCount, maxUses, villagerXp, priceMultiplier);
+        public EmeraldToItem(UniformInt firstCount, Item item, UniformInt secondCount, int maxUses, int villagerXp, float priceMultiplier) {
+            super(firstCount, secondCount, maxUses, villagerXp, priceMultiplier);
             this.item = item;
         }
 
@@ -95,13 +98,13 @@ public class EaselModItemListings {
 
     public static class RandomItemToEmerald extends EaselModTrade implements VillagerTrades.ItemListing {
         private final List<Item> items;
-        public RandomItemToEmerald(List<Item> allowedItems, UniformInt costCount, UniformInt emeraldCount, int maxUses, int xp, float priceMultiplier) {
-            super(costCount, emeraldCount, maxUses, xp, priceMultiplier);
+        public RandomItemToEmerald(List<Item> allowedItems, UniformInt firstCount, UniformInt secondCount, int maxUses, int xp, float priceMultiplier) {
+            super(firstCount, secondCount, maxUses, xp, priceMultiplier);
             this.items = allowedItems;
         }
 
-        public RandomItemToEmerald(List<Item> allowedItems, UniformInt costCount, UniformInt emeraldCount) {
-            this(allowedItems, costCount, emeraldCount, 16, 2, 0.05F);
+        public RandomItemToEmerald(List<Item> allowedItems, UniformInt firstCount, UniformInt secondCount) {
+            this(allowedItems, firstCount, secondCount, 16, 2, 0.05F);
         }
 
         @Override
@@ -118,37 +121,39 @@ public class EaselModItemListings {
     public static class EmeraldToRandomItem extends EaselModTrade implements VillagerTrades.ItemListing {
         private final List<Item> allowedItems;
 
-        public EmeraldToRandomItem(UniformInt emeraldCount, List<Item> allowedItems, UniformInt costCount, int maxUses, int xp, float priceMultiplier) {
-            super(costCount, emeraldCount, maxUses, xp, priceMultiplier);
+        public EmeraldToRandomItem(UniformInt firstCount, List<Item> allowedItems, UniformInt secondCount, int maxUses, int xp, float priceMultiplier) {
+            super(firstCount, secondCount, maxUses, xp, priceMultiplier);
             this.allowedItems = allowedItems;
         }
 
-        public EmeraldToRandomItem(List<Item> allowedItems, UniformInt costCount, UniformInt emeraldCount) {
-            this(emeraldCount, allowedItems, costCount, 16, 2, 0.05F);
-        }
-
-        @Override
-        public Item getSecondItem(RandomSource random, Entity entity) {
-            return Util.getRandom(allowedItems, random);
+        public EmeraldToRandomItem(List<Item> allowedItem, UniformInt firstCount, UniformInt secondCount) {
+            this(firstCount, allowedItem, secondCount, 16, 2, 0.05F);
         }
 
         @Override
         public Item getFirstItem(RandomSource random, Entity entity) {
             return Items.EMERALD;
         }
+
+        @Override
+        public Item getSecondItem(RandomSource random, Entity entity) {
+            return Util.getRandom(allowedItems, random);
+        }
     }
 
-    public static class EmeraldToPainting extends EmeraldToItem implements VillagerTrades.ItemListing {
+    public static class EmeraldToPainting extends EmeraldToItem {
         private final ResourceLocation variant;
 
-        public EmeraldToPainting(ResourceLocation variant, UniformInt emeraldCount, int maxUses, int villagerXp, float priceMultiplier) {
-            super(UniformInt.of(1, 1), Items.PAINTING, emeraldCount, maxUses, villagerXp, priceMultiplier);
+        public EmeraldToPainting(ResourceLocation variant, UniformInt firstCount, int maxUses, int villagerXp, float priceMultiplier) {
+            super(UniformInt.of(1, 1), Items.PAINTING, firstCount, maxUses, villagerXp, priceMultiplier);
             this.variant = variant;
         }
 
         @Override
         public ItemStack getSecond(RandomSource random, Entity entity) {
-            return PaintingUtil.makeStack(variant, entity.registryAccess());
+            ItemStack stack = PaintingUtil.makeStack(variant, entity.registryAccess());
+            stack.setCount(getFirstCount().sample(random));
+            return stack;
         }
     }
 }
