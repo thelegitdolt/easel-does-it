@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import java.util.concurrent.CompletableFuture;
 
 /*
-3. Fix villager trades
 6. Redo my variable names in easel screen because they are atrocious
+7. Check if artist houses still generate
  */
 @Mod(EaselDoesIt.MOD_ID)
 public class EaselDoesIt {

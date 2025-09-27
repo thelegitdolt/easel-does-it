@@ -38,6 +38,5 @@ public class EaselModBlocks {
 
     public static class Properties {
         public static final BlockBehaviour.Properties EASEL = BlockBehaviour.Properties.ofFullCopy(Blocks.LECTERN).mapColor(MapColor.COLOR_RED);
-        public static final BlockBehaviour.Properties STATUE = BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_BLOCK);
     }
 }
