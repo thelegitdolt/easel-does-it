@@ -14,18 +14,18 @@ public class EaselModConstants {
 
 
     public static ResourceLocation clayworks(String path) {
-        return new ResourceLocation(CLAYWORKS, path);
+        return ResourceLocation.fromNamespaceAndPath(CLAYWORKS, path);
     }
 
     public static ResourceLocation farmersDelight(String path) {
-        return new ResourceLocation(FARMERS_DELIGHT, path);
+        return ResourceLocation.fromNamespaceAndPath(FARMERS_DELIGHT, path);
     }
 
     public static ResourceLocation dyeDepot(String path) {
-        return new ResourceLocation(DYE_DEPOT, path);
+        return ResourceLocation.fromNamespaceAndPath(DYE_DEPOT, path);
     }
 
     public static ResourceLocation chalk(String path) {
-        return new ResourceLocation(CHALK, path);
+        return ResourceLocation.fromNamespaceAndPath(CHALK, path);
     }
 }

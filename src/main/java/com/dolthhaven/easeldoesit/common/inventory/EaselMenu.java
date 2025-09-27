@@ -7,29 +7,36 @@ import com.dolthhaven.easeldoesit.core.registry.EaselModSoundEvents;
 import com.dolthhaven.easeldoesit.other.util.MathUtil;
 import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
 import com.teamabnormals.blueprint.common.world.storage.tracking.IDataManager;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class EaselMenu extends AbstractContainerMenu {
     // https://github.com/team-abnormals/woodworks/blob/1.20.x/src/main/java/com/teamabnormals/woodworks/common/inventory/SawmillMenu.java
-    private static final int MIN_DIMENSION = 16;
-    private static final int MAX_DIMENSION = 64;
+    private static final int MIN_DIMENSION = 1;
+    private static final int MAX_DIMENSION = 4;
+    private static final List<PaintingVariant> EMPTY = List.of();
 
     private final ContainerLevelAccess access;
+    private final Level level;
+
     long lastSoundTime;
 
     // slots
@@ -51,7 +58,7 @@ public class EaselMenu extends AbstractContainerMenu {
     private final DataSlot paintingWidth = DataSlot.standalone();
     private final DataSlot paintingIndex = DataSlot.standalone();
     private final DataSlot[] savedIndexInEachDimension = new DataSlot[16]; // an array holding the last visited index before the painting dimension is changed
-    private List<PaintingVariant> possiblePaintings = new ArrayList<>(); // a list of all paintings of (paintingHeight, paintingWidth)
+    private final List<List<PaintingVariant>> possiblePaintings = new ArrayList<>(16); // a list of all paintings of (paintingHeight, paintingWidth)
 
     public EaselMenu(int id, Inventory inv) {
         this(id, inv, ContainerLevelAccess.NULL);
@@ -59,6 +66,7 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public EaselMenu(int id, Inventory inv, final ContainerLevelAccess access) {
         super(EaselModMenuTypes.EASEL_MENU.get(), id);
+        this.level = inv.player.level();
         this.access = access;
 
         this.inputSlot = this.addSlot(new Slot(this.inputContainer, 0, 15, 35) {
@@ -100,23 +108,18 @@ public class EaselMenu extends AbstractContainerMenu {
         for (int i = 0; i < 16; i++) {
             DataSlot data = DataSlot.standalone();
             data.set(0);
+            addDataSlot(data);
             savedIndexInEachDimension[i] = (data);
         }
 
+        addDataSlot(paintingHeight);
+        addDataSlot(paintingWidth);
+        addDataSlot(paintingIndex);
+
         // uhhh tracked data???
         // Set easel initial conditions
-        short savedPaintingData = ((IDataManager) (inv.player)).getValue(EaselModTrackedData.PLAYER_CURRENT_PAINTING_INDEX);
-        if (savedPaintingData == 0) {
-            setPaintingWidth(0);
-            setPaintingHeight(0);
-            setPaintingIndex(0);
-        }
-        else {
-            int[] dataInfo = EaselModTrackedData.decodePainting(savedPaintingData);
-            setPaintingWidth(dataInfo[0]);
-            setPaintingHeight(dataInfo[1]);
-            setPaintingIndex(dataInfo[2]);
-        }
+        syncPlayerData(inv.player);
+        initPaintings(level.registryAccess());
     }
 
     @Override
@@ -129,76 +132,47 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private void createResult() {
-        if (this.inputSlot.getItem().is(Items.PAINTING) && isLegalIndex(getPaintingIndex())) {
-            PaintingVariant variant = getCurrentPainting();
-            ItemStack stack = PaintingUtil.makeStack(variant);
-            this.resultSlot.set(stack);
-        }
-        else {
+        if (this.inputSlot.getItem().is(Items.PAINTING) && this.getCurrentPainting().isEmpty()) {
+            this.getCurrentPainting().ifPresent(variant -> {
+                ItemStack stack = PaintingUtil.makeStack(variant, level.registryAccess());
+                this.resultSlot.set(stack);
+            });
+        } else {
             this.resultSlot.set(ItemStack.EMPTY);
         }
         this.broadcastChanges();
     }
 
-    /**
-     * Method ran BEFORE you change the painting dimensions
-     * It will:
-     * - save the current painting to the list
-     */
     public void dimensionChangedPre() {
         savePaintingForCurrentDimension();
     }
 
-    /**
-     * Method ran AFTER you change the painting dimensions
-     * It will:
-     * - Reset possible paintings
-     */
     public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
-        setPossiblePaintings(PaintingUtil.withTag(getPaintingWidth(), getPaintingHeight()));
-
-        // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
-        // if it hasn't then it should be set to 0
-        int newIndex = getIndexFromPaintingCoords();
-        setPaintingIndex(newIndex);
+        setPaintingIndex(savedIndex());
 
         if (inputStack.is(Items.PAINTING)) {
             createResult();
         }
     }
 
-    /**
-     * So uh yeah we kinda automated everytihng
-     * When change dimensions you uh, look at the saved paintings in each dimension and do that index I suppose
-     **/
-    private int getIndexFromPaintingCoords() {
+    private int savedIndex() {
         if (!isLegalDimensions()) {
-            // todo: this number should be -1, make it so that it is
-            return 0;
+            return -1;
         }
 
         int serializedCord = encodeCords();
-        int savedIndex = this.savedIndexInEachDimension[serializedCord].get();
-
-        return savedIndex;
+        return this.savedIndexInEachDimension[serializedCord].get();
     }
 
     public void indexChanged() {
         createResult();
     }
 
-    public List<PaintingVariant> getPossiblePaintings() {
-        return this.possiblePaintings;
+    public List<PaintingVariant> getPaintings() {
+        return isLegalDimensions() ? possiblePaintings.get(encodeCords()) : EMPTY;
     }
 
-    public void setPossiblePaintings(List<PaintingVariant> paintings) {
-        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(PAINTING_VARIANTS::getKey)).toList();
-    }
-
-    /**
-     * Okay so the bases are 0, 1, 2, 3, 4 and the painting heights (as coded) are 0, 16, 32, 64, so yeah.
-     */
     private void savePaintingForCurrentDimension() {
         if (!isLegalDimensions()) return;
         this.savedIndexInEachDimension[encodeCords()].set(getPaintingIndex());
@@ -225,7 +199,7 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public int getPossiblePaintingsSize() {
-        return possiblePaintings.size();
+        return getPaintings().size();
     }
 
     public int getPaintingIndex() {
@@ -234,27 +208,28 @@ public class EaselMenu extends AbstractContainerMenu {
 
     public void setPaintingIndex(int newIndex) {
         this.paintingIndex.set(newIndex);
+        indexChanged();
+    }
+
+    public boolean isLegalIndex() {
+        return isLegalIndex(getPaintingIndex());
     }
 
     public boolean isLegalIndex(int index) {
         return index >= 0 && index < this.getPossiblePaintingsSize();
     }
 
-    private boolean isLegalDimensions() {
+    public boolean isLegalDimensions() {
         if (getPaintingHeight() < MIN_DIMENSION || getPaintingHeight() > MAX_DIMENSION) return false;
         if (getPaintingWidth() < MIN_DIMENSION || getPaintingWidth() > MAX_DIMENSION) return false;
-
         return true;
     }
 
-    public PaintingVariant getCurrentPainting() {
-        try {
-            return getPossiblePaintings().get(getPaintingIndex());
-        }
-        catch (IndexOutOfBoundsException e) {
-            return ForgeRegistries.PAINTING_VARIANTS.getValue(PaintingVariants.KEBAB.location());
-        }
+    public Optional<PaintingVariant> getCurrentPainting() {
+        PaintingVariant variant = !isLegalIndex() ? null : getPaintings().get(getPaintingIndex());
+        return Optional.ofNullable(variant);
     }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         Slot slot = this.slots.get(index);
@@ -318,11 +293,12 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     private int encodeCords() {
-        return encodeTuple(getPaintingWidth() / 16, getPaintingHeight() / 16);
+        return encodeCords(getPaintingWidth(), getPaintingHeight());
     }
 
-    private static int encodeTuple(int width, int height) {
-        return MathUtil.base4ExceptTheNumbersAre1234InsteadOf0123(width, height);
+    private int encodeCords(int width, int height) {
+        if (width == 0 || height == 0) return -1;
+        return MathUtil.base4Minus5(width, height);
     }
 
     @Override
@@ -346,8 +322,8 @@ public class EaselMenu extends AbstractContainerMenu {
 
         IDataManager manager = (IDataManager) player;
         short paintingIndex = EaselModTrackedData.encodePainting(new int[]{
-                this.getPaintingWidth() / 16 - 1,
-                this.getPaintingHeight() / 16 - 1,
+                this.getPaintingWidth() - 1,
+                this.getPaintingHeight() - 1,
                 this.getPaintingIndex()});
 
         manager.setValue(EaselModTrackedData.PLAYER_CURRENT_PAINTING_INDEX, paintingIndex);
@@ -365,5 +341,34 @@ public class EaselMenu extends AbstractContainerMenu {
         for (int k = 0; k < 9; ++k) {
             this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
         }
+    }
+
+    private void syncPlayerData(Player player) {
+        short savedPaintingData = ((IDataManager) (player)).getValue(EaselModTrackedData.PLAYER_CURRENT_PAINTING_INDEX);
+        if (savedPaintingData == 0) {
+            setPaintingWidth(0);
+            setPaintingHeight(0);
+            setPaintingIndex(0);
+        }
+        else {
+            Vec3i dataInfo = EaselModTrackedData.decodePainting(savedPaintingData);
+            setPaintingWidth(dataInfo.getX());
+            setPaintingHeight(dataInfo.getY());
+            setPaintingIndex(dataInfo.getZ());
+        }
+    }
+
+    private void initPaintings(RegistryAccess access) {
+        for (int i = 0; i < 16; i++) {
+            this.possiblePaintings.add(new ArrayList<>());
+        }
+
+        PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, access, painting -> painting.width() <= 64 && painting.height() <= 64)
+                .forEach((painting -> {
+                    int entry = encodeCords(painting.width(), painting.height());
+                    possiblePaintings.get(entry).add(painting);
+                }));
+
+        possiblePaintings.forEach(list -> list.sort(Comparator.comparing(PaintingVariant::assetId)));
     }
 }

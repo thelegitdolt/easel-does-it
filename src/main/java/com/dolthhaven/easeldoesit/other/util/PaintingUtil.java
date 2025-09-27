@@ -1,92 +1,91 @@
 package com.dolthhaven.easeldoesit.other.util;
 
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.PaintingVariantTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.Level;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public class PaintingUtil {
-    public static Optional<PaintingVariant> readStack(ItemStack stack) {
+
+    public static Optional<Holder<PaintingVariant>> readStack(ItemStack stack, HolderLookup.Provider access) {
         if (!stack.is(Items.PAINTING)) return Optional.empty();
-
-        CompoundTag tag = stack.getTag();
-        if (tag == null) return Optional.empty();
-
-        Optional<Holder<PaintingVariant>> painting = Painting.loadVariant(tag.getCompound("EntityTag"));
-
-        if (painting.isPresent()) {
-            return Optional.of(painting.orElseThrow().get());
-        }
-        else {
-            return Optional.empty();
-        }
+        CustomData data = stack.get(DataComponents.ENTITY_DATA);
+        if (data != null) {
+            DataResult<Holder<PaintingVariant>> paintingMaybe = stack.get(DataComponents.ENTITY_DATA).read(access.createSerializationContext(NbtOps.INSTANCE), Painting.VARIANT_MAP_CODEC);
+            if (paintingMaybe.isSuccess()) {
+                return paintingMaybe.result();
+            }
+        } return Optional.empty();
     }
 
-    public static ItemStack makeStack(Supplier<PaintingVariant> variant) {
-        return makeStack(variant.get());
+    public static boolean isTagged(ResourceKey<PaintingVariant> painting, TagKey<PaintingVariant> tag, HolderLookup.Provider access) {
+        return access.lookupOrThrow(Registries.PAINTING_VARIANT).get(tag).map(holders -> holders.stream()
+                .anyMatch(loc -> loc.is(painting))).orElse(false);
     }
 
-    public static ItemStack makeStack(PaintingVariant variant) {
+    public static ItemStack makeStack(ResourceLocation location, RegistryAccess access) {
+        return makeStack(access.registry(Registries.PAINTING_VARIANT).orElseThrow().get(location), access);
+    }
+
+    public static ItemStack makeStack(PaintingVariant variant, RegistryAccess access) {
         ItemStack paintingStack = new ItemStack(Items.PAINTING, 1);
-
-        CompoundTag tag = paintingStack.getOrCreateTagElement("EntityTag");
-        Painting.storeVariant(tag, holder(variant));
+        CustomData data = CustomData.EMPTY.update(RegistryOps.create(NbtOps.INSTANCE, access), Painting.VARIANT_MAP_CODEC, holder(variant, access))
+                .getOrThrow()
+                .update(tag -> tag.putString("id", "minecraft:painting"));
+        paintingStack.set(DataComponents.ENTITY_DATA, data);
 
         return paintingStack;
     }
 
-    public static List<PaintingVariant> withTag(int width, int height) {
-        return withTag(width, height, false);
+
+    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, RegistryAccess access, Predicate<PaintingVariant> predicate) {
+        Set<PaintingVariant> variants = new HashSet<>();
+        access.lookup(Registries.PAINTING_VARIANT).orElseThrow().get(PaintingVariantTags.PLACEABLE)
+                .ifPresent(paintings -> paintings.forEach(painting -> {
+                    PaintingVariant variant = painting.value();
+                    if (predicate.test(variant)) {
+                        variants.add(painting.value());
+                    }
+                }));
+        return variants;
     }
 
-    public static List<PaintingVariant> withTag(int width, int height, boolean includeUnplaceable) {
-        return ServerLevel.instance.stream()
-                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
-                .filter(painting -> includeUnplaceable || holder(painting).is(PaintingVariantTags.PLACEABLE))
-                .toList();
+    public static Holder<PaintingVariant> holder(PaintingVariant painting, Level level) {
+        return holder(painting, level.registryAccess());
     }
 
-    public static Set<ItemStack> withTag(TagKey<PaintingVariant> tag) {
-        return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
-                .map(PaintingUtil::holder)
-                .filter(h -> h.is(tag))
-                .map(Holder::value)
-                .map(PaintingUtil::makeStack)
-                .collect(Collectors.toSet());
+    public static Holder<PaintingVariant> holder(PaintingVariant painting, RegistryAccess access) {
+        Optional<Registry<PaintingVariant>> paintings = access.registry(Registries.PAINTING_VARIANT);
+        return paintings.map(registry -> registry.getHolder(registry.getKey(painting))).orElseThrow().orElseThrow();
     }
 
-    public static Holder<PaintingVariant> holder(PaintingVariant painting) {
-        return ForgeRegistries.PAINTING_VARIANTS.getHolder(painting).orElseThrow();
-    }
-
-    public static Optional<Holder<PaintingVariant>> fromLanguageKey(String key) {
-        String[] keys = key.split("\\.");
-        return ForgeRegistries.PAINTING_VARIANTS.getHolder(
-                new ResourceLocation(keys[1], keys[2])
-        );
-    }
-
-    public static ResourceLocation getPaintingLocation(PaintingVariant variant) {
-        ResourceLocation loc = Objects.requireNonNull(ForgeRegistries.PAINTING_VARIANTS.getKey(variant));
-        return new ResourceLocation(loc.getNamespace(), "textures/painting/" + loc.getPath() + ".png");
-    }
+//    public static Optional<Holder<PaintingVariant>> fromLanguageKey(String key) {
+//        String[] keys = key.split("\\.");
+//        return ForgeRegistries.PAINTING_VARIANTS.getHolder(
+//                new ResourceLocation(keys[1], keys[2])
+//        );
+//    }
 }

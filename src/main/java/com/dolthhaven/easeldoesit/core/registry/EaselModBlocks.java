@@ -10,14 +10,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
-@EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class EaselModBlocks {
-    public static final BlockSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getBlockSubHelper();
+    public static final BlockSubRegistryHelper BLOCKS = EaselDoesIt.REGISTRY_HELPER.getBlockSubHelper();
 
-    public static final DeferredBlock<Block> EASEL = HELPER.createBlock("easel", () -> new EaselBlock(Properties.EASEL));
+    public static final DeferredBlock<Block> EASEL = BLOCKS.createBlock("easel", () -> new EaselBlock(Properties.EASEL));
 
 
 //    public static final RegistryObject<Block> STATUE = HELPER.createBlockNoItem("statue", () -> new WeatheringVillagerStatueBlock(Properties.STATUE));
@@ -40,6 +38,5 @@ public class EaselModBlocks {
 
     public static class Properties {
         public static final BlockBehaviour.Properties EASEL = BlockBehaviour.Properties.ofFullCopy(Blocks.LECTERN).mapColor(MapColor.COLOR_RED);
-        public static final BlockBehaviour.Properties STATUE = BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_BLOCK);
     }
 }

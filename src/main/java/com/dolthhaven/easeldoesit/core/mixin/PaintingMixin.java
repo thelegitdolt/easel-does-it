@@ -36,7 +36,7 @@ public abstract class PaintingMixin extends HangingEntity {
             return original.call(instance, itemLike);
         }
 
-        ItemStack paintingStack = PaintingUtil.makeStack(this.getVariant().value());
+        ItemStack paintingStack = PaintingUtil.makeStack(this.getVariant().value(), this.registryAccess());
         return instance.spawnAtLocation(paintingStack);
     }
 }

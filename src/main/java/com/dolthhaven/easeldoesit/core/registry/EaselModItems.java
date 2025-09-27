@@ -1,18 +1,11 @@
 package com.dolthhaven.easeldoesit.core.registry;
 
 import com.dolthhaven.easeldoesit.core.EaselDoesIt;
-import com.dolthhaven.easeldoesit.other.util.PaintingUtil;
-import com.teamabnormals.blueprint.core.util.item.CreativeModeTabContentsPopulator;
 import com.teamabnormals.blueprint.core.util.registry.ItemSubRegistryHelper;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.fml.common.EventBusSubscriber;
 
-@EventBusSubscriber(modid = EaselDoesIt.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class EaselModItems {
-    public static final ItemSubRegistryHelper HELPER = EaselDoesIt.REGISTRY_HELPER.getItemSubHelper();
+    public static final ItemSubRegistryHelper ITEMS = EaselDoesIt.REGISTRY_HELPER.getItemSubHelper();
 
 //    public static final RegistryObject<Item> STATUE = HELPER.createItem("statue", () -> new DoubleHighBlockItem(EaselModBlocks.STATUE.get(), Properties.STATUE));
 //    public static final RegistryObject<Item> EXPOSED_STATUE = HELPER.createItem("exposed_statue", () -> new DoubleHighBlockItem(EaselModBlocks.EXPOSED_STATUE.get(), Properties.STATUE));
@@ -28,9 +21,9 @@ public class EaselModItems {
 
 
     public static void setUpTabEditors() {
-        CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
-                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makeStack(EaselModPaintings.CULTURE));
+//        CreativeModeTabContentsPopulator.mod(EaselDoesIt.MOD_ID)
+//                .tab(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+//                .addStacksBefore(Ingredient.of(Items.BOOKSHELF), () -> PaintingUtil.makeStack(EaselModPaintings.CULTURE));
     }
 
     public static class Properties {

@@ -1,14 +1,24 @@
 package com.dolthhaven.easeldoesit.common.block.entity;
 
 import com.dolthhaven.easeldoesit.common.block.EaselBlock;
+import com.dolthhaven.easeldoesit.core.EaselDoesIt;
 import com.dolthhaven.easeldoesit.core.registry.EaselModBlockEntities;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class EaselBlockEntity extends BlockEntity {
     private ItemStack painting = ItemStack.EMPTY;
 
@@ -20,10 +30,6 @@ public class EaselBlockEntity extends BlockEntity {
 
         this.setPainting(ItemStack.EMPTY);
         return paintingContent;
-    }
-
-    private boolean hasPainting() {
-        return !this.painting.isEmpty();
     }
 
     public void setPainting(ItemStack stack) {
@@ -39,17 +45,18 @@ public class EaselBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (!isEmpty()) {
-            tag.put("Painting", this.getPainting().save(new CompoundTag()));
+            tag.put("painting", this.getPainting().save(registries));
         }
     }
+
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("Painting", 10)) {
-            this.painting = ItemStack.of(tag.getCompound("Painting"));
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("painting", 10)) {
+            setPainting(ItemStack.parse(registries, tag.get("painting")).orElse(ItemStack.EMPTY));
         }
     }
 
