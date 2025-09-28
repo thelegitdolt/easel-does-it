@@ -145,19 +145,20 @@ public class EaselBlock extends BaseEntityBlock {
     }
 
     public static boolean tryPlacePainting(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING)) {
+        if (!state.getValue(HAS_PAINTING) && stack.is(Items.PAINTING) && player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 placePainting(player, level, pos, state, stack);
             } return true;
         } return false;
     }
 
-    private static void placePainting(Entity entity, Level level, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void placePainting(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof EaselBlockEntity easel) {
-            easel.setPainting(stack.split(1));
+            easel.setPainting(stack.copyWithCount(1));
+            if (!player.isCreative()) stack.shrink(1);
             level.playSound(null, pos, SoundEvents.PAINTING_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
-            togglePainting(entity, pos, level, state, true);
+            togglePainting(player, pos, level, state, true);
         }
     }
 
