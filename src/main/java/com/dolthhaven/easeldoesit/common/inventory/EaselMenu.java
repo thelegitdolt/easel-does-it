@@ -363,7 +363,7 @@ public class EaselMenu extends AbstractContainerMenu {
             this.possiblePaintings.add(new ArrayList<>());
         }
 
-        PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, access, painting -> painting.width() <= 64 && painting.height() <= 64)
+        PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, access, painting -> painting.width() <= MAX_DIMENSION && painting.height() <= MAX_DIMENSION)
                 .forEach((painting -> {
                     int entry = encodeCords(painting.width(), painting.height());
                     possiblePaintings.get(entry).add(painting);
