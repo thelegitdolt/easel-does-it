@@ -59,7 +59,7 @@ public class PaintingUtil {
     }
 
 
-    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, RegistryAccess access, Predicate<PaintingVariant> predicate) {
+    public static Set<PaintingVariant> tagged(TagKey<PaintingVariant> tag, HolderLookup.Provider access, Predicate<PaintingVariant> predicate) {
         Set<PaintingVariant> variants = new HashSet<>();
         access.lookup(Registries.PAINTING_VARIANT).orElseThrow().get(PaintingVariantTags.PLACEABLE)
                 .ifPresent(paintings -> paintings.forEach(painting -> {
