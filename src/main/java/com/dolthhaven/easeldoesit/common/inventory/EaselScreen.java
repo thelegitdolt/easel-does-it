@@ -15,9 +15,11 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Inventory;
@@ -156,6 +158,27 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int pButton) {
+        if (clickPageManager(mouseX, mouseY)) {
+            return true;
+        } return super.mouseClicked(mouseX, mouseY, pButton);
+    }
+
+    private boolean clickPageManager(double mouseX, double mouseY) {
+        for (int[] buttons : getPageButtonYPositionsAndRepresentedIndex()) {
+            int start = buttons[0];
+            boolean inXRange = MathUtil.isBetween((int) mouseX, leftPos + PAGES_START_X, leftPos + PAGES_START_X + PAGE_BUTTON_DIMENSIONS);
+            boolean inYRange = MathUtil.isBetween((int) mouseY, topPos + buttons[0], topPos + buttons[0] + PAGE_BUTTON_DIMENSIONS);
+            boolean notIdentityTransformation = buttons[0] != getMenu().getPaintingIndex();
+            if (inXRange && inYRange && notIdentityTransformation) {
+                setMenuIndex(buttons[1]);
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+        } return false;
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
         double potentialIndex = subtractInputFromScroll(speed);
         float remainders = (float) potentialIndex - Mth.floor(potentialIndex);
@@ -234,7 +257,7 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
 
         int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
 
-        for (int[] yPosAndIndex : getPageButtonYPositionsAndRepresentedIndex(currentPage, numPaintingsInThisPage)) {
+        for (int[] yPosAndIndex : getPageButtonYPositionsAndRepresentedIndex()) {
             int yPos = yPosAndIndex[0];
             int currentIndex = yPosAndIndex[1];
 
@@ -256,7 +279,12 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         }
     }
 
-    private List<int[]> getPageButtonYPositionsAndRepresentedIndex(int currentPage, int numPaintingsInThisPage) {
+    private List<int[]> getPageButtonYPositionsAndRepresentedIndex() {
+        int menuPaintingIndex = getMenu().getPaintingIndex();
+        int currentPage = Mth.ceil((double) (menuPaintingIndex + 1) / MAX_PAINTINGS_PER_PAGE);
+
+        int numPaintingsInThisPage = Math.min(MAX_PAINTINGS_PER_PAGE, getMenu().getPossiblePaintingsSize() - MAX_PAINTINGS_PER_PAGE * (currentPage - 1));
+
         List<int[]> list = Lists.newArrayList();
         int yPos = (AVAILABLE_PIXELS_PER_PAGE - totalReqPixelsFor(numPaintingsInThisPage)) / 2;
         yPos += 2;

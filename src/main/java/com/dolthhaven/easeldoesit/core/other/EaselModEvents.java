@@ -37,6 +37,10 @@ public class EaselModEvents {
         }
     }
 
+    private static UniformInt constant(int i) {
+        return UniformInt.of(i, i);
+    }
+
     @SubscribeEvent
     public static void addCustomTrades(VillagerTradesEvent event) {
         if (event.getType() == EaselModVillagers.ARTIST.get()) {
@@ -46,93 +50,83 @@ public class EaselModEvents {
             List<Item> rare_dyes = ModUtil.getAllMembersOfTag(EaselModTags.Items.RARE_DYES);
 
 
-            trades.get(1).add(new RandomItemsSellingTrade(
-                    rare_dyes,
-                    UniformInt.of(3, 3),
-                    ONE));
+            trades.get(1).add(new EmeraldToRandomItem(rare_dyes, ONE,
+                    constant(3)));
 
-            trades.get(1).add(new RandomItemsBuyingTrade(
-                    dyes,
-                    UniformInt.of(14, 19),
+            trades.get(1).add(new RandomItemToEmerald(
+                    dyes, UniformInt.of(14, 19),
                     ONE));
 
 
-            trades.get(2).add(new ItemSellingTrade(
-                    Items.ITEM_FRAME, UniformInt.of(1, 1), UniformInt.of(1, 1), 12,
+            trades.get(2).add(new EmeraldToItem(
+                    ONE,
+                    Items.ITEM_FRAME, ONE, 12,
                     10, 0.01f)
             );
 
 
             // villager buy dye
-            trades.get(2).add(new RandomItemsBuyingTrade(
-                    dyes,
-                    ONE,
-                    UniformInt.of(3, 3), 16, 10, 0.01f));
+            trades.get(2).add(new RandomItemToEmerald(
+                    dyes, UniformInt.of(14, 19),
+                    ONE,16, 10, 0.01f));
             // villager sell dye
-            trades.get(2).add(new RandomItemsSellingTrade(
+            trades.get(2).add(new EmeraldToRandomItem(
                     ONE,
-                    rare_dyes,
-                    UniformInt.of(3, 3), 16, 10, 0.01f));
-            trades.get(2).add(new RandomItemsSellingTrade(
-                    UniformInt.of(1, 1),
-                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye + "_wool")),
-                    UniformInt.of(2, 2), 12, 10, 0.01f));
-            trades.get(2).add(new ItemBuyingTrade(
-                    Items.INK_SAC,
-                    UniformInt.of(4, 4),
+                    rare_dyes, constant(3), 16, 10, 0.01f));
+            trades.get(2).add(new EmeraldToRandomItem(
+                    ONE,
+                    ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye + "_wool")), UniformInt.of(2, 2),
+                    12, 10, 0.01f));
+            trades.get(2).add(new ItemToEmerald(
+                    Items.INK_SAC, UniformInt.of(3, 5),
                     ONE, 16, 10, 0.01f));
-            if (ModList.get().isLoaded(EaselModConstants.FARMERS_DELIGHT)) {
-                trades.get(2).add(new ItemBuyingTrade(
-                        EaselModConstants.CANVAS,
-                        UniformInt.of(6, 8),
+            if (ModList.get().isLoaded(EaselModConstants.FARMERS_DELIGHT))
+                trades.get(2).add(new ItemToEmerald(
+                        EaselModConstants.CANVAS, UniformInt.of(6, 8),
                         ONE, 16, 10, 0.01f));
-            }
 
-
-
-            trades.get(3).add(new RandomItemsBuyingTrade(
-                    dyes,
-                    UniformInt.of(14, 19),
+            trades.get(3).add(new RandomItemToEmerald(
+                    dyes, UniformInt.of(14, 19),
                     ONE, 16, 10, 0.01f));
-            trades.get(3).add(new RandomItemsSellingTrade(
-                    UniformInt.of(2, 2),
+            trades.get(3).add(new EmeraldToRandomItem(
+                    constant(2),
                     ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_terracotta")),
-                    UniformInt.of(4, 4), 12, 10, 0.01f
+                    constant(5), 12, 10, 0.01f
             ));
-            trades.get(3).add(new RandomItemsSellingTrade(
-                    UniformInt.of(2, 2),
+            trades.get(3).add(new EmeraldToRandomItem(
+                    constant(2),
                     ModUtil.getAllDyedItems(dye -> new ResourceLocation(dye +  "_glazed_terracotta")),
-                    UniformInt.of(4, 4), 12, 10, 0.01f
+                    constant(5), 12, 10, 0.01f
             ));
 
 
 
-            trades.get(4).add(new ItemBuyingTrade(
+            trades.get(4).add(new ItemToEmerald(
                     Items.CHARCOAL,
                     UniformInt.of(6, 9),
                     ONE, 12, 10, 0.01f
             ));
-            trades.get(4).add(new ItemBuyingTrade(
+            trades.get(4).add(new ItemToEmerald(
                     Items.PAINTING,
-                    UniformInt.of(8, 8),
+                    constant(8),
                     ONE, 12, 10, 0.01f
             ));
             if (ModList.get().isLoaded(EaselModConstants.FARMERS_DELIGHT)) {
-                trades.get(4).add(new RandomItemsSellingTrade(
-                        UniformInt.of(2, 2),
+                trades.get(4).add(new EmeraldToRandomItem(
+                        constant(2),
                         ModUtil.getAllDyedItems(dye -> EaselModConstants.farmersDelight(dye + "_hanging_canvas_sign")),
                         ONE, 12, 10, 0.01f
                 ));
             }
             if (ModList.get().isLoaded(EaselModConstants.CLAYWORKS)) {
-                trades.get(4).add(new RandomItemsSellingTrade(
+                trades.get(4).add(new EmeraldToRandomItem(
                         ONE,
                         ModUtil.getAllDyedItems(dye -> EaselModConstants.clayworks(dye + "_decorated_pot")),
                         ONE, 12, 10, 0.01f
                 ));
             }
             if (ModList.get().isLoaded(EaselModConstants.CHALK)) {
-                trades.get(4).add(new RandomItemsSellingTrade(
+                trades.get(4).add(new EmeraldToRandomItem(
                         ONE,
                         ModUtil.getAllDyedItems(dye -> EaselModConstants.chalk(dye + "_chalk")),
                         UniformInt.of(1, 1), 12, 10, 0.01f
@@ -140,9 +134,7 @@ public class EaselModEvents {
             }
 
 
-            trades.get(5).add(new SellPaintingVariantTrade(
-                    EaselModPaintings.CULTURE.get(), UniformInt.of(5, 5), 12
-            ));
+            trades.get(5).add(new EmeraldToPainting(EaselModPaintings.CULTURE.get(), constant(12), 12, 25, 0.1f));
 
         }
     }

@@ -25,4 +25,8 @@ public class MathUtil {
         double newVal = 2 / (1 + Math.exp(-Math.abs(velocity) / 3) ) + 3;
         return newVal * sign;
     }
+
+    public static boolean isBetween(int num, int start, int end) {
+        return num >= start && num <= end;
+    }
 }
