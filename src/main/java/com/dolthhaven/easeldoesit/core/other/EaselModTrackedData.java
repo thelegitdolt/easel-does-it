@@ -6,7 +6,6 @@ import com.teamabnormals.blueprint.common.world.storage.tracking.TrackedData;
 import com.teamabnormals.blueprint.common.world.storage.tracking.TrackedDataManager;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.codec.ByteBufCodecs;
-import org.jetbrains.annotations.NotNull;
 
 public class EaselModTrackedData {
     // of the 16 bits of a short:

@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -363,12 +364,18 @@ public class EaselMenu extends AbstractContainerMenu {
             this.possiblePaintings.add(new ArrayList<>());
         }
 
-        PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, access, painting -> painting.width() <= MAX_DIMENSION && painting.height() <= MAX_DIMENSION)
+        PaintingUtil.tagged(PaintingVariantTags.PLACEABLE, access, painting -> true)
                 .forEach((painting -> {
-                    int entry = encodeCords(painting.width(), painting.height());
+                    int width = Math.min(painting.width(), 4);
+                    int height = Math.min(painting.height(), 4);
+
+                    int entry = encodeCords(width, height);
                     possiblePaintings.get(entry).add(painting);
                 }));
 
-        possiblePaintings.forEach(list -> list.sort(Comparator.comparing(PaintingVariant::assetId)));
+        possiblePaintings.forEach(list -> list.sort(Comparator
+                .comparing((PaintingVariant p) -> new Vector2i(p.width(), p.height()),
+                           Comparator.comparing(Vector2i::x).thenComparing(Vector2i::y))
+        .thenComparing(PaintingVariant::assetId)));
     }
 }

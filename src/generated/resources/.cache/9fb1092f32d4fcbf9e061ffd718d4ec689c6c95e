@@ -1,6 +1,4 @@
-// 1.21.1	2025-09-17T21:22:07.031349	Recipes
+// 1.21.1	2026-03-29T16:37:16.626838	Recipes
 e2184722f100d36d67366759707049692b8ff5df data/easel_does_it/advancement/recipes/decorations/easel.json
-fda5a40dee861a6d88b8bdb1125d146a1e5a7ff0 data/easel_does_it/advancement/recipes/decorations/easel_mirrored.json
 bcbe604e5d5457b9cd1387e923550c1c2f1ae053 data/easel_does_it/recipe/easel.json
-0e1d99c1c6d0cdf0f30088f0bbcf3353abc5949b data/easel_does_it/recipe/easel_mirrored.json
 59ffb7dec1af84338579be52c2b81dce3fb9d49a data/easel_does_it/recipe/painting_variant_unset.json

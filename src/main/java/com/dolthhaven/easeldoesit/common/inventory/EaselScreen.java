@@ -287,6 +287,8 @@ public class EaselScreen extends AbstractContainerScreen<EaselMenu> {
         if (!isEaselActive() || !menu.isLegalIndex() || !menu.isLegalDimensions()) return;
 
         this.menu.getCurrentPainting().ifPresent(painting -> {
+            if (painting.width() > 4 || painting.height() > 4) return;
+
             TextureAtlasSprite paintingSprite = Minecraft.getInstance().getPaintingTextures().get(painting);
             graphics.blit(this.leftPos + PREVIEW_BOX_GUI.x(), this.topPos + PREVIEW_BOX_GUI.y(),
                     0, painting.width() * 16, painting.height() * 16, paintingSprite);

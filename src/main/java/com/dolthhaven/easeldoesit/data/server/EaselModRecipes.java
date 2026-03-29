@@ -26,13 +26,6 @@ public class EaselModRecipes extends BlueprintRecipeProvider {
                 .pattern("00")
                 .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(output);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EaselModBlocks.EASEL.get())
-                .define('0', ItemTags.PLANKS)
-                .pattern("0 ")
-                .pattern(" 0")
-                .pattern("00")
-                .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(output, EaselDoesIt.rl("easel_mirrored"));
-
         SpecialRecipeBuilder.special(PaintingUnsetRecipe::new).save(output, EaselDoesIt.rl("painting_variant_unset"));
     }
 }
