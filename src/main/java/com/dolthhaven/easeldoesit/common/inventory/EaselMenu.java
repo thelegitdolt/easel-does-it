@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -157,7 +158,8 @@ public class EaselMenu extends AbstractContainerMenu {
      */
     public void dimensionChangedPost() {
         ItemStack inputStack = this.inputSlot.getItem();
-        setPossiblePaintings(PaintingUtil.withTag(getPaintingWidth(), getPaintingHeight()));
+        setPossiblePaintings(PaintingUtil
+                .withTag(getPaintingWidth(), getPaintingHeight()));
 
         // if this exact dimension has been visited before then we save the progress, setting it to that last visited painting.
         // if it hasn't then it should be set to 0
@@ -194,7 +196,10 @@ public class EaselMenu extends AbstractContainerMenu {
     }
 
     public void setPossiblePaintings(List<PaintingVariant> paintings) {
-        this.possiblePaintings = paintings.stream().sorted(Comparator.comparing(ForgeRegistries.PAINTING_VARIANTS::getKey)).toList();
+        this.possiblePaintings = paintings.stream().sorted(
+                Comparator.comparing((PaintingVariant p) -> new Vector2i(p.getWidth(), p.getHeight()),
+                        Comparator.comparing(Vector2i::x).thenComparing(Vector2i::y))
+                        .thenComparing(ForgeRegistries.PAINTING_VARIANTS::getKey)).toList();
     }
 
     /**

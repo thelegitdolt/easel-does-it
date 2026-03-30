@@ -12,7 +12,6 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -55,7 +54,7 @@ public class PaintingUtil {
 
     public static List<PaintingVariant> withTag(int width, int height, boolean includeUnplaceable) {
         return ForgeRegistries.PAINTING_VARIANTS.getValues().stream()
-                .filter(painting -> painting.getHeight() == height && painting.getWidth() == width)
+                .filter(painting -> Math.min(painting.getHeight(), 64) == height && Math.min(painting.getWidth(), 64) == width)
                 .filter(painting -> includeUnplaceable || holder(painting).is(PaintingVariantTags.PLACEABLE))
                 .toList();
     }

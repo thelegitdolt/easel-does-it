@@ -28,13 +28,6 @@ public class EaselModRecipes extends BlueprintRecipeProvider {
                 .pattern("00")
                 .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EaselModBlocks.EASEL.get())
-                .define('0', ItemTags.PLANKS)
-                .pattern("0 ")
-                .pattern(" 0")
-                .pattern("00")
-                .unlockedBy(getHasName(Items.PAINTING), has(Items.PAINTING)).save(consumer, EaselDoesIt.rl("easel_mirrored"));
-
         SpecialRecipeBuilder.special(EaselModRecipeSerializers.PAINTING_UNSET.get()).save(consumer, "painting_variant_unset");
     }
 }
